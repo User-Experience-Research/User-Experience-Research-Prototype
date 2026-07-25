@@ -6,17 +6,19 @@
   <title>NMSI Student Support Navigator</title>
   <style>
     :root {
-      --ink: #17231f;
-      --muted: #53635e;
+      --ink: #202323;
+      --ink-soft: #303434;
       --panel: #ffffff;
-      --canvas: #f3f5f4;
-      --line: #cbd5d1;
-      --green: #087965;
-      --green-dark: #075849;
-      --green-soft: #e5f3ef;
-      --charcoal: #1d2825;
-      --sand: #f5efe2;
-      --shadow: 0 14px 34px rgba(23, 35, 31, 0.10);
+      --canvas: #f5f6f5;
+      --line: #d7dbd9;
+      --muted: #64706c;
+      --green: #0fd2a3;
+      --green-dark: #087d66;
+      --green-soft: #e6fbf5;
+      --charcoal: #242625;
+      --sand: #f4ead1;
+      --shadow: 0 18px 45px rgba(20, 30, 27, 0.12);
+      --sidebar: 282px;
     }
 
     * { box-sizing: border-box; }
@@ -34,13 +36,15 @@
 
     button, input, select, textarea { font: inherit; }
 
-    button, a, input, select, textarea {
-      outline-offset: 4px;
+    button { cursor: pointer; }
+
+    a:focus-visible, input:focus, select:focus, textarea:focus, button:focus-visible {
+      outline: 3px solid #087d66;
+      outline-offset: 3px;
+      border-color: var(--green-dark);
     }
 
-    :focus-visible {
-      outline: 3px solid #f3b51b;
-    }
+    h2[tabindex="-1"]:focus { outline: none; }
 
     .skip-link {
       position: fixed;
@@ -48,9 +52,9 @@
       top: -80px;
       z-index: 100;
       padding: 12px 18px;
-      border-radius: 8px;
       background: #ffffff;
-      color: #0b4f43;
+      color: #073d32;
+      border: 3px solid #073d32;
       font-weight: 700;
     }
 
@@ -61,21 +65,21 @@
     .button {
       min-height: 46px;
       border: 2px solid transparent;
-      border-radius: 6px;
+      border-radius: 2px;
       padding: 10px 18px;
       cursor: pointer;
       font-weight: 700;
     }
 
     .button--primary {
-      background: var(--green);
+      background: var(--green-dark);
       color: #ffffff;
     }
 
-    .button--primary:hover { background: var(--green-dark); }
+    .button--primary:hover { background: #066552; }
 
     .button--secondary {
-      border-color: var(--green);
+      border-color: #9fa8a4;
       background: #ffffff;
       color: var(--green-dark);
     }
@@ -94,79 +98,89 @@
     .login-layout {
       display: grid;
       min-height: 100vh;
-      grid-template-columns: minmax(320px, 44%) minmax(420px, 56%);
+      grid-template-columns: minmax(360px, 0.9fr) minmax(470px, 1.1fr);
     }
 
     .login-brand {
       position: relative;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-between;
       overflow: hidden;
-      padding: 72px clamp(44px, 7vw, 112px);
+      min-height: 100vh;
+      padding: 72px 72px 56px;
       background:
-        radial-gradient(circle at 94% 70%, transparent 0 21%, rgba(255,255,255,.04) 21.3% 30%, transparent 30.3%),
-        linear-gradient(145deg, #253b35, #121918 70%);
+        linear-gradient(145deg, rgba(15, 210, 163, 0.15), transparent 42%),
+        linear-gradient(180deg, #272a29 0%, #131514 100%);
       color: #ffffff;
     }
 
+    .login-brand::after {
+      content: "";
+      position: absolute;
+      width: 390px;
+      height: 390px;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 50%;
+      right: -170px;
+      bottom: 80px;
+      box-shadow: 0 0 0 55px rgba(255,255,255,0.025), 0 0 0 110px rgba(255,255,255,0.018);
+    }
+
+    .login-brand__top { position: relative; z-index: 1; }
+
     .login-brand h1 {
-      max-width: 650px;
-      margin: 42px 0 20px;
-      font-size: clamp(2.3rem, 4vw, 4.7rem);
+      max-width: 560px;
+      margin: 32px 0 14px;
+      font-size: clamp(2.4rem, 4vw, 4.8rem);
       line-height: 1.03;
       font-weight: 400;
+      letter-spacing: -0.045em;
     }
 
     .login-brand p {
-      max-width: 620px;
+      max-width: 520px;
       margin: 0;
-      color: #d5dfdc;
-      font-size: 1.15rem;
+      color: #cfd6d3;
+      font-size: 1.08rem;
+      line-height: 1.65;
     }
 
-    .nmsi-mark {
+    .logo-mark {
+      width: 118px;
+      height: 118px;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 9px 16px rgba(0, 0, 0, 0.2));
+    }
+
+    .login-brand .logo-mark { width: 145px; height: 145px; }
+
+    .login-brand__foot {
       position: relative;
-      width: 146px;
-      height: 146px;
-      border: 8px solid #0d5f50;
-      border-radius: 50%;
-      background: #12342d;
-      box-shadow: inset 0 0 0 3px #33c6a9, 0 12px 28px rgba(0,0,0,.2);
+      z-index: 1;
+      color: #9ea7a3;
+      font-size: 0.9rem;
     }
-
-    .nmsi-mark span {
-      position: absolute;
-      color: #ffffff;
-      font-weight: 800;
-      line-height: 1;
-      text-shadow: 5px 5px 0 rgba(0,0,0,.18);
-    }
-
-    .nmsi-mark .n { left: 18px; top: 42px; font-size: 70px; }
-    .nmsi-mark .m { left: 70px; top: 19px; font-size: 46px; }
-    .nmsi-mark .s { left: 77px; top: 67px; font-size: 42px; }
-    .nmsi-mark .i { right: 16px; bottom: 16px; font-size: 56px; }
 
     .login-panel {
       display: grid;
       place-items: center;
-      padding: 54px;
-      background: #f7f8f7;
+      padding: 44px;
+      background: #f3f4f3;
     }
 
     .login-card {
-      width: min(660px, 100%);
-      padding: clamp(36px, 5vw, 68px);
-      border: 1px solid #d9e0dd;
+      width: min(520px, 100%);
+      padding: 46px;
+      border: 1px solid #e0e3e2;
       background: #ffffff;
       box-shadow: var(--shadow);
     }
 
     .login-card h2 {
       margin: 0 0 8px;
-      font-size: clamp(2.2rem, 4vw, 4rem);
-      font-weight: 400;
+      font-size: 2rem;
+      font-weight: 500;
     }
 
     .field { margin-top: 26px; }
@@ -181,10 +195,10 @@
     .field select,
     .field textarea {
       width: 100%;
-      min-height: 50px;
-      border: 1px solid #84948e;
-      border-radius: 4px;
-      padding: 12px;
+      min-height: 46px;
+      border: 1px solid #bdc5c1;
+      border-radius: 2px;
+      padding: 12px 13px;
       background: #ffffff;
       color: var(--ink);
     }
@@ -202,63 +216,63 @@
     }
 
     .app-shell {
-      display: grid;
+      display: block;
       min-height: 100vh;
-      grid-template-columns: 292px minmax(0, 1fr);
     }
 
     .sidebar {
-      position: sticky;
-      top: 0;
+      position: fixed;
+      inset: 0 auto 0 0;
       display: flex;
       height: 100vh;
+      width: var(--sidebar);
       flex-direction: column;
-      padding: 30px 20px;
-      background: var(--charcoal);
+      padding: 0;
+      background: #242625;
       color: #ffffff;
+      border-right: 1px solid #111;
+      z-index: 20;
     }
 
     .sidebar-brand {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 0 10px 28px;
-      border-bottom: 1px solid rgba(255,255,255,.14);
+      height: 172px;
+      padding: 35px 28px 24px;
+      border-bottom: 1px solid #151716;
+      background: #232524;
     }
 
-    .sidebar-brand .mini-mark {
-      display: grid;
-      width: 60px;
-      height: 60px;
-      place-items: center;
-      border: 2px solid #31c4a6;
-      border-radius: 50%;
-      background: #12342d;
-      font-size: 1.15rem;
-      font-weight: 800;
+    .sidebar-brand__abbr {
+      font-size: 3.1rem;
+      font-weight: 300;
+      line-height: 1;
       letter-spacing: -0.06em;
     }
 
-    .sidebar-brand strong { display: block; font-size: 1.08rem; }
-    .sidebar-brand small { color: #b8c6c1; }
+    .sidebar-brand__name {
+      margin-top: 13px;
+      color: #b8c0bd;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      max-width: 205px;
+    }
 
     .nav-list {
       display: grid;
       gap: 8px;
-      margin: 28px 0 0;
-      padding: 0;
+      margin: 0;
+      padding: 17px 12px;
       list-style: none;
     }
 
     .nav-button {
       display: flex;
       width: 100%;
-      min-height: 52px;
+      min-height: 50px;
       align-items: center;
       gap: 12px;
-      border: 1px solid transparent;
-      border-radius: 5px;
-      padding: 11px 13px;
+      border: 2px solid transparent;
+      border-radius: 3px;
+      padding: 10px 12px;
       background: transparent;
       color: #eef4f2;
       cursor: pointer;
@@ -266,44 +280,69 @@
     }
 
     .nav-button[aria-current="page"] {
-      border-color: #4be0c1;
-      background: #0f5f50;
-      box-shadow: inset 5px 0 0 #55e2c5;
+      border-color: var(--green);
+      background: rgba(15, 210, 163, 0.09);
+      box-shadow: inset 4px 0 0 var(--green);
       font-weight: 700;
     }
 
     .nav-icon {
       display: grid;
-      width: 30px;
-      height: 30px;
+      width: 27px;
+      height: 27px;
       place-items: center;
       border-radius: 50%;
-      background: rgba(255,255,255,.12);
+      border: 1px solid currentColor;
+      background: transparent;
       font-weight: 700;
     }
 
     .sidebar-footer {
       margin-top: auto;
-      padding: 22px 10px 0;
-      border-top: 1px solid rgba(255,255,255,.14);
-      color: #b9c6c2;
-      font-size: 0.87rem;
+      padding: 20px 24px 25px;
+      border-top: 1px solid #303332;
+      color: #a8afac;
+      font-size: 0.72rem;
     }
 
-    .workspace { min-width: 0; }
+    .workspace {
+      min-width: 0;
+      margin-left: var(--sidebar);
+      min-height: 100vh;
+    }
 
     .topbar {
+      position: relative;
       display: flex;
-      min-height: 88px;
-      align-items: center;
+      height: 205px;
+      align-items: flex-start;
       justify-content: space-between;
       gap: 24px;
-      padding: 20px clamp(28px, 5vw, 72px);
-      background: #ffffff;
-      border-bottom: 1px solid var(--line);
+      padding: 35px 52px 0 205px;
+      background:
+        radial-gradient(circle at 82% -20%, rgba(15, 210, 163, 0.16), transparent 36%),
+        linear-gradient(180deg, #292b2a 0%, #101211 100%);
+      color: white;
     }
 
-    .topbar strong { font-size: 1.08rem; }
+    .topbar strong { font-size: 1.75rem; font-weight: 400; }
+    .topbar .muted { color: #b8c3bf; margin-top: 8px; }
+
+    .seal {
+      position: absolute;
+      left: 48px;
+      bottom: -56px;
+      width: 142px;
+      height: 142px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #073d32;
+      border: 7px solid #0a5544;
+      box-shadow: 0 8px 0 #061c18, 0 15px 28px rgba(0,0,0,0.23);
+    }
+
+    .seal .logo-mark { width: 116px; height: 116px; filter: none; }
 
     .sign-out {
       border: 0;
@@ -314,9 +353,9 @@
     }
 
     .content {
-      width: min(1420px, 100%);
+      width: min(1260px, 100%);
       margin: 0 auto;
-      padding: 52px clamp(28px, 5vw, 72px) 80px;
+      padding: 88px 52px 70px;
     }
 
     .page-heading {
@@ -329,7 +368,7 @@
 
     .page-heading h2 {
       margin: 0;
-      font-size: clamp(2.25rem, 4vw, 4rem);
+      font-size: clamp(2rem, 3.3vw, 3.45rem);
       font-weight: 400;
       line-height: 1.08;
     }
@@ -346,6 +385,73 @@
       grid-template-columns: 1.15fr 0.85fr;
       gap: 26px;
     }
+
+    .portal-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(320px, 0.88fr);
+      border: 1px solid #cbd0ce;
+      background: white;
+      min-height: 405px;
+    }
+
+    .portal-art {
+      background: var(--sand);
+      min-height: 405px;
+      display: grid;
+      place-items: center;
+      border-right: 1px solid #cbd0ce;
+      overflow: hidden;
+    }
+
+    .portal-art svg { width: 78%; max-width: 540px; height: auto; }
+    .portal-links { display: grid; grid-template-rows: repeat(4, 1fr); }
+
+    .portal-link {
+      border: 0;
+      border-bottom: 1px solid #cbd0ce;
+      background: #f4f5f4;
+      color: var(--ink);
+      text-align: left;
+      padding: 25px 28px;
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .portal-link:last-child { border-bottom: 0; }
+    .portal-link:hover { background: white; }
+    .portal-link--primary {
+      background: var(--green-soft);
+      border: 2px solid var(--green-dark);
+      box-shadow: inset 5px 0 0 var(--green);
+    }
+
+    .portal-link small {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.77rem;
+    }
+
+    .arrow { font-size: 1.25rem; color: var(--green-dark); }
+
+    .dashboard-lower {
+      margin-top: 38px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .info-panel {
+      background: white;
+      border: 1px solid var(--line);
+      padding: 24px;
+    }
+
+    .info-panel h3 { margin: 0 0 10px; font-size: 1.06rem; }
+    .info-panel p { margin: 0; color: var(--muted); line-height: 1.55; }
 
     .feature-card,
     .info-card,
@@ -530,6 +636,124 @@
       text-align: center;
     }
 
+    /* Visual parity with the approved Iteration 1 portal. */
+    .search-panel {
+      display: block;
+      background: white;
+      border: 1px solid var(--line);
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: none;
+    }
+
+    .search-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .search-box { position: relative; }
+    .search-box input {
+      width: 100%;
+      min-height: 50px;
+      padding: 12px 13px 12px 42px;
+      border: 1px solid #bdc5c1;
+      border-radius: 2px;
+    }
+
+    .search-box::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 16px;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #59625f;
+      border-radius: 50%;
+    }
+
+    .search-box::after {
+      content: "";
+      position: absolute;
+      left: 26px;
+      top: 29px;
+      width: 8px;
+      height: 2px;
+      background: #59625f;
+      transform: rotate(45deg);
+      transform-origin: left center;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      gap: 12px;
+      padding-top: 17px;
+    }
+
+    .filter-field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #46504c;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .filter-field select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid #bdc5c1;
+      border-radius: 2px;
+      background: white;
+      padding: 12px 13px;
+    }
+
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin: 25px 0 13px;
+    }
+
+    .service-list { gap: 14px; }
+
+    .service-card {
+      grid-template-columns: minmax(0, 1fr) 230px;
+      gap: 22px;
+      padding: 22px;
+      box-shadow: 0 3px 12px rgba(22, 33, 29, 0.04);
+    }
+
+    .service-card h3 { font-size: 1.17rem; }
+    .service-card p { color: #424b48; }
+
+    .service-facts {
+      min-width: 0;
+      padding-left: 20px;
+      border-left: 1px solid #e0e4e2;
+      justify-content: center;
+      font-size: 0.84rem;
+    }
+
+    .tag {
+      min-height: 0;
+      gap: 5px;
+      border: 1px solid #cbd2cf;
+      border-radius: 3px;
+      padding: 6px 8px;
+      background: #f7f8f7;
+      color: #3c4642;
+      font-size: 0.75rem;
+      line-height: 1.15;
+    }
+
+    .detail-card,
+    .booking-card,
+    .confirmation-card {
+      box-shadow: 0 3px 12px rgba(22, 33, 29, 0.04);
+    }
+
     .sr-only {
       position: absolute;
       width: 1px;
@@ -545,37 +769,66 @@
     @media (max-width: 1060px) {
       .login-layout { grid-template-columns: 1fr; }
       .login-brand { min-height: 420px; }
-      .app-shell { grid-template-columns: 220px minmax(0, 1fr); }
-      .search-panel { grid-template-columns: 1fr 1fr; }
-      .home-grid, .detail-grid, .booking-grid { grid-template-columns: 1fr; }
+      .portal-grid, .home-grid, .detail-grid, .booking-grid { grid-template-columns: 1fr; }
+      .portal-art { border-right: 0; border-bottom: 1px solid #cbd0ce; min-height: 270px; }
       .service-card { grid-template-columns: 1fr; }
+      .service-facts { border-left: 0; border-top: 1px solid #e0e4e2; padding: 15px 0 0; }
     }
 
     @media (max-width: 720px) {
       .app-shell { display: block; }
       .sidebar { position: static; height: auto; }
+      .workspace { margin-left: 0; }
       .nav-list { grid-template-columns: 1fr 1fr; }
       .sidebar-footer { display: none; }
-      .topbar, .page-heading { align-items: flex-start; }
-      .page-heading, .topbar { flex-direction: column; }
-      .search-panel, .boundary-grid { grid-template-columns: 1fr; }
+      .topbar {
+        height: auto;
+        min-height: 165px;
+        padding: 28px 22px 28px 118px;
+      }
+      .seal { width: 82px; height: 82px; left: 20px; bottom: 24px; border-width: 4px; }
+      .seal .logo-mark { width: 70px; height: 70px; }
+      .page-heading { align-items: flex-start; }
+      .page-heading { flex-direction: column; }
+      .search-row, .filters, .boundary-grid, .dashboard-lower { grid-template-columns: 1fr; }
       .login-panel { padding: 24px; }
       .login-brand { padding: 48px 28px; }
+      .content { padding: 54px 16px 45px; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <div id="status-region" class="sr-only" aria-live="polite"></div>
+  <svg class="sr-only" aria-hidden="true">
+    <symbol id="nmsi-logo" viewBox="0 0 180 180">
+      <circle cx="90" cy="90" r="85" fill="#0a4b3d"/>
+      <circle cx="90" cy="90" r="71" fill="#11312a" stroke="#25ddb1" stroke-width="2"/>
+      <g font-family="Arial Black, Arial, sans-serif" font-weight="900">
+        <g fill="#05251f" opacity="0.9" transform="translate(7 7)">
+          <text x="26" y="116" font-size="82">N</text>
+          <text x="79" y="70" font-size="47">M</text>
+          <text x="82" y="111" font-size="51">S</text>
+          <text x="127" y="133" font-size="53">I</text>
+        </g>
+        <text x="26" y="116" font-size="82" fill="#f5fff9" stroke="#bcebdd" stroke-width="1">N</text>
+        <text x="79" y="70" font-size="47" fill="#f5fff9">M</text>
+        <text x="82" y="111" font-size="51" fill="#f5fff9">S</text>
+        <text x="127" y="133" font-size="53" fill="#f5fff9">I</text>
+      </g>
+      <path d="M41 137 L140 137 L126 149 L55 149 Z" fill="#25ddb1" opacity="0.75"/>
+    </symbol>
+  </svg>
 
   <section id="screen-login" class="screen" aria-labelledby="login-heading">
     <div class="login-layout">
       <div class="login-brand">
-        <div class="nmsi-mark" aria-hidden="true">
-          <span class="n">N</span><span class="m">M</span><span class="s">S</span><span class="i">I</span>
+        <div class="login-brand__top">
+          <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
+          <h1>North-western Medical and Science Institute</h1>
+          <p>A student portal for learning, campus services and practical support. This prototype focuses on helping students find the right source of help without needing to know the university structure first.</p>
         </div>
-        <h1>North-western Medical and Science Institute</h1>
-        <p>A student portal for learning, campus services and practical support.</p>
+        <div class="login-brand__foot">NMSI student systems · Prototype environment</div>
       </div>
       <div class="login-panel">
         <form class="login-card" onsubmit="logIn(event)">
@@ -601,8 +854,8 @@
     <div class="app-shell">
       <aside class="sidebar" aria-label="Student portal navigation">
         <div class="sidebar-brand">
-          <div class="mini-mark" aria-hidden="true">NMSI</div>
-          <div><strong>NMSI Student</strong><small>Campus portal</small></div>
+          <div class="sidebar-brand__abbr">NMSI</div>
+          <div class="sidebar-brand__name">North-western Medical and Science Institute</div>
         </div>
         <nav aria-label="Primary navigation">
           <ul class="nav-list">
@@ -615,6 +868,9 @@
 
       <div class="workspace">
         <header class="topbar">
+          <div class="seal">
+            <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
+          </div>
           <div><strong>North-western Medical and Science Institute</strong><div class="muted">Student services</div></div>
           <button class="sign-out" type="button" onclick="signOut()">Sign out</button>
         </header>
@@ -624,20 +880,42 @@
             <div class="page-heading">
               <div><p class="eyebrow">Home</p><h2 id="home-heading" tabindex="-1">Student services</h2><p>Open the tools you use most. Support Navigator is highlighted as the tested path.</p></div>
             </div>
-            <div class="home-grid">
-              <article class="feature-card">
-                <p class="eyebrow">Featured service</p>
-                <h3>Not sure which support team handles your situation?</h3>
-                <p>Describe the problem in your own words, compare overlapping services and choose a source using practical information rather than department names alone.</p>
-                <button id="open-support" class="button button--primary" type="button" onclick="showView('support')">Open Support Navigator</button>
-              </article>
-              <aside class="info-card">
-                <h3>Other student tools</h3>
-                <p><strong>Learning modules</strong><br><span class="muted">View course materials</span></p>
-                <p><strong>University email</strong><br><span class="muted">Open your inbox</span></p>
-                <p><strong>My timetable</strong><br><span class="muted">View teaching activity</span></p>
-                <p class="muted">These links are inactive in this research prototype.</p>
-              </aside>
+            <div class="portal-grid">
+              <div class="portal-art" aria-hidden="true">
+                <svg viewBox="0 0 620 390">
+                  <ellipse cx="305" cy="330" rx="215" ry="24" fill="#d7c49b" opacity="0.55"/>
+                  <path d="M154 226 C116 192 130 134 183 129 C203 75 277 66 310 112 C359 91 415 127 415 179 C468 190 474 263 427 286 L190 286 C141 281 118 247 154 226Z" fill="#ffffff" stroke="#97b2b7" stroke-width="12"/>
+                  <path d="M221 184 L306 137 L394 183 L394 280 L221 280Z" fill="#eef2ef"/>
+                  <path d="M221 184 L306 228 L394 183 L306 137Z" fill="#cbd4d0"/>
+                  <path d="M238 192 L306 226 L306 307 L238 270Z" fill="#0b856b"/>
+                  <path d="M306 226 L380 187 L380 270 L306 307Z" fill="#0fd2a3"/>
+                  <rect x="263" y="218" width="34" height="24" fill="#ffffff"/>
+                  <circle cx="250" cy="257" r="20" fill="#f2cda4"/>
+                  <path d="M229 310 C230 274 269 271 275 310Z" fill="#27302d"/>
+                  <rect x="210" y="293" width="83" height="48" rx="4" fill="#ffffff" stroke="#1f2825" stroke-width="3"/>
+                  <line x1="245" y1="307" x2="280" y2="307" stroke="#0b856b" stroke-width="5"/>
+                  <line x1="245" y1="319" x2="274" y2="319" stroke="#aab3af" stroke-width="4"/>
+                </svg>
+              </div>
+              <div class="portal-links">
+                <button id="open-support" class="portal-link portal-link--primary" type="button" onclick="showView('support')" aria-label="Open Student Support Navigator">
+                  <span><strong>Student Support Navigator</strong><small>Describe your issue, compare suitable sources and book a conversation.</small></span>
+                  <span class="arrow" aria-hidden="true">→</span>
+                </button>
+                <button class="portal-link" type="button" onclick="announce('Learning modules are outside this prototype.')"><span><strong>Learning modules</strong><small>View course materials.</small></span><span aria-hidden="true">›</span></button>
+                <button class="portal-link" type="button" onclick="announce('University email is outside this prototype.')"><span><strong>University email</strong><small>Open your inbox.</small></span><span aria-hidden="true">›</span></button>
+                <button class="portal-link" type="button" onclick="announce('My timetable is outside this prototype.')"><span><strong>My timetable</strong><small>View teaching activity.</small></span><span aria-hidden="true">›</span></button>
+              </div>
+            </div>
+            <div class="dashboard-lower">
+              <div class="info-panel">
+                <h3>Not sure where your issue belongs?</h3>
+                <p>Start with the words you would normally use. The navigator compares service scope, access and expected response time.</p>
+              </div>
+              <div class="info-panel">
+                <h3>Urgent or immediate risk?</h3>
+                <p>Emergency help is not simulated here. In a live portal, urgent and crisis routes would always remain visible.</p>
+              </div>
             </div>
           </section>
 
@@ -646,30 +924,34 @@
               <div><p class="eyebrow">Student services</p><h2 id="support-heading" tabindex="-1">Student Support Navigator</h2><p>Search in your own words, then compare what each source handles, who provides it and how easily you can access it.</p></div>
             </div>
             <form class="search-panel" onsubmit="applySearch(event)">
-              <div class="field">
-                <label for="support-query">What do you need help with?</label>
-                <input id="support-query" type="search" placeholder="For example: falling behind and feeling stressed">
+              <div class="search-row">
+                <div class="search-box">
+                  <label class="sr-only" for="support-query">What do you need help with?</label>
+                  <input id="support-query" type="search" placeholder="For example: falling behind and feeling stressed">
+                </div>
+                <button class="button button--primary" type="submit">Search support</button>
               </div>
-              <div class="field">
-                <label for="filter-topic">Support type</label>
-                <select id="filter-topic">
-                  <option value="all">All types</option>
-                  <option value="academic">Academic progress</option>
-                  <option value="wellbeing">Emotional wellbeing</option>
-                  <option value="programme">Programme decisions</option>
-                </select>
+              <div class="filters">
+                <div class="filter-field">
+                  <label for="filter-topic">Support type</label>
+                  <select id="filter-topic">
+                    <option value="all">All types</option>
+                    <option value="academic">Academic progress</option>
+                    <option value="wellbeing">Emotional wellbeing</option>
+                    <option value="programme">Programme decisions</option>
+                  </select>
+                </div>
+                <div class="filter-field">
+                  <label for="filter-access">Access</label>
+                  <select id="filter-access">
+                    <option value="all">Any access</option>
+                    <option value="online">Online available</option>
+                    <option value="campus">On campus</option>
+                  </select>
+                </div>
               </div>
-              <div class="field">
-                <label for="filter-access">Access</label>
-                <select id="filter-access">
-                  <option value="all">Any access</option>
-                  <option value="online">Online available</option>
-                  <option value="campus">On campus</option>
-                </select>
-              </div>
-              <button class="button button--primary" type="submit">Search and filter</button>
             </form>
-            <div class="results-meta">
+            <div class="results-meta results-bar">
               <h3 id="results-heading">Suggested sources</h3>
               <span id="result-count" class="muted">3 services</span>
             </div>
