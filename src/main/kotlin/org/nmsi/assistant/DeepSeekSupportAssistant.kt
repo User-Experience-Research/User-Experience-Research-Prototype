@@ -494,7 +494,7 @@ class DeepSeekSupportAssistant(
             confirmed = CONFIRMATION_WORDS.any(normalized::contains),
             wantsAppointments =
                 mentionsAppointment &&
-                    APPOINTMENT_LIST_WORDS.any(normalized::contains),
+                    APPOINTMENT_RECORD_WORDS.any(normalized::contains),
             bookedOnly =
                 BOOKED_ONLY_WORDS.any(normalized::contains),
         )
@@ -544,7 +544,19 @@ class DeepSeekSupportAssistant(
         val BOOK_WORDS = setOf("book ", "reserve ", "schedule ")
         val CANCEL_WORDS = setOf("cancel", "remove appointment")
         val CONFIRMATION_WORDS = setOf("confirm", "yes", "go ahead", "do it")
-        val APPOINTMENT_LIST_WORDS = setOf("show", "list", "what", "which", "my", "current", "have")
+        val APPOINTMENT_RECORD_WORDS =
+            setOf(
+                "my appointment",
+                "my booking",
+                "my booked",
+                "booked appointment",
+                "current appointment",
+                "upcoming appointment",
+                "appointment record",
+                "booking record",
+                "do i have",
+                "appointments do i have",
+            )
         val BOOKED_ONLY_WORDS = setOf("booked", "active", "upcoming")
     }
 }

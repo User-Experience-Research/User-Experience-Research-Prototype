@@ -14,6 +14,39 @@ import kotlin.test.assertTrue
 
 class DeepSeekSupportAssistantTest {
     @Test
+    fun `available appointment times are not mistaken for the student's appointment records`() {
+        database().use { dataSource ->
+            val repository = SupportRepository(dataSource)
+            repository.ensureFutureSlots()
+            val user = repository.demoUser()
+            val facility = repository.searchFacilities("study skills", null).first()
+            val responses =
+                ArrayDeque(
+                    listOf(
+                        toolResponse(
+                            name = "get_available_slots",
+                            arguments = """{"facility_id": ${facility.id}}""",
+                        ),
+                        contentResponse("Here are the verified available times in NMSI local time."),
+                    ),
+                )
+            val assistant = assistant(repository, responses)
+
+            val reply =
+                runBlocking {
+                    assistant.respond(
+                        user.id,
+                        "Please show me the available appointment times for the Academic Skills Hub in NMSI local time.",
+                    )
+                }
+
+            assertEquals("Here are the verified available times in NMSI local time.", reply.text)
+            assertTrue(repository.listAppointments(user.id).isEmpty())
+            assertTrue(responses.isEmpty())
+        }
+    }
+
+    @Test
     fun `confirmed booking cannot be claimed until the booking tool succeeds`() {
         database().use { dataSource ->
             val repository = SupportRepository(dataSource)
