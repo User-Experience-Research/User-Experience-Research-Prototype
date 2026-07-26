@@ -9,9 +9,12 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
+import org.nmsi.data.Appointment
 import org.nmsi.data.Facility
 import org.nmsi.data.SupportRepository
 import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 internal class AssistantToolExecutor(
     private val repository: SupportRepository,
@@ -111,24 +114,29 @@ internal class AssistantToolExecutor(
     }
 
     private fun listAppointments(userId: Long): AssistantToolExecution =
-        AssistantToolExecution(
-            output =
-                buildJsonObject {
-                    val appointments =
-                        repository.listAppointments(userId).map { appointment ->
-                            mapOf(
-                                "appointment_id" to JsonPrimitive(appointment.id),
-                                "facility_id" to JsonPrimitive(appointment.facilityId),
-                                "facility_name" to JsonPrimitive(appointment.facilityName),
-                                "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
-                                "status" to JsonPrimitive(appointment.status),
-                                "note" to JsonPrimitive(appointment.note.orEmpty()),
-                            )
-                        }
-                    put("result_count", JsonPrimitive(appointments.size))
-                    put("appointments", Json.parseToJsonElement(json.encodeToString(appointments)))
-                }.toString(),
-        )
+        repository.listAppointments(userId).let { appointments ->
+            AssistantToolExecution(
+                output =
+                    buildJsonObject {
+                        val payload =
+                            appointments.map { appointment ->
+                                mapOf(
+                                    "appointment_id" to JsonPrimitive(appointment.id),
+                                    "facility_id" to JsonPrimitive(appointment.facilityId),
+                                    "facility_name" to JsonPrimitive(appointment.facilityName),
+                                    "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
+                                    "starts_at_institute" to JsonPrimitive(appointment.startsAt.instituteTime()),
+                                    "institute_time_zone" to JsonPrimitive(INSTITUTE_ZONE.id),
+                                    "status" to JsonPrimitive(appointment.status),
+                                    "note" to JsonPrimitive(appointment.note.orEmpty()),
+                                )
+                            }
+                        put("result_count", JsonPrimitive(payload.size))
+                        put("appointments", Json.parseToJsonElement(json.encodeToString(payload)))
+                    }.toString(),
+                appointments = appointments,
+            )
+        }
 
     private fun getAvailableSlots(arguments: JsonObject): AssistantToolExecution {
         val facilityId = arguments.long("facility_id")
@@ -141,6 +149,8 @@ internal class AssistantToolExecutor(
                     "slot_id" to JsonPrimitive(slot.id),
                     "facility_id" to JsonPrimitive(slot.facilityId),
                     "starts_at" to JsonPrimitive(slot.startsAt.toString()),
+                    "starts_at_institute" to JsonPrimitive(slot.startsAt.instituteTime()),
+                    "institute_time_zone" to JsonPrimitive(INSTITUTE_ZONE.id),
                 )
             }
         return AssistantToolExecution(
@@ -187,9 +197,12 @@ internal class AssistantToolExecutor(
                                     put("facility_id", JsonPrimitive(appointment.facilityId))
                                     put("facility_name", JsonPrimitive(appointment.facilityName))
                                     put("starts_at", JsonPrimitive(appointment.startsAt.toString()))
+                                    put("starts_at_institute", JsonPrimitive(appointment.startsAt.instituteTime()))
+                                    put("institute_time_zone", JsonPrimitive(INSTITUTE_ZONE.id))
                                     put("status", JsonPrimitive(appointment.status))
                                 }.toString(),
                             facilities = listOf(facility),
+                            mutation = AssistantMutation(AssistantMutationType.BOOKED, appointment),
                         )
                     },
                     onFailure = {
@@ -227,8 +240,11 @@ internal class AssistantToolExecutor(
                         put("facility_id", JsonPrimitive(appointment.facilityId))
                         put("facility_name", JsonPrimitive(appointment.facilityName))
                         put("starts_at", JsonPrimitive(appointment.startsAt.toString()))
+                        put("starts_at_institute", JsonPrimitive(appointment.startsAt.instituteTime()))
+                        put("institute_time_zone", JsonPrimitive(INSTITUTE_ZONE.id))
                         put("status", JsonPrimitive(appointment.status))
                     }.toString(),
+                mutation = AssistantMutation(AssistantMutationType.CANCELLED, appointment),
             )
         }
     }
@@ -250,10 +266,16 @@ internal class AssistantToolExecutor(
             "available_slots" to
                 JsonArray(
                     repository.availableSlots(facility.id).map { slot ->
-                        JsonPrimitive(slot.startsAt.toString())
+                        buildJsonObject {
+                            put("starts_at", JsonPrimitive(slot.startsAt.toString()))
+                            put("starts_at_institute", JsonPrimitive(slot.startsAt.instituteTime()))
+                            put("institute_time_zone", JsonPrimitive(INSTITUTE_ZONE.id))
+                        }
                     },
                 ),
         )
+
+    private fun OffsetDateTime.instituteTime(): String = atZoneSameInstant(INSTITUTE_ZONE).format(INSTITUTE_TIME_FORMAT)
 
     private fun error(
         code: String,
@@ -284,10 +306,24 @@ internal class AssistantToolExecutor(
 
     private companion object {
         const val MAX_FACILITY_RESULTS = 6
+        val INSTITUTE_ZONE: ZoneId = ZoneId.of("Asia/Shanghai")
+        val INSTITUTE_TIME_FORMAT: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE d MMM yyyy, HH:mm")
     }
 }
 
 internal data class AssistantToolExecution(
     val output: String,
     val facilities: List<Facility> = emptyList(),
+    val appointments: List<Appointment>? = null,
+    val mutation: AssistantMutation? = null,
 )
+
+internal data class AssistantMutation(
+    val type: AssistantMutationType,
+    val appointment: Appointment,
+)
+
+internal enum class AssistantMutationType {
+    BOOKED,
+    CANCELLED,
+}

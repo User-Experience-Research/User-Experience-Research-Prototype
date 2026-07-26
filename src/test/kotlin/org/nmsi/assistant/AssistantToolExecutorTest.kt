@@ -98,9 +98,12 @@ class AssistantToolExecutorTest {
                     .jsonPrimitive.content
                     .toLong()
             assertEquals("BOOKED", bookedPayload.getValue("status").jsonPrimitive.content)
+            assertEquals("Asia/Shanghai", bookedPayload.getValue("institute_time_zone").jsonPrimitive.content)
+            assertEquals(AssistantMutationType.BOOKED, booking.mutation?.type)
 
             val appointments = executor.execute(user.id, "list_user_appointments", buildJsonObject {})
             assertTrue(appointments.output.contains("\"appointment_id\":$appointmentId"))
+            assertEquals(1, appointments.appointments?.size)
 
             val unconfirmedCancellation =
                 executor.execute(
@@ -137,6 +140,7 @@ class AssistantToolExecutorTest {
                     .getValue("status")
                     .jsonPrimitive.content,
             )
+            assertEquals(AssistantMutationType.CANCELLED, cancellation.mutation?.type)
         }
     }
 
