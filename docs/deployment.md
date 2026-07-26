@@ -7,7 +7,9 @@ The deployed architecture intentionally separates compute and data:
 ```mermaid
 flowchart LR
     Browser["Student browser"] --> Render["Render Free Web Service<br/>Ktor Docker container"]
-    Render --> Neon[("Neon Free PostgreSQL<br/>persistent external project")]
+    Render --> Demo[("Neon child branch: Demo<br/>daily prototype data")]
+    Production[("Neon production branch<br/>fallback copy")]
+    Production -. parent of .-> Demo
     Render --> DeepSeek["DeepSeek V4 Flash API<br/>optional key"]
     GitHub["GitHub main + CI"] --> Render
 ```
@@ -33,6 +35,15 @@ postgresql://role:password@ep-example.region.aws.neon.tech/neondb?sslmode=requir
 
 Direct mode is deliberate: Flyway runs schema migrations at Ktor startup. Hikari performs application-side pooling.
 
+### Branch strategy used by this deployment
+
+- `Demo` is a persistent child of `production` and is the only branch connected to Render.
+- Automatic expiry is disabled for `Demo`, so routine prototype data is not removed by a temporary-branch deadline.
+- `production` is not connected to the running service. It remains unchanged as a fallback copy if daily prototype data needs to be discarded.
+- Render stores the `Demo` connection string in the secret `DATABASE_URL`; neither branch password appears in Git, the Wiki, or client-side code.
+
+This is a lightweight prototype safeguard, not a complete backup strategy. Before collecting real research data, add scheduled exports and a tested restore procedure.
+
 ## 2. Create the Render service
 
 Open the Render Blueprint creation page for this repository. `render.yaml` creates only:
@@ -43,7 +54,7 @@ Open the Render Blueprint creation page for this repository. `render.yaml` creat
 - a three-connection pool;
 - health checks and CI-gated deploys.
 
-When Render requests `DATABASE_URL`, paste the Neon connection string. `sync: false` prevents the value from being committed to the Blueprint.
+When Render requests `DATABASE_URL`, paste the direct connection string for the persistent `Demo` child branch. `sync: false` prevents the value from being committed to the Blueprint.
 
 Do not add `DEEPSEEK_API_KEY` yet unless desired. The database-guided fallback keeps the support chat demonstrable without it.
 

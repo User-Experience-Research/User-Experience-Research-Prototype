@@ -160,6 +160,8 @@ The default local database is H2 in PostgreSQL compatibility mode.
 
 Production deployment uses an external Neon Free PostgreSQL project. Neon Free has no time limit or credit-card requirement; its current allowance is 0.5 GB storage and 100 CU-hours per project each month, with compute scaling to zero while idle.
 
+The Render service uses the persistent Neon child branch named `Demo` for day-to-day prototype activity. The original `production` branch is kept unchanged as a fallback copy. Automatic expiry is disabled for `Demo`; database credentials remain only in Render environment variables and are never committed.
+
 From the Neon project dashboard, choose **Connect**, select the direct connection rather than the `-pooler` hostname, and copy the TLS connection string:
 
 ```bash
@@ -244,10 +246,11 @@ The repository includes a [Render Blueprint](render.yaml) and [Dockerfile](Docke
 Deployment order:
 
 1. Create a Neon Free project.
-2. Copy its direct TLS connection string.
-3. Create the Render Blueprint from this repository.
-4. Paste the Neon string into the requested `DATABASE_URL` secret.
-5. Add `DEEPSEEK_API_KEY` later under:
+2. Create a persistent child branch named `Demo` from `production` and disable its automatic expiry.
+3. Copy the child branch's direct TLS connection string.
+4. Create the Render Blueprint from this repository.
+5. Paste the child-branch string into the requested `DATABASE_URL` secret.
+6. Add `DEEPSEEK_API_KEY` later under:
 
 **Render Dashboard → nmsi-support-navigator → Environment → Add Environment Variable**
 
