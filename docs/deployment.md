@@ -50,7 +50,7 @@ Do not add `DEEPSEEK_API_KEY` yet unless desired. The database-guided fallback k
 ## 3. Verify first deployment
 
 1. Confirm the Docker build completes.
-2. Confirm Flyway reports three successful migrations.
+2. Confirm Flyway reports four successful migrations.
 3. Open `/health` and verify a `200` response.
 4. Open `/login`, submit the blank prototype login, and reach the dashboard.
 5. Search for `deadline` and verify seeded facilities appear.

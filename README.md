@@ -36,7 +36,7 @@ The feature-to-evidence mapping and usability plan are documented in [Research a
 - Accessible support chat available from the lower-right corner
 - DeepSeek V4 Flash integration with server-side, user-scoped tools for search and appointment actions
 - Deterministic database-guided fallback when no AI key is configured
-- Flyway migrations for H2 in local development and PostgreSQL in deployment
+- Four Flyway migrations for H2 in local development and PostgreSQL in deployment
 - CI for ktlint, detekt, tests, and Playwright/axe accessibility checks
 
 ## Architecture

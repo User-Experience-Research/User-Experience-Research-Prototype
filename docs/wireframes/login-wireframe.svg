@@ -12,7 +12,7 @@
   <rect x="55" y="85" width="640" height="520" class="box"/>
   <line x1="365" y1="85" x2="365" y2="605" class="thin"/>
   <circle cx="180" cy="190" r="70" class="box"/>
-  <text x="126" y="202" class="h">NMSI</text>
+  <text x="130" y="207" class="h">N</text><text x="177" y="173" class="t">M</text><text x="177" y="202" class="t">S</text><text x="215" y="223" class="t">I</text>
   <text x="85" y="315" class="t">North-western Medical</text>
   <text x="93" y="345" class="t">and Science Institute</text>
   <text x="95" y="390" class="s">Student portal context</text>
