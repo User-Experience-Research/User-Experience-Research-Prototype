@@ -1136,6 +1136,7 @@
         <ul class="nav-list">
           <li><button class="nav-button is-active" type="button" data-nav="dashboard" onclick="showScreen('dashboard')" aria-current="page"><span class="nav-icon" aria-hidden="true">H</span>Home</button></li>
           <li><button class="nav-button" type="button" data-nav="support" onclick="showScreen('support')"><span class="nav-icon" aria-hidden="true">?</span>Support Navigator</button></li>
+          <li><button class="nav-button" type="button" data-nav="appointments" onclick="showScreen('appointments')"><span class="nav-icon" aria-hidden="true">A</span>My appointments</button></li>
           <li><button class="nav-button" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span class="nav-icon" aria-hidden="true">C</span>Course area</button></li>
         </ul>
       </nav>
@@ -1190,6 +1191,7 @@
                 <span><strong>Student Support Navigator</strong><small>Describe your issue, compare suitable sources and book a conversation.</small></span>
                 <span class="arrow" aria-hidden="true">→</span>
               </button>
+              <button class="portal-link" type="button" onclick="showScreen('appointments')"><span><strong>My appointments</strong><small>Review active and cancelled support appointments.</small></span><span aria-hidden="true">›</span></button>
               <button class="portal-link" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span>Course area</span><span aria-hidden="true">›</span></button>
             </div>
           </div>
@@ -1420,8 +1422,20 @@
               </div>
             </div>
             <div class="form-actions">
+              <button class="button button--accent" type="button" onclick="showScreen('appointments')">View my appointments</button>
             </div>
           </div>
+        </section>
+
+        <section id="screen-appointments" class="screen" aria-labelledby="appointments-heading" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Student services</p>
+              <h2 id="appointments-heading" tabindex="-1">My appointments</h2>
+              <p>Review confirmed and cancelled support appointments, open the full record or cancel an active booking.</p>
+            </div>
+          </div>
+          <div id="appointments-list" class="records-list" aria-live="polite"></div>
         </section>
 
       </div>
@@ -1619,6 +1633,7 @@
         messages = [];
         currentAppointmentId = null;
         pendingCancelId = null;
+        renderAppointments();
         document.getElementById("screen-announcer").textContent =
           "Prototype appointments and messages have been cleared. The large font setting was kept.";
         fakeAction("Prototype appointments and messages cleared.");
@@ -1664,7 +1679,8 @@
         support: "support",
         detail: "support",
         booking: "support",
-        confirmation: "support",
+        confirmation: "appointments",
+        appointments: "appointments",
       };
       document.querySelectorAll("[data-nav]").forEach(button => {
         const active = button.dataset.nav === navMap[name];
@@ -1679,12 +1695,14 @@
         detail: ["Support option", "Compare scope, access and expected response"],
         booking: ["Book a conversation", "Prototype appointment flow"],
         confirmation: ["Appointment record", "Booking status, access details and fallback"],
+        appointments: ["My appointments", "Review or cancel support bookings"],
       };
       const pageTitle = titles[name] || titles.dashboard;
       document.getElementById("banner-title").textContent = pageTitle[0];
       document.getElementById("banner-subtitle").textContent = pageTitle[1];
 
       if (name === "support") renderSupportOptions();
+      if (name === "appointments") renderAppointments();
 
       window.scrollTo({ top: 0, behavior: "instant" });
       document.getElementById("screen-announcer").textContent = `${pageTitle[0]} page loaded.`;
@@ -1877,6 +1895,7 @@
         createdAt: new Date().toISOString(),
         cancelledAt: null
       };
+      appointments.unshift(appointment);
       currentAppointmentId = appointment.id;
       renderAppointmentRecord(appointment);
       document.getElementById("issue-summary").value = "";
@@ -2048,6 +2067,7 @@
     }
 
     populateDetail();
+    renderAppointments();
   </script>
 </body>
 </html>
