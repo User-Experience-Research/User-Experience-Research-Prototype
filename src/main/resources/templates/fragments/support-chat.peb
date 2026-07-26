@@ -1,0 +1,56 @@
+<button
+    id="support-chat-launcher"
+    class="chat-launcher"
+    type="button"
+    aria-controls="support-chat-panel"
+    aria-expanded="false"
+>
+    <span aria-hidden="true">?</span>
+    <span>Ask Support Guide</span>
+</button>
+
+<section
+    id="support-chat-panel"
+    class="chat-panel"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="support-chat-title"
+    hidden
+>
+    <header class="chat-header">
+        <div>
+            <p class="eyebrow">Immediate guidance</p>
+            <h2 id="support-chat-title">Support Guide</h2>
+        </div>
+        <button id="support-chat-close" class="chat-close" type="button" aria-label="Close Support Guide">×</button>
+    </header>
+    <p class="chat-scope">
+        Describe what is happening in your own words. This guide offers initial routing, not a medical diagnosis or emergency service.
+    </p>
+    <div id="support-chat-log" class="chat-log" role="log" aria-live="polite" aria-relevant="additions">
+        <div class="chat-message chat-message--assistant">
+            <p>Hi {{ session.displayName }}. You do not need to know the right category. What would you like help with?</p>
+        </div>
+    </div>
+    <div class="chat-suggestions" aria-label="Example questions">
+        <button type="button" data-chat-suggestion="I am stressed about a deadline and I am not sure who to ask.">Deadline stress</button>
+        <button type="button" data-chat-suggestion="My laptop cannot connect to the university Wi-Fi.">Digital access</button>
+        <button type="button" data-chat-suggestion="Can you show me my appointments?">My appointments</button>
+    </div>
+    <form id="support-chat-form" class="chat-form">
+        <label for="support-chat-input">Your message</label>
+        <div>
+            <textarea
+                id="support-chat-input"
+                name="message"
+                rows="2"
+                maxlength="1200"
+                required
+                placeholder="Describe your situation"
+            ></textarea>
+            <button type="submit">Send</button>
+        </div>
+        <p id="support-chat-status" class="chat-status" role="status" aria-live="polite"></p>
+    </form>
+</section>
+

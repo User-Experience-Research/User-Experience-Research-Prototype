@@ -9,7 +9,9 @@ import io.ktor.server.http.content.staticResources
 import io.ktor.server.pebble.Pebble
 import io.ktor.server.pebble.PebbleContent
 import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.receive
 import io.ktor.server.request.path
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.respond
@@ -26,8 +28,10 @@ import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
+import io.ktor.serialization.kotlinx.json.json
 import io.pebbletemplates.pebble.loader.ClasspathLoader
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.nmsi.data.DatabaseFactory
 import org.nmsi.data.SupportRepository
 import java.time.OffsetDateTime
@@ -36,6 +40,16 @@ import java.time.OffsetDateTime
 data class PortalSession(
     val userId: Long,
     val displayName: String,
+)
+
+@Serializable
+data class ChatRequest(
+    val message: String,
+)
+
+@Serializable
+data class ChatResponse(
+    val reply: String,
 )
 
 fun Application.module() {
@@ -47,6 +61,14 @@ fun Application.module() {
 
     install(CallLogging) {
         filter { call -> !call.request.path().startsWith("/assets/") }
+    }
+    install(ContentNegotiation) {
+        json(
+            Json {
+                ignoreUnknownKeys = true
+                encodeDefaults = true
+            },
+        )
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
@@ -225,6 +247,18 @@ private fun Route.authenticatedPortalRoutes(repository: SupportRepository) {
                 repository.cancelAppointment(session.userId, appointmentId)
             }
             call.respondRedirect("/appointments?cancelled=1")
+        }
+        post("/api/chat") {
+            val session = call.requireSession() ?: return@post
+            val request = call.receive<ChatRequest>()
+            val message = request.message.trim().take(1200)
+            val reply =
+                if (message.isBlank()) {
+                    "Tell me a little about what is happening, and I will help you narrow down the right support source."
+                } else {
+                    "Thanks, ${session.displayName.substringBefore(" ")}. I can help you compare support sources without needing to know the university category first. The next step is to connect this chat to the support directory."
+                }
+            call.respond(ChatResponse(reply))
         }
     }
 }
