@@ -46,10 +46,39 @@ class SupportRepository(
     fun searchFacilities(
         query: String?,
         categorySlug: String?,
-    ): List<Facility> =
+    ): List<Facility> {
+        val normalizedQuery = query?.trim()?.lowercase().orEmpty()
+        val requestedCategory = categorySlug?.trim()?.lowercase().orEmpty()
+        val normalizedCategory =
+            requestedCategory
+                .takeIf { requested ->
+                    requested.isNotBlank() && listCategories().any { category -> category.slug == requested }
+                }.orEmpty()
+        val candidates = facilitiesInCategory(normalizedCategory)
+        val terms =
+            SEARCH_TOKEN
+                .findAll(normalizedQuery)
+                .map { match -> match.value }
+                .filterNot(STOP_WORDS::contains)
+                .distinct()
+                .toList()
+        return when {
+            normalizedQuery.isBlank() || terms.isEmpty() -> candidates
+            else ->
+                candidates
+                    .map { facility -> facility to facility.searchScore(normalizedQuery, terms) }
+                    .filter { (_, score) -> score > 0 }
+                    .sortedWith(
+                        compareByDescending<Pair<Facility, Int>> { (_, score) -> score }
+                            .thenByDescending { (facility) -> facility.rating }
+                            .thenBy { (facility) -> facility.distanceMinutes }
+                            .thenBy { (facility) -> facility.name },
+                    ).map(Pair<Facility, Int>::first)
+        }
+    }
+
+    private fun facilitiesInCategory(normalizedCategory: String): List<Facility> =
         dataSource.connection.use { connection ->
-            val normalizedQuery = query?.trim()?.lowercase().orEmpty()
-            val normalizedCategory = categorySlug?.trim()?.lowercase().orEmpty()
             connection
                 .prepareStatement(
                     """
@@ -59,24 +88,12 @@ class SupportRepository(
                     FROM facilities f
                     LEFT JOIN facility_categories fc ON fc.facility_id = f.id
                     LEFT JOIN categories c ON c.id = fc.category_id
-                    WHERE (
-                        ? = ''
-                        OR LOWER(f.name) LIKE ?
-                        OR LOWER(f.summary) LIKE ?
-                        OR LOWER(f.provider) LIKE ?
-                        OR LOWER(f.tags) LIKE ?
-                        OR LOWER(c.name) LIKE ?
-                        OR LOWER(c.keywords) LIKE ?
-                    )
-                    AND (? = '' OR LOWER(c.slug) = ?)
+                    WHERE (? = '' OR LOWER(c.slug) = ?)
                     ORDER BY f.rating DESC, f.distance_minutes ASC, f.name ASC
                     """.trimIndent(),
                 ).use { statement ->
-                    val like = "%$normalizedQuery%"
-                    statement.setString(1, normalizedQuery)
-                    (2..7).forEach { statement.setString(it, like) }
-                    statement.setString(8, normalizedCategory)
-                    statement.setString(9, normalizedCategory)
+                    statement.setString(1, normalizedCategory)
+                    statement.setString(2, normalizedCategory)
                     statement.executeQuery().use { result ->
                         buildList {
                             while (result.next()) {
@@ -86,6 +103,50 @@ class SupportRepository(
                     }
                 }
         }
+
+    private fun Facility.searchScore(
+        normalizedQuery: String,
+        terms: List<String>,
+    ): Int {
+        val searchText =
+            buildString {
+                append(name)
+                append(' ')
+                append(summary)
+                append(' ')
+                append(provider)
+                append(' ')
+                append(location)
+                append(' ')
+                append(responseTime)
+                append(' ')
+                append(contactMode)
+                append(' ')
+                append(eligibility)
+                append(' ')
+                append(preparation)
+                append(' ')
+                append(tags)
+                categories.forEach { category ->
+                    append(' ')
+                    append(category.name)
+                    append(' ')
+                    append(category.description)
+                    append(' ')
+                    append(category.keywords)
+                }
+            }.lowercase()
+        val phraseScore = if (searchText.contains(normalizedQuery)) 20 else 0
+        val termScore =
+            terms.sumOf { term ->
+                when {
+                    searchText.contains(term) -> 6
+                    SEARCH_ALIASES[term].orEmpty().any(searchText::contains) -> 3
+                    else -> 0
+                }
+            }
+        return phraseScore + termScore
+    }
 
     fun facilityById(id: Long): Facility? =
         dataSource.connection.use { connection ->
@@ -549,5 +610,45 @@ class SupportRepository(
     private companion object {
         val INSTITUTE_ZONE: ZoneId = ZoneId.of("Asia/Shanghai")
         val STANDARD_SLOT_TIMES: List<LocalTime> = listOf(LocalTime.of(10, 0), LocalTime.of(14, 30))
+        val SEARCH_TOKEN = Regex("[a-z0-9]+")
+        val STOP_WORDS =
+            setOf(
+                "a",
+                "an",
+                "and",
+                "for",
+                "find",
+                "help",
+                "i",
+                "in",
+                "is",
+                "me",
+                "my",
+                "need",
+                "of",
+                "or",
+                "please",
+                "service",
+                "services",
+                "source",
+                "support",
+                "the",
+                "to",
+                "university",
+                "want",
+                "with",
+            )
+        val SEARCH_ALIASES =
+            mapOf(
+                "exam" to setOf("assessment", "study"),
+                "exams" to setOf("assessment", "study"),
+                "learning" to setOf("academic", "study"),
+                "tutor" to setOf("academic", "study skills"),
+                "tutoring" to setOf("academic", "study skills"),
+                "counselor" to setOf("wellbeing", "emotional"),
+                "counseling" to setOf("wellbeing", "emotional"),
+                "counsellor" to setOf("wellbeing", "emotional"),
+                "counselling" to setOf("wellbeing", "emotional"),
+            )
     }
 }

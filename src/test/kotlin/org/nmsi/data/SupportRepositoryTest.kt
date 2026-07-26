@@ -35,6 +35,23 @@ class SupportRepositoryTest {
     }
 
     @Test
+    fun `natural language search tolerates multiple terms and an unknown category`() {
+        database().use { dataSource ->
+            val repository = SupportRepository(dataSource)
+
+            val results =
+                repository.searchFacilities(
+                    query = "tutoring, study skills, exam preparation, or learning development",
+                    categorySlug = "academic-support",
+                )
+
+            assertTrue(results.isNotEmpty())
+            assertEquals("Academic Skills Hub", results.first().name)
+            assertTrue(results.any { facility -> facility.slug == "student-casework" })
+        }
+    }
+
+    @Test
     fun `appointments can be booked and cancelled for the current user`() {
         database().use { dataSource ->
             val repository = SupportRepository(dataSource)
