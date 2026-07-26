@@ -30,7 +30,7 @@ The feature-to-evidence mapping and usability plan are documented in [Research a
 - Persistent large-font accessibility preference
 - Screen-reader labels, landmarks, live regions, keyboard focus management, and AA contrast
 - Support directory with ten need categories and twelve facilities
-- Own-language search and category filtering across facility text and taxonomy keywords
+- Ranked own-language search across facility text and taxonomy keywords, including multi-term queries and safe recovery from an unknown category label
 - Facility detail pages showing provider, scope, distance, response time, access mode, eligibility, preparation, and rating
 - Database-backed appointment availability, booking, listing, and cancellation
 - Accessible support chat available from the lower-right corner
@@ -152,7 +152,9 @@ The English system prompt is stored at [support-assistant-system.txt](src/main/r
 - request explicit confirmation before booking or cancelling;
 - use only the current authenticated user's appointment records.
 
-The model never receives database credentials. Tool calls are executed server-side, and user identity is injected by the application rather than accepted from model arguments.
+The model receives the current category slugs through a read-only tool schema and can list the taxonomy before searching. If it supplies an unknown slug, the server ignores that filter and safely retries the own-language search instead of treating the directory as empty. Booking and cancellation tools reject requests unless their explicit `confirmed` flag is true.
+
+The model never receives database credentials. Tool calls are executed and validated server-side, and user identity is injected by the application rather than accepted from model arguments.
 
 ## Database configuration
 

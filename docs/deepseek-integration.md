@@ -20,6 +20,7 @@ The English prompt at `src/main/resources/prompts/support-assistant-system.txt` 
 - clarify the situation before choosing between plausible services;
 - compare scope, provider, examples, eligibility, response time, channel, location, preparation, and privacy;
 - use database tools rather than inventing facilities or appointment status;
+- list the verified taxonomy and retry a shorter own-language search instead of claiming that an empty match means the directory is empty;
 - request explicit confirmation before appointment mutations;
 - avoid diagnosis and switch to urgent safety guidance when necessary;
 - be transparent when information is missing.
@@ -28,7 +29,8 @@ The English prompt at `src/main/resources/prompts/support-assistant-system.txt` 
 
 | Tool | Purpose | User boundary |
 |---|---|---|
-| `search_facilities` | Search current facilities and overlapping categories | Public taxonomy only |
+| `list_categories` | Read the complete current taxonomy and valid slugs | Public taxonomy only |
+| `search_facilities` | Ranked multi-term search of current facilities and overlapping categories | Unknown slugs are ignored and reported |
 | `get_facility` | Retrieve scope and access details | Public facility record |
 | `list_user_appointments` | Review current bookings | Server injects session user |
 | `get_available_slots` | Retrieve live prototype availability | Facility-scoped |
@@ -42,6 +44,10 @@ The English prompt at `src/main/resources/prompts/support-assistant-system.txt` 
 3. The server validates and executes each request.
 4. Tool results are returned to DeepSeek for a short student-facing explanation.
 5. The final response and recommendations are saved to the current conversation.
+
+Search is deliberately tolerant of the student's wording. It scores meaningful terms across facility names, scope, provider, tags, access details, and linked category metadata. Common variants such as `exam`, `tutoring`, and `counselling` are mapped to relevant research-directory language. An invented category slug cannot suppress otherwise valid results.
+
+`book_appointment` and `cancel_appointment` require `confirmed=true` in addition to the model's prompt-level confirmation rule. Invalid times, stale slots, missing facilities, and appointments outside the signed-in student's records return structured errors rather than bypassing the repository checks.
 
 Non-thinking mode is used for the tool loop to keep this prototype responsive and predictable. The model name is configurable so the integration can be updated without changing source code.
 
