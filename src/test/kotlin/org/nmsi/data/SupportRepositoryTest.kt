@@ -22,6 +22,7 @@ class SupportRepositoryTest {
         database().use { dataSource ->
             val repository = SupportRepository(dataSource)
 
+            assertEquals("John doe", repository.demoUser().displayName)
             assertEquals(10, repository.listCategories().size)
             assertEquals(12, repository.searchFacilities(null, null).size)
 

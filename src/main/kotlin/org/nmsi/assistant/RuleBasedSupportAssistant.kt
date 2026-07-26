@@ -33,7 +33,7 @@ class RuleBasedSupportAssistant(
                 route != null ->
                     "Your description may relate to ${route.label}. This is initial guidance rather than a diagnosis. I found a few sources that cover this area, including overlapping responsibilities, so compare their scope and access details before choosing."
                 else ->
-                    "I am not yet certain which need area fits best. You do not need to choose a university category yourself. Could you tell me what happened, what you need to do next, or whether time, location or privacy matters most?"
+                    "I can help narrow this down. Could you tell me what happened, what you need to do next, and whether timing, location or privacy matters?"
             }
         repository.appendConversationMessage(userId, "ASSISTANT", text)
         return AssistantReply(

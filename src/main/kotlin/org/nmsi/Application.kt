@@ -105,7 +105,7 @@ fun Application.module() {
             (System.getenv("SESSION_SECRET") ?: "nmsi-local-session-secret-change-in-production")
                 .padEnd(32, '0')
                 .toByteArray()
-        cookie<PortalSession>("nmsi_session") {
+        cookie<PortalSession>("nmsi_session_v2") {
             cookie.path = "/"
             cookie.httpOnly = true
             cookie.extensions["SameSite"] = "Lax"
