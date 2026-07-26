@@ -1,6 +1,6 @@
 # Student Support Navigator
 
-An evidence-linked full-stack prototype for the North-western Medical and Science Institute (NMSI).
+An evidence-linked full-stack prototype for the North-western Medical and Science Institute.
 
 The project asks:
 
