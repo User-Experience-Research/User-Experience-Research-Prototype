@@ -2,11 +2,10 @@
 .idea/
 .env
 build/
-data/
+/data/
 node_modules/
 playwright-report/
 test-results/
 *.iml
 *.log
 .DS_Store
-
