@@ -212,6 +212,7 @@ private fun Route.authenticatedPortalRoutes(
                         pageTitle = facility.name,
                         activePage = "support",
                         "facility" to facility,
+                        "availableSlots" to repository.availableSlots(facility.id),
                     ),
                 ),
             )

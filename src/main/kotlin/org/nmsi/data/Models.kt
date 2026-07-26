@@ -37,6 +37,12 @@ data class Appointment(
     val note: String?,
 )
 
+data class AppointmentSlot(
+    val id: Long,
+    val facilityId: Long,
+    val startsAt: OffsetDateTime,
+)
+
 data class UserAccount(
     val id: Long,
     val studentId: String,

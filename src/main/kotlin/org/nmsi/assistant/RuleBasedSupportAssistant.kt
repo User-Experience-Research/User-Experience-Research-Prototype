@@ -29,7 +29,7 @@ class RuleBasedSupportAssistant(
         val text =
             when {
                 normalized.contains("appointment") || normalized.contains("booking") ->
-                    "You can review your current bookings in My appointments. If you tell me the kind of support you need, I can also help narrow down a suitable source."
+                    appointmentSummary(userId)
                 route != null ->
                     "Your description may relate to ${route.label}. This is initial guidance rather than a diagnosis. I found a few sources that cover this area, including overlapping responsibilities, so compare their scope and access details before choosing."
                 else ->
@@ -41,6 +41,18 @@ class RuleBasedSupportAssistant(
             recommendations = facilities.map(::recommendation),
             mode = "database-guided fallback",
         )
+    }
+
+    private fun appointmentSummary(userId: Long): String {
+        val appointments = repository.listAppointments(userId).filter { it.status == "BOOKED" }
+        if (appointments.isEmpty()) {
+            return "You have no booked support appointments. Tell me what you need help with and I can suggest a source; without a DeepSeek API key, complete booking actions through the facility page."
+        }
+        val summary =
+            appointments.joinToString("; ") { appointment ->
+                "#${appointment.id} ${appointment.facilityName} at ${appointment.startsAt}"
+            }
+        return "Your booked appointment(s): $summary. You can review or cancel them in My appointments."
     }
 
     private fun recommendation(facility: Facility) =

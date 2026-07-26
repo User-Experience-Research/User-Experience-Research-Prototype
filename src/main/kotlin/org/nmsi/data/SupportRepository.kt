@@ -126,6 +126,34 @@ class SupportRepository(
                 }
         }
 
+    fun availableSlots(facilityId: Long): List<AppointmentSlot> =
+        dataSource.connection.use { connection ->
+            connection
+                .prepareStatement(
+                    """
+                    SELECT id, facility_id, starts_at
+                    FROM appointment_slots
+                    WHERE facility_id = ? AND is_available = TRUE AND starts_at > CURRENT_TIMESTAMP
+                    ORDER BY starts_at ASC
+                    """.trimIndent(),
+                ).use { statement ->
+                    statement.setLong(1, facilityId)
+                    statement.executeQuery().use { result ->
+                        buildList {
+                            while (result.next()) {
+                                add(
+                                    AppointmentSlot(
+                                        id = result.getLong("id"),
+                                        facilityId = result.getLong("facility_id"),
+                                        startsAt = result.getObject("starts_at", OffsetDateTime::class.java),
+                                    ),
+                                )
+                            }
+                        }
+                    }
+                }
+        }
+
     fun bookAppointment(
         userId: Long,
         facilityId: Long,
@@ -133,25 +161,62 @@ class SupportRepository(
         note: String?,
     ): Appointment {
         dataSource.connection.use { connection ->
-            connection
-                .prepareStatement(
-                    """
-                    INSERT INTO appointments (user_id, facility_id, starts_at, status, note)
-                    VALUES (?, ?, ?, 'BOOKED', ?)
-                    """.trimIndent(),
-                    Statement.RETURN_GENERATED_KEYS,
-                ).use { statement ->
-                    statement.setLong(1, userId)
-                    statement.setLong(2, facilityId)
-                    statement.setObject(3, startsAt)
-                    statement.setString(4, note?.take(500))
-                    statement.executeUpdate()
-                    statement.generatedKeys.use { keys ->
-                        check(keys.next()) { "Appointment id was not generated" }
-                        return appointmentById(connection, userId, keys.getLong(1))
-                            ?: error("Appointment was not found after insert")
+            connection.autoCommit = false
+            try {
+                val slotId =
+                    connection
+                        .prepareStatement(
+                            """
+                            SELECT id
+                            FROM appointment_slots
+                            WHERE facility_id = ? AND starts_at = ? AND is_available = TRUE
+                            FOR UPDATE
+                            """.trimIndent(),
+                        ).use { statement ->
+                            statement.setLong(1, facilityId)
+                            statement.setObject(2, startsAt)
+                            statement.executeQuery().use { result ->
+                                check(result.next()) { "The requested appointment slot is not available" }
+                                result.getLong(1)
+                            }
+                        }
+                connection
+                    .prepareStatement(
+                        "UPDATE appointment_slots SET is_available = FALSE WHERE id = ?",
+                    ).use { statement ->
+                        statement.setLong(1, slotId)
+                        statement.executeUpdate()
                     }
-                }
+                val appointmentId =
+                    connection
+                        .prepareStatement(
+                            """
+                            INSERT INTO appointments (user_id, facility_id, starts_at, status, note)
+                            VALUES (?, ?, ?, 'BOOKED', ?)
+                            """.trimIndent(),
+                            Statement.RETURN_GENERATED_KEYS,
+                        ).use { statement ->
+                            statement.setLong(1, userId)
+                            statement.setLong(2, facilityId)
+                            statement.setObject(3, startsAt)
+                            statement.setString(4, note?.take(500))
+                            statement.executeUpdate()
+                            statement.generatedKeys.use { keys ->
+                                check(keys.next()) { "Appointment id was not generated" }
+                                keys.getLong(1)
+                            }
+                        }
+                val appointment =
+                    appointmentById(connection, userId, appointmentId)
+                        ?: error("Appointment was not found after insert")
+                connection.commit()
+                return appointment
+            } catch (error: Throwable) {
+                connection.rollback()
+                throw error
+            } finally {
+                connection.autoCommit = true
+            }
         }
     }
 
@@ -162,6 +227,11 @@ class SupportRepository(
         dataSource.connection.use { connection ->
             connection.autoCommit = false
             try {
+                val existing = appointmentById(connection, userId, appointmentId)
+                if (existing == null || existing.status != "BOOKED") {
+                    connection.rollback()
+                    return@use null
+                }
                 val updated =
                     connection
                         .prepareStatement(
@@ -175,6 +245,20 @@ class SupportRepository(
                             statement.setLong(2, userId)
                             statement.executeUpdate()
                         }
+                if (updated == 1) {
+                    connection
+                        .prepareStatement(
+                            """
+                            UPDATE appointment_slots
+                            SET is_available = TRUE
+                            WHERE facility_id = ? AND starts_at = ?
+                            """.trimIndent(),
+                        ).use { statement ->
+                            statement.setLong(1, existing.facilityId)
+                            statement.setObject(2, existing.startsAt)
+                            statement.executeUpdate()
+                        }
+                }
                 val appointment = if (updated == 1) appointmentById(connection, userId, appointmentId) else null
                 connection.commit()
                 appointment
@@ -184,6 +268,14 @@ class SupportRepository(
             } finally {
                 connection.autoCommit = true
             }
+        }
+
+    fun appointmentById(
+        userId: Long,
+        appointmentId: Long,
+    ): Appointment? =
+        dataSource.connection.use { connection ->
+            appointmentById(connection, userId, appointmentId)
         }
 
     fun recentConversation(

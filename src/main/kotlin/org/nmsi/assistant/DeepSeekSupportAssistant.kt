@@ -81,7 +81,7 @@ class DeepSeekSupportAssistant(
                                 function["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
                             ).jsonObject
                         }.getOrElse { JsonObject(emptyMap()) }
-                    val output = executeTool(name, arguments, toolContext)
+                    val output = executeTool(userId, name, arguments, toolContext)
                     repository.appendConversationMessage(userId, "TOOL", "$name: $output")
                     messages.add(
                         buildJsonObject {
@@ -199,6 +199,82 @@ class DeepSeekSupportAssistant(
                     required = listOf("facility_id"),
                 ),
             )
+            add(
+                functionTool(
+                    name = "list_user_appointments",
+                    description =
+                        "List appointments belonging to the signed-in student. The server scopes this tool, so it accepts no user id.",
+                    properties = buildJsonObject {},
+                    required = emptyList(),
+                ),
+            )
+            add(
+                functionTool(
+                    name = "get_available_slots",
+                    description = "List verified available appointment times for one facility.",
+                    properties =
+                        buildJsonObject {
+                            put(
+                                "facility_id",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("integer"))
+                                    put("description", JsonPrimitive("Verified facility id."))
+                                },
+                            )
+                        },
+                    required = listOf("facility_id"),
+                ),
+            )
+            add(
+                functionTool(
+                    name = "book_appointment",
+                    description =
+                        "Book an available slot for the signed-in student. Call only after the student explicitly confirms the facility and exact time.",
+                    properties =
+                        buildJsonObject {
+                            put(
+                                "facility_id",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("integer"))
+                                    put("description", JsonPrimitive("Verified facility id."))
+                                },
+                            )
+                            put(
+                                "starts_at",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("string"))
+                                    put("description", JsonPrimitive("Exact ISO-8601 offset time returned by get_available_slots."))
+                                },
+                            )
+                            put(
+                                "note",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("string"))
+                                    put("description", JsonPrimitive("Optional note from the student, or an empty string."))
+                                },
+                            )
+                        },
+                    required = listOf("facility_id", "starts_at", "note"),
+                ),
+            )
+            add(
+                functionTool(
+                    name = "cancel_appointment",
+                    description =
+                        "Cancel one booked appointment belonging to the signed-in student. Call only after explicit confirmation of the appointment.",
+                    properties =
+                        buildJsonObject {
+                            put(
+                                "appointment_id",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("integer"))
+                                    put("description", JsonPrimitive("Appointment id returned by list_user_appointments."))
+                                },
+                            )
+                        },
+                    required = listOf("appointment_id"),
+                ),
+            )
         }
 
     private fun functionTool(
@@ -228,6 +304,7 @@ class DeepSeekSupportAssistant(
         }
 
     private fun executeTool(
+        userId: Long,
         name: String,
         arguments: JsonObject,
         context: ToolContext,
@@ -254,6 +331,70 @@ class DeepSeekSupportAssistant(
                     json.encodeToString(facilityPayload(facility))
                 }
             }
+            "list_user_appointments" ->
+                json.encodeToString(
+                    repository.listAppointments(userId).map { appointment ->
+                        mapOf(
+                            "appointment_id" to JsonPrimitive(appointment.id),
+                            "facility_id" to JsonPrimitive(appointment.facilityId),
+                            "facility_name" to JsonPrimitive(appointment.facilityName),
+                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
+                            "status" to JsonPrimitive(appointment.status),
+                            "note" to JsonPrimitive(appointment.note.orEmpty()),
+                        )
+                    },
+                )
+            "get_available_slots" -> {
+                val facilityId = arguments["facility_id"]?.jsonPrimitive?.content?.toLongOrNull()
+                val slots = facilityId?.let(repository::availableSlots).orEmpty()
+                json.encodeToString(
+                    slots.map { slot ->
+                        mapOf(
+                            "slot_id" to JsonPrimitive(slot.id),
+                            "facility_id" to JsonPrimitive(slot.facilityId),
+                            "starts_at" to JsonPrimitive(slot.startsAt.toString()),
+                        )
+                    },
+                )
+            }
+            "book_appointment" -> {
+                val facilityId = arguments["facility_id"]?.jsonPrimitive?.content?.toLongOrNull()
+                val startsAt =
+                    arguments["starts_at"]
+                        ?.jsonPrimitive
+                        ?.contentOrNull
+                        ?.let(java.time.OffsetDateTime::parse)
+                val note = arguments["note"]?.jsonPrimitive?.contentOrNull?.takeIf(String::isNotBlank)
+                if (facilityId == null || startsAt == null || repository.facilityById(facilityId) == null) {
+                    """{"error":"Invalid facility or appointment time"}"""
+                } else {
+                    val appointment = repository.bookAppointment(userId, facilityId, startsAt, note)
+                    json.encodeToString(
+                        mapOf(
+                            "appointment_id" to JsonPrimitive(appointment.id),
+                            "facility_name" to JsonPrimitive(appointment.facilityName),
+                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
+                            "status" to JsonPrimitive(appointment.status),
+                        ),
+                    )
+                }
+            }
+            "cancel_appointment" -> {
+                val appointmentId = arguments["appointment_id"]?.jsonPrimitive?.content?.toLongOrNull()
+                val appointment = appointmentId?.let { repository.cancelAppointment(userId, it) }
+                if (appointment == null) {
+                    """{"error":"Booked appointment not found for the signed-in student"}"""
+                } else {
+                    json.encodeToString(
+                        mapOf(
+                            "appointment_id" to JsonPrimitive(appointment.id),
+                            "facility_name" to JsonPrimitive(appointment.facilityName),
+                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
+                            "status" to JsonPrimitive(appointment.status),
+                        ),
+                    )
+                }
+            }
             else -> """{"error":"Unsupported tool"}"""
         }
 
@@ -271,6 +412,12 @@ class DeepSeekSupportAssistant(
             "eligibility" to JsonPrimitive(facility.eligibility),
             "preparation" to JsonPrimitive(facility.preparation),
             "categories" to JsonArray(facility.categories.map { JsonPrimitive(it.name) }),
+            "available_slots" to
+                JsonArray(
+                    repository.availableSlots(facility.id).map { slot ->
+                        JsonPrimitive(slot.startsAt.toString())
+                    },
+                ),
         )
 
     private fun recommendation(facility: Facility) =
@@ -302,4 +449,3 @@ class DeepSeekSupportAssistant(
         const val MAX_TOOL_ROUNDS = 4
     }
 }
-

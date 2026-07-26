@@ -38,9 +38,9 @@
             <label for="starts-at">Available time</label>
             <select id="starts-at" name="startsAt" required>
                 <option value="">Choose a time</option>
-                <option value="2026-07-28T10:00:00+08:00">Tuesday 28 July, 10:00</option>
-                <option value="2026-07-29T14:30:00+08:00">Wednesday 29 July, 14:30</option>
-                <option value="2026-07-30T11:00:00+08:00">Thursday 30 July, 11:00</option>
+                {% for slot in availableSlots %}
+                    <option value="{{ slot.startsAt }}">{{ slot.startsAt }}</option>
+                {% endfor %}
             </select>
             <label for="appointment-note">Anything useful to share? <span>(optional)</span></label>
             <textarea id="appointment-note" name="note" rows="4" maxlength="500"></textarea>
@@ -49,4 +49,3 @@
     </section>
 </div>
 {% include "fragments/portal-end" %}
-
