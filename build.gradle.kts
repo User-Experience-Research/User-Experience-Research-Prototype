@@ -28,7 +28,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:6.3.2")
     implementation("org.flywaydb:flyway-core:11.13.2")
     implementation("org.flywaydb:flyway-database-postgresql:11.13.2")
-    implementation("org.postgresql:postgresql:42.7.8")
+    implementation("org.postgresql:postgresql:42.7.13")
     runtimeOnly("com.h2database:h2:2.3.232")
 
     runtimeOnly("ch.qos.logback:logback-classic:1.5.18")
