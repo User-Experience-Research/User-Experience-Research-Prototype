@@ -8,39 +8,41 @@
   <rect width="1100" height="720" fill="#fff"/>
   <text x="35" y="42" class="h">D2 — Institutional student services dashboard</text>
   <rect x="35" y="75" width="790" height="590" class="box"/>
-  <rect x="35" y="75" width="170" height="590" class="box"/>
-  <circle cx="80" cy="118" r="25" class="box"/><text x="62" y="123" class="s">NMSI</text><text x="115" y="125" class="t">NMSI</text>
-  <text x="55" y="175" class="s">John doe</text>
-  <rect x="35" y="195" width="170" height="45" class="box"/><text x="58" y="223" class="s">⌂  Home</text>
-  <text x="58" y="275" class="s">⌕  Support Navigator</text>
-  <text x="58" y="320" class="s">▣  My appointments</text>
-  <text x="58" y="365" class="s">▤  Learning</text><text x="58" y="410" class="s">◷  My timetable</text>
-  <rect x="55" y="565" width="130" height="40" class="box"/><text x="73" y="590" class="s">↪  Sign out</text>
+  <rect x="35" y="75" width="190" height="590" class="box"/>
+  <text x="55" y="125" class="h">NMSI</text>
+  <text x="55" y="157" class="s">North-western Medical</text><text x="55" y="179" class="s">and Science Institute</text>
+  <line x1="35" y1="198" x2="225" y2="198" class="thin"/>
+  <circle cx="70" cy="230" r="22" class="box"/><text x="60" y="236" class="s">JD</text>
+  <text x="103" y="226" class="s">John doe</text><text x="103" y="249" class="s">Student account</text>
+  <rect x="48" y="275" width="164" height="52" class="box"/><circle cx="72" cy="301" r="15" class="box"/><text x="67" y="307" class="s">H</text><text x="98" y="307" class="s">Home</text>
+  <circle cx="72" cy="355" r="15" class="box"/><text x="68" y="361" class="s">?</text><text x="98" y="361" class="s">Support Navigator</text>
+  <circle cx="72" cy="409" r="15" class="box"/><text x="67" y="415" class="s">A</text><text x="98" y="415" class="s">My appointments</text>
+  <circle cx="72" cy="463" r="15" class="box"/><text x="67" y="469" class="s">M</text><text x="98" y="469" class="s">Messages</text>
+  <circle cx="72" cy="517" r="15" class="box"/><text x="67" y="523" class="s">C</text><text x="98" y="523" class="s">Course area</text>
+  <rect x="55" y="592" width="145" height="40" class="box"/><text x="73" y="617" class="s">←  Sign out</text>
 
-  <rect x="205" y="75" width="620" height="50" class="box"/>
-  <text x="230" y="106" class="s">Institute name</text><rect x="690" y="82" width="115" height="35" class="box"/><text x="706" y="105" class="s">Large font</text>
-  <rect x="205" y="125" width="620" height="95" class="box"/>
-  <circle cx="515" cy="172" r="35" class="box"/><text x="490" y="178" class="s">N M S I</text>
+  <rect x="225" y="75" width="600" height="145" class="box"/>
+  <text x="443" y="115" class="t">Student portal</text>
+  <text x="380" y="145" class="s">North-western Medical and Science Institute</text>
+  <rect x="682" y="92" width="125" height="42" class="box"/><text x="695" y="118" class="s">Large font: Off</text>
+  <circle cx="300" cy="205" r="46" class="box"/><text x="270" y="212" class="s">N M S I</text>
 
-  <text x="235" y="255" class="s">HOME</text><text x="235" y="290" class="h">Student services</text>
-  <text x="235" y="317" class="s">Open a student service or continue with a support request.</text>
-  <text x="235" y="355" class="t">Support and student systems</text>
-  <rect x="235" y="375" width="550" height="205" class="box"/>
-  <rect x="235" y="375" width="260" height="205" class="box"/>
-  <rect x="260" y="420" width="60" height="60" class="box"/><text x="281" y="458" class="h">＋</text>
-  <text x="340" y="420" class="s">RECOMMENDED ROUTE</text>
-  <text x="340" y="453" class="t">Start with what</text><text x="340" y="478" class="t">is happening</text>
-  <rect x="495" y="375" width="290" height="54" class="box"/><text x="515" y="408" class="s">⌕  Support Navigator  →</text>
-  <rect x="495" y="429" width="290" height="50" class="box"/><text x="515" y="460" class="s">▣  My appointments  →</text>
-  <rect x="495" y="479" width="290" height="50" class="box"/><text x="515" y="510" class="s">▤  Learning materials</text>
-  <rect x="495" y="529" width="290" height="51" class="box"/><text x="515" y="560" class="s">◷  My timetable</text>
+  <text x="255" y="275" class="s">HOME</text><text x="255" y="310" class="h">Student services</text>
+  <text x="255" y="337" class="s">Open the tools you use most; the tested route is highlighted.</text>
+  <rect x="255" y="370" width="530" height="225" class="box"/>
+  <rect x="255" y="370" width="270" height="225" class="box"/>
+  <path d="M305 530 C290 465 340 420 392 450 C435 405 492 458 475 520 Z" class="thin"/>
+  <rect x="365" y="475" width="72" height="72" class="box"/><text x="386" y="518" class="s">visual</text>
+  <rect x="525" y="370" width="260" height="75" class="box"/><text x="545" y="402" class="s">Student Support Navigator</text><text x="545" y="427" class="s">Describe · compare · book  →</text>
+  <rect x="525" y="445" width="260" height="75" class="box"/><text x="545" y="478" class="s">My appointments</text><text x="545" y="503" class="s">Review active and cancelled  →</text>
+  <rect x="525" y="520" width="260" height="75" class="box"/><text x="545" y="553" class="s">Messages</text><text x="545" y="578" class="s">Confirmations and updates  ›</text>
   <circle cx="780" cy="625" r="23" class="box"/><text x="773" y="631" class="s">✦</text>
 
   <rect x="860" y="130" width="210" height="125" class="dash"/>
   <text x="878" y="162" class="s">All portal routes share the</text><text x="878" y="187" class="s">same sidebar, header, banner</text><text x="878" y="212" class="s">and NMSI mark alignment.</text>
   <path d="M860 210 C835 225 815 235 790 210" class="line"/>
   <rect x="860" y="330" width="210" height="145" class="dash"/>
-  <text x="878" y="362" class="s">The tested route is a service</text><text x="878" y="387" class="s">row with an icon, description</text><text x="878" y="412" class="s">and directional cue—not a</text><text x="878" y="437" class="s">generic text-only button.</text>
+  <text x="878" y="362" class="s">Desktop follows the supplied</text><text x="878" y="387" class="s">portal reference: account block,</text><text x="878" y="412" class="s">letter icons, overlapping logo</text><text x="878" y="437" class="s">and three service rows.</text>
   <path d="M860 405 C830 420 815 420 785 405" class="line"/>
   <text x="45" y="700" class="s">Evidence: own-language entry T01–T03; practical comparison T08–T15; shared shell prevents route-to-route misalignment.</text>
 </svg>

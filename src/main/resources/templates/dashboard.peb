@@ -2,63 +2,49 @@
 <header class="page-heading">
     <p class="eyebrow">Home</p>
     <h1>Student services</h1>
-    <p>Open a student service or continue with a support request.</p>
+    <p>Open the tools you use most. Support Navigator is highlighted because it is the tested path in this prototype.</p>
 </header>
 
-<section class="service-section" aria-labelledby="student-support-heading">
-    <h2 id="student-support-heading">Support and student systems</h2>
+<section class="service-section dashboard-services" aria-label="Student service shortcuts">
     <div class="service-directory">
         <div class="directory-visual">
-            <span class="directory-visual__icon" aria-hidden="true">＋</span>
-            <div>
-                <p class="eyebrow">Recommended route</p>
-                <h3>Start with what is happening</h3>
-                <p>Search across services, compare practical details and choose a next step.</p>
-            </div>
+            <svg class="service-illustration" viewBox="0 0 520 410" aria-hidden="true">
+                <ellipse cx="262" cy="371" rx="179" ry="24" fill="#dfcf9f"/>
+                <path d="M128 301c-45 0-76-29-76-70 0-39 27-68 67-72 18-61 68-99 129-99 61 0 112 38 129 97 46 1 82 34 82 76 0 39-31 68-73 68Z" fill="#fff" stroke="#9db8bf" stroke-width="13"/>
+                <path d="M234 201 322 151 403 198 315 250Z" fill="#c7d2d0"/>
+                <path d="M234 201v113l81 49V250Z" fill="#078b74"/>
+                <path d="M315 250v113l88-50V198Z" fill="#10cba4"/>
+                <rect x="259" y="247" width="50" height="27" fill="#fff"/>
+                <circle cx="248" cy="303" r="25" fill="#f5c98d"/>
+                <path d="M205 369c3-37 17-57 43-57 27 0 42 20 46 57" fill="#27312f"/>
+                <rect x="207" y="348" width="92" height="58" rx="3" fill="#fff" stroke="#27312f" stroke-width="6"/>
+                <rect x="244" y="365" width="39" height="6" fill="#078b74"/>
+                <rect x="244" y="381" width="28" height="5" fill="#9ba6a3"/>
+            </svg>
         </div>
         <div class="directory-links">
             <a class="directory-link directory-link--featured" href="/support">
-                <span class="directory-link__icon" aria-hidden="true">⌕</span>
                 <span>
                     <strong>Student Support Navigator</strong>
-                    <small>Describe a concern and compare overlapping support sources</small>
+                    <small>Describe your issue, compare suitable sources and book a conversation.</small>
                 </span>
                 <span class="directory-link__arrow" aria-hidden="true">→</span>
             </a>
             <a class="directory-link" href="/appointments">
-                <span class="directory-link__icon" aria-hidden="true">▣</span>
                 <span>
                     <strong>My appointments</strong>
-                    <small>{{ appointments | length }} active support appointment(s)</small>
+                    <small>Review active and cancelled support appointments.</small>
                 </span>
                 <span class="directory-link__arrow" aria-hidden="true">→</span>
             </a>
-            <div class="directory-link directory-link--disabled">
-                <span class="directory-link__icon" aria-hidden="true">▤</span>
+            <div class="directory-link directory-link--disabled" aria-disabled="true">
                 <span>
-                    <strong>Learning materials</strong>
-                    <small>Courses and assessments</small>
+                    <strong>Messages</strong>
+                    <small>Open booking confirmations and cancellation updates.</small>
                 </span>
-            </div>
-            <div class="directory-link directory-link--disabled">
-                <span class="directory-link__icon" aria-hidden="true">◷</span>
-                <span>
-                    <strong>My timetable</strong>
-                    <small>Teaching schedule</small>
-                </span>
+                <span class="directory-link__arrow" aria-hidden="true">›</span>
             </div>
         </div>
-    </div>
-</section>
-
-<section class="service-section" aria-labelledby="tools-heading">
-    <h2 id="tools-heading">Before you choose a support source</h2>
-    <div class="guidance-strip">
-        <p><strong>Compare more than the title.</strong> Scope, provider, response time, access mode and location can help separate services that sound similar.</p>
-        <a class="text-action" href="/support">
-            <span>Browse the support directory</span>
-            <span aria-hidden="true">→</span>
-        </a>
     </div>
 </section>
 {% include "fragments/portal-end" %}

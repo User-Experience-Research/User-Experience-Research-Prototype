@@ -14,10 +14,8 @@
     <aside id="portal-sidebar" class="portal-sidebar" aria-label="Student portal" tabindex="-1">
         <div class="sidebar-topbar">
             <a class="portal-brand" href="/dashboard" aria-label="NMSI student portal home">
-                <span class="nmsi-logo nmsi-logo--sidebar" aria-hidden="true">
-                    <span>N</span><span>M</span><span>S</span><span>I</span>
-                </span>
-                <span>NMSI</span>
+                <span class="sidebar-wordmark">NMSI</span>
+                <span class="sidebar-institute">North-western Medical and Science Institute</span>
             </a>
             <button
                 class="sidebar-close"
@@ -28,27 +26,33 @@
                 <span aria-hidden="true">←</span>
             </button>
         </div>
-        <p class="student-name">{{ session.displayName }}</p>
+        <div class="student-profile">
+            <span class="student-avatar" aria-hidden="true">JD</span>
+            <span>
+                <strong>{{ session.displayName }}</strong>
+                <small>Student account</small>
+            </span>
+        </div>
         <nav aria-label="Primary">
             <a href="/dashboard" {% if activePage == "dashboard" %}aria-current="page"{% endif %}>
-                <span class="nav-icon" aria-hidden="true">⌂</span>
+                <span class="nav-icon" aria-hidden="true">H</span>
                 <span>Home</span>
             </a>
             <a href="/support" {% if activePage == "support" %}aria-current="page"{% endif %}>
-                <span class="nav-icon" aria-hidden="true">⌕</span>
+                <span class="nav-icon" aria-hidden="true">?</span>
                 <span>Support Navigator</span>
             </a>
             <a href="/appointments" {% if activePage == "appointments" %}aria-current="page"{% endif %}>
-                <span class="nav-icon" aria-hidden="true">▣</span>
+                <span class="nav-icon" aria-hidden="true">A</span>
                 <span>My appointments</span>
             </a>
             <a href="#" aria-disabled="true">
-                <span class="nav-icon" aria-hidden="true">▤</span>
-                <span>Learning</span>
+                <span class="nav-icon" aria-hidden="true">M</span>
+                <span>Messages</span>
             </a>
             <a href="#" aria-disabled="true">
-                <span class="nav-icon" aria-hidden="true">◷</span>
-                <span>My timetable</span>
+                <span class="nav-icon" aria-hidden="true">C</span>
+                <span>Course area</span>
             </a>
         </nav>
         <div class="sidebar-footer">
@@ -80,7 +84,10 @@
             >
                 <span aria-hidden="true">☰</span>
             </button>
-            <p class="institution-name">North-western Medical and Science Institute</p>
+            <div class="portal-title-group">
+                <p class="portal-title">Student portal</p>
+                <p class="institution-name">North-western Medical and Science Institute</p>
+            </div>
             <p class="mobile-page-title">{{ pageTitle }}</p>
             <button class="font-toggle font-toggle--header" type="button" data-font-toggle aria-pressed="false">Large font: Off</button>
         </header>
