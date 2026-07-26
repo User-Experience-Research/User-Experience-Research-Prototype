@@ -57,36 +57,36 @@ jobs:
               {
                 url: "http://127.0.0.1:4173/",
                 actions: [
-                  "click element #login-submit",
-                  "wait for element #view-home to be visible",
-                  "click element #open-support",
-                  "wait for element #view-support to be visible"
+                  "click element #login-screen .login-card button[type='submit']",
+                  "wait for element #screen-dashboard.is-active to be visible",
+                  "click element [data-nav='support']",
+                  "wait for element #screen-support.is-active to be visible"
                 ]
               },
               {
                 url: "http://127.0.0.1:4173/",
                 actions: [
-                  "click element #login-submit",
-                  "wait for element #view-home to be visible",
-                  "click element #open-support",
-                  "wait for element #view-support to be visible",
-                  "click element #compare-academic",
-                  "wait for element #view-detail to be visible"
+                  "click element #login-screen .login-card button[type='submit']",
+                  "wait for element #screen-dashboard.is-active to be visible",
+                  "click element [data-nav='support']",
+                  "wait for element #screen-support.is-active to be visible",
+                  "click element button[aria-label='View Academic Skills & Extensions details']",
+                  "wait for element #screen-detail.is-active to be visible"
                 ]
               },
               {
                 url: "http://127.0.0.1:4173/",
                 actions: [
-                  "click element #login-submit",
-                  "wait for element #view-home to be visible",
-                  "click element #open-support",
-                  "wait for element #view-support to be visible",
-                  "click element #compare-academic",
-                  "wait for element #view-detail to be visible",
-                  "click element #choose-source",
-                  "wait for element #view-booking to be visible",
-                  "click element #confirm-booking",
-                  "wait for element #view-confirmation to be visible"
+                  "click element #login-screen .login-card button[type='submit']",
+                  "wait for element #screen-dashboard.is-active to be visible",
+                  "click element [data-nav='support']",
+                  "wait for element #screen-support.is-active to be visible",
+                  "click element button[aria-label='View Academic Skills & Extensions details']",
+                  "wait for element #screen-detail.is-active to be visible",
+                  "click element #screen-detail .detail-side .button",
+                  "wait for element #screen-booking.is-active to be visible",
+                  "click element #screen-booking .booking-form button[type='submit']",
+                  "wait for element #screen-confirmation.is-active to be visible"
                 ]
               }
             ]
