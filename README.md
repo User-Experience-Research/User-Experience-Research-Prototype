@@ -222,6 +222,24 @@ docker run --rm -p 8080:8080 \
   nmsi-support-navigator
 ```
 
+## Deploy the full stack
+
+The repository includes a [Render Blueprint](render.yaml) and [Dockerfile](Dockerfile). The Blueprint creates:
+
+- a free Docker web service in Singapore;
+- a free PostgreSQL database;
+- an internal database connection;
+- a generated session secret;
+- HTTPS-only session cookies;
+- `/health` application checks;
+- automatic deploys after GitHub CI succeeds.
+
+Create the Blueprint from this repository, then add `DEEPSEEK_API_KEY` under:
+
+**Render Dashboard → nmsi-support-navigator → Environment → Add Environment Variable**
+
+The application deploys without the key in database-guided fallback mode, so the secret can be added later. A free Render web service may spin down after inactivity, and a free Render PostgreSQL database expires after 30 days; use a paid datastore before treating the prototype as persistent.
+
 ## Documentation
 
 - [Research and UX rationale](docs/research-and-ux-rationale.md)

@@ -1,0 +1,13 @@
+.git
+.github
+.gradle
+.idea
+build
+data
+node_modules
+playwright-report
+test-results
+*.iml
+*.log
+.DS_Store
+.env
