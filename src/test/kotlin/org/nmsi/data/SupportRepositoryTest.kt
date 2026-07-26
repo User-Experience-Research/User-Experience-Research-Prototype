@@ -8,6 +8,16 @@ import kotlin.test.assertTrue
 
 class SupportRepositoryTest {
     @Test
+    fun `Neon channel binding parameter is normalized for pgJDBC`() {
+        val query = "sslmode=require&channel_binding=require"
+
+        assertEquals(
+            "sslmode=require&channelBinding=require",
+            DatabaseFactory.normalizePostgresQuery(query),
+        )
+    }
+
+    @Test
     fun `seeded taxonomy is searchable by a student's own words`() {
         database().use { dataSource ->
             val repository = SupportRepository(dataSource)

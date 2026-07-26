@@ -47,13 +47,26 @@ object DatabaseFactory {
         }
         val credentials = uri.userInfo?.split(":", limit = 2).orEmpty()
         val port = if (uri.port == -1) 5432 else uri.port
-        val jdbcUrl = "jdbc:postgresql://${uri.host}:$port${uri.path}${uri.query?.let { "?$it" }.orEmpty()}"
+        val jdbcUrl =
+            "jdbc:postgresql://${uri.host}:$port${uri.path}" +
+                normalizePostgresQuery(uri.rawQuery)?.let { "?$it" }.orEmpty()
         return DatabaseConnection(
             jdbcUrl = jdbcUrl,
             username = credentials.getOrNull(0),
             password = credentials.getOrNull(1),
         )
     }
+
+    internal fun normalizePostgresQuery(rawQuery: String?): String? =
+        rawQuery
+            ?.split("&")
+            ?.joinToString("&") { parameter ->
+                if (parameter.startsWith("channel_binding=")) {
+                    parameter.replaceFirst("channel_binding=", "channelBinding=")
+                } else {
+                    parameter
+                }
+            }
 
     private data class DatabaseConnection(
         val jdbcUrl: String,
