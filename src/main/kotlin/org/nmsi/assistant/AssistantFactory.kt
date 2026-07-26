@@ -4,16 +4,16 @@ import org.nmsi.data.SupportRepository
 
 object AssistantFactory {
     fun create(repository: SupportRepository): SupportAssistant {
-        val apiKey = System.getenv("OPENAI_API_KEY")?.trim().orEmpty()
+        val apiKey = System.getenv("DEEPSEEK_API_KEY")?.trim().orEmpty()
         val fallback = RuleBasedSupportAssistant(repository)
         if (apiKey.isBlank()) return fallback
 
         return ResilientSupportAssistant(
             primary =
-                OpenAiSupportAssistant(
+                DeepSeekSupportAssistant(
                     repository = repository,
                     apiKey = apiKey,
-                    model = System.getenv("OPENAI_MODEL")?.trim().orEmpty().ifBlank { "gpt-5.6-terra" },
+                    model = System.getenv("DEEPSEEK_MODEL")?.trim().orEmpty().ifBlank { "deepseek-v4-flash" },
                 ),
             fallback = fallback,
         )
@@ -31,4 +31,3 @@ private class ResilientSupportAssistant(
         runCatching { primary.respond(userId, message) }
             .getOrElse { fallback.respond(userId, message) }
 }
-

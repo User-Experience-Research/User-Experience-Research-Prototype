@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.time.Duration
 
-class OpenAiSupportAssistant(
+class DeepSeekSupportAssistant(
     private val repository: SupportRepository,
     private val apiKey: String,
     private val model: String,
@@ -43,113 +43,117 @@ class OpenAiSupportAssistant(
     ): AssistantReply =
         withContext(Dispatchers.IO) {
             repository.appendConversationMessage(userId, "USER", message)
+            val messages = initialMessages(userId, message).toMutableList()
             val toolContext = ToolContext()
-            var requestBody = initialRequest(userId, message)
+
             repeat(MAX_TOOL_ROUNDS) {
-                val response = postResponse(requestBody)
-                val functionCalls =
-                    response["output"]
-                        ?.jsonArray
-                        ?.filter { item -> item.jsonObject["type"]?.jsonPrimitive?.contentOrNull == "function_call" }
-                        .orEmpty()
-                if (functionCalls.isEmpty()) {
-                    val text = extractOutputText(response)
-                    check(text.isNotBlank()) { "OpenAI returned no assistant text" }
+                val response = postChatCompletion(userId, messages)
+                val responseMessage =
+                    response
+                        .getValue("choices")
+                        .jsonArray
+                        .first()
+                        .jsonObject
+                        .getValue("message")
+                        .jsonObject
+                val toolCalls = responseMessage["tool_calls"]?.jsonArray.orEmpty()
+
+                if (toolCalls.isEmpty()) {
+                    val text = responseMessage["content"]?.jsonPrimitive?.contentOrNull.orEmpty().trim()
+                    check(text.isNotBlank()) { "DeepSeek returned no assistant text" }
                     repository.appendConversationMessage(userId, "ASSISTANT", text)
                     return@withContext AssistantReply(
                         text = text,
                         recommendations = toolContext.facilities.values.take(3).map(::recommendation),
-                        mode = "OpenAI Responses API",
+                        mode = "DeepSeek V4 Flash",
                     )
                 }
 
-                val outputs =
-                    buildJsonArray {
-                        functionCalls.forEach { item ->
-                            val call = item.jsonObject
-                            val callId = call.getValue("call_id").jsonPrimitive.content
-                            val name = call.getValue("name").jsonPrimitive.content
-                            val arguments =
-                                json.parseToJsonElement(
-                                    call["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
-                                ).jsonObject
-                            val toolOutput = executeTool(name, arguments, toolContext)
-                            repository.appendConversationMessage(userId, "TOOL", "$name: $toolOutput")
-                            add(
-                                buildJsonObject {
-                                    put("type", JsonPrimitive("function_call_output"))
-                                    put("call_id", JsonPrimitive(callId))
-                                    put("output", JsonPrimitive(toolOutput))
-                                },
-                            )
-                        }
-                    }
-                requestBody =
-                    continuationRequest(
-                        userId = userId,
-                        previousResponseId = response.getValue("id").jsonPrimitive.content,
-                        toolOutputs = outputs,
-                    )
-            }
-            error("OpenAI exceeded the maximum number of tool rounds")
-        }
-
-    private fun initialRequest(
-        userId: Long,
-        message: String,
-    ): JsonObject {
-        val history = repository.recentConversation(userId, 10).dropLast(1)
-        return commonRequest(userId) {
-            put(
-                "input",
-                buildJsonArray {
-                    history.forEach { previous ->
-                        if (previous.role != "TOOL") {
-                            add(
-                                buildJsonObject {
-                                    put(
-                                        "role",
-                                        JsonPrimitive(if (previous.role == "USER") "user" else "assistant"),
-                                    )
-                                    put("content", JsonPrimitive(previous.content))
-                                },
-                            )
-                        }
-                    }
-                    add(
+                messages.add(responseMessage)
+                toolCalls.forEach { item ->
+                    val call = item.jsonObject
+                    val callId = call.getValue("id").jsonPrimitive.content
+                    val function = call.getValue("function").jsonObject
+                    val name = function.getValue("name").jsonPrimitive.content
+                    val arguments =
+                        runCatching {
+                            json.parseToJsonElement(
+                                function["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
+                            ).jsonObject
+                        }.getOrElse { JsonObject(emptyMap()) }
+                    val output = executeTool(name, arguments, toolContext)
+                    repository.appendConversationMessage(userId, "TOOL", "$name: $output")
+                    messages.add(
                         buildJsonObject {
-                            put("role", JsonPrimitive("user"))
-                            put("content", JsonPrimitive(message))
+                            put("role", JsonPrimitive("tool"))
+                            put("tool_call_id", JsonPrimitive(callId))
+                            put("content", JsonPrimitive(output))
                         },
                     )
+                }
+            }
+            error("DeepSeek exceeded the maximum number of tool rounds")
+        }
+
+    private fun initialMessages(
+        userId: Long,
+        message: String,
+    ): List<JsonObject> =
+        buildList {
+            add(
+                buildJsonObject {
+                    put("role", JsonPrimitive("system"))
+                    put("content", JsonPrimitive(systemPrompt))
+                },
+            )
+            repository.recentConversation(userId, 10).dropLast(1).forEach { previous ->
+                if (previous.role != "TOOL") {
+                    add(
+                        buildJsonObject {
+                            put("role", JsonPrimitive(if (previous.role == "USER") "user" else "assistant"))
+                            put("content", JsonPrimitive(previous.content))
+                        },
+                    )
+                }
+            }
+            add(
+                buildJsonObject {
+                    put("role", JsonPrimitive("user"))
+                    put("content", JsonPrimitive(message))
                 },
             )
         }
+
+    private fun postChatCompletion(
+        userId: Long,
+        messages: List<JsonObject>,
+    ): JsonObject {
+        val body =
+            buildJsonObject {
+                put("model", JsonPrimitive(model))
+                put("messages", JsonArray(messages))
+                put("tools", tools())
+                put("tool_choice", JsonPrimitive("auto"))
+                put("thinking", buildJsonObject { put("type", JsonPrimitive("disabled")) })
+                put("max_tokens", JsonPrimitive(900))
+                put("stream", JsonPrimitive(false))
+                put("user_id", JsonPrimitive(safetyIdentifier(userId)))
+            }
+        val request =
+            HttpRequest
+                .newBuilder()
+                .uri(URI("https://api.deepseek.com/v1/chat/completions"))
+                .timeout(Duration.ofSeconds(45))
+                .header("Authorization", "Bearer $apiKey")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
+                .build()
+        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
+        check(response.statusCode() in 200..299) {
+            "DeepSeek request failed with status ${response.statusCode()}"
+        }
+        return json.parseToJsonElement(response.body()).jsonObject
     }
-
-    private fun continuationRequest(
-        userId: Long,
-        previousResponseId: String,
-        toolOutputs: JsonArray,
-    ): JsonObject =
-        commonRequest(userId) {
-            put("previous_response_id", JsonPrimitive(previousResponseId))
-            put("input", toolOutputs)
-        }
-
-    private fun commonRequest(
-        userId: Long,
-        additionalFields: kotlinx.serialization.json.JsonObjectBuilder.() -> Unit,
-    ): JsonObject =
-        buildJsonObject {
-            put("model", JsonPrimitive(model))
-            put("instructions", JsonPrimitive(systemPrompt))
-            put("safety_identifier", JsonPrimitive(safetyIdentifier(userId)))
-            put("reasoning", buildJsonObject { put("effort", JsonPrimitive("low")) })
-            put("text", buildJsonObject { put("verbosity", JsonPrimitive("low")) })
-            put("tools", tools())
-            additionalFields()
-        }
 
     private fun tools(): JsonArray =
         buildJsonArray {
@@ -157,21 +161,21 @@ class OpenAiSupportAssistant(
                 functionTool(
                     name = "search_facilities",
                     description =
-                        "Search the NMSI database for real support facilities by a student's own words and optional category slug. Returns scope, provider, access, response time, distance, rating and facility id.",
+                        "Search the NMSI database for real support facilities using the student's own words and an optional category. Returns verified scope, provider, access, response time, distance and rating.",
                     properties =
                         buildJsonObject {
                             put(
                                 "query",
                                 buildJsonObject {
                                     put("type", JsonPrimitive("string"))
-                                    put("description", JsonPrimitive("Short search phrase in the student's own words."))
+                                    put("description", JsonPrimitive("A short search phrase in the student's own words."))
                                 },
                             )
                             put(
                                 "category_slug",
                                 buildJsonObject {
-                                    put("type", buildJsonArray { add(JsonPrimitive("string")); add(JsonPrimitive("null")) })
-                                    put("description", JsonPrimitive("Optional known category slug, otherwise null."))
+                                    put("type", JsonPrimitive("string"))
+                                    put("description", JsonPrimitive("A category slug when known, or an empty string."))
                                 },
                             )
                         },
@@ -205,16 +209,20 @@ class OpenAiSupportAssistant(
     ): JsonObject =
         buildJsonObject {
             put("type", JsonPrimitive("function"))
-            put("name", JsonPrimitive(name))
-            put("description", JsonPrimitive(description))
-            put("strict", JsonPrimitive(true))
             put(
-                "parameters",
+                "function",
                 buildJsonObject {
-                    put("type", JsonPrimitive("object"))
-                    put("properties", properties)
-                    put("required", JsonArray(required.map(::JsonPrimitive)))
-                    put("additionalProperties", JsonPrimitive(false))
+                    put("name", JsonPrimitive(name))
+                    put("description", JsonPrimitive(description))
+                    put(
+                        "parameters",
+                        buildJsonObject {
+                            put("type", JsonPrimitive("object"))
+                            put("properties", properties)
+                            put("required", JsonArray(required.map(::JsonPrimitive)))
+                            put("additionalProperties", JsonPrimitive(false))
+                        },
+                    )
                 },
             )
         }
@@ -227,7 +235,11 @@ class OpenAiSupportAssistant(
         when (name) {
             "search_facilities" -> {
                 val query = arguments["query"]?.jsonPrimitive?.contentOrNull
-                val category = arguments["category_slug"]?.jsonPrimitive?.contentOrNull
+                val category =
+                    arguments["category_slug"]
+                        ?.jsonPrimitive
+                        ?.contentOrNull
+                        ?.takeIf(String::isNotBlank)
                 val facilities = repository.searchFacilities(query, category).take(6)
                 facilities.forEach { context.facilities[it.id] = it }
                 json.encodeToString(facilities.map(::facilityPayload))
@@ -260,37 +272,6 @@ class OpenAiSupportAssistant(
             "preparation" to JsonPrimitive(facility.preparation),
             "categories" to JsonArray(facility.categories.map { JsonPrimitive(it.name) }),
         )
-
-    private fun postResponse(body: JsonObject): JsonObject {
-        val request =
-            HttpRequest
-                .newBuilder()
-                .uri(URI("https://api.openai.com/v1/responses"))
-                .timeout(Duration.ofSeconds(45))
-                .header("Authorization", "Bearer $apiKey")
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body.toString(), StandardCharsets.UTF_8))
-                .build()
-        val response = httpClient.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8))
-        check(response.statusCode() in 200..299) {
-            "OpenAI request failed with status ${response.statusCode()}"
-        }
-        return json.parseToJsonElement(response.body()).jsonObject
-    }
-
-    private fun extractOutputText(response: JsonObject): String =
-        response["output"]
-            ?.jsonArray
-            ?.asSequence()
-            ?.map(JsonElement::jsonObject)
-            ?.filter { it["type"]?.jsonPrimitive?.contentOrNull == "message" }
-            ?.flatMap { it["content"]?.jsonArray?.asSequence().orEmpty() }
-            ?.map(JsonElement::jsonObject)
-            ?.firstOrNull { it["type"]?.jsonPrimitive?.contentOrNull == "output_text" }
-            ?.get("text")
-            ?.jsonPrimitive
-            ?.contentOrNull
-            .orEmpty()
 
     private fun recommendation(facility: Facility) =
         FacilityRecommendation(
