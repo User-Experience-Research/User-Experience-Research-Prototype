@@ -1596,8 +1596,8 @@
     let currentAppointmentId = null;
     let pendingCancelId = null;
     let lastFocusedElement = null;
-    let appointments = [];
-    let messages = [];
+    let appointments = readStoredJSON(storageKeys.appointments, []);
+    let messages = readStoredJSON(storageKeys.messages, []);
 
     function readStoredJSON(key, fallback) {
       try {
@@ -1609,7 +1609,11 @@
     }
 
     function writeStoredJSON(key, value) {
-      // Iteration state remains in memory until browser persistence is introduced.
+      try {
+        window.localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        fakeAction("This browser could not save the prototype state.");
+      }
     }
 
     function escapeHTML(value) {
@@ -1927,6 +1931,7 @@
         cancelledAt: null
       };
       appointments.unshift(appointment);
+      writeStoredJSON(storageKeys.appointments, appointments);
       createMessage("confirmed", appointment);
       currentAppointmentId = appointment.id;
       renderAppointmentRecord(appointment);
@@ -2090,6 +2095,7 @@
 
       appointment.status = "cancelled";
       appointment.cancelledAt = new Date().toISOString();
+      writeStoredJSON(storageKeys.appointments, appointments);
       createMessage("cancelled", appointment);
       currentAppointmentId = appointment.id;
       document.getElementById("cancel-dialog-backdrop").hidden = true;
