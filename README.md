@@ -154,6 +154,8 @@ The English system prompt is stored at [support-assistant-system.txt](src/main/r
 
 The model receives the current category slugs through a read-only tool schema and can list the taxonomy before searching. If it supplies an unknown slug, the server ignores that filter and safely retries the own-language search instead of treating the directory as empty. Booking and cancellation tools reject requests unless their explicit `confirmed` flag is true.
 
+The server also checks the completed tool trace before accepting an action-related model reply. A confirmed booking cannot be described as successful unless `book_appointment` actually ran, and cancellation cannot be described as successful unless `cancel_appointment` returned the signed-in student's updated record. Successful mutation replies are generated from that record and use the NMSI `Asia/Shanghai` time zone.
+
 The model never receives database credentials. Tool calls are executed and validated server-side, and user identity is injected by the application rather than accepted from model arguments.
 
 ## Database configuration

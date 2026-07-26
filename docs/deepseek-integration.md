@@ -49,6 +49,10 @@ Search is deliberately tolerant of the student's wording. It scores meaningful t
 
 `book_appointment` and `cancel_appointment` require `confirmed=true` in addition to the model's prompt-level confirmation rule. Invalid times, stale slots, missing facilities, and appointments outside the signed-in student's records return structured errors rather than bypassing the repository checks.
 
+The final response is also guarded server-side. If the student asks to list or cancel appointments, the model must call the user-scoped list tool before answering. If a confirmed booking or cancellation reaches a final model message without its mutation tool having run, Ktor sends a corrective tool instruction instead of accepting an unsupported success claim. After a successful mutation, Ktor replaces free-form success wording with a deterministic confirmation built from the returned database record.
+
+Appointment tools include both the exact offset timestamp and an NMSI-local label. Student-facing confirmations use `Asia/Shanghai`; raw UTC values are retained only for database/tool precision.
+
 Non-thinking mode is used for the tool loop to keep this prototype responsive and predictable. The model name is configurable so the integration can be updated without changing source code.
 
 ## No-key behavior
