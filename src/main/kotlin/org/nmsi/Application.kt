@@ -32,6 +32,9 @@ import io.ktor.serialization.kotlinx.json.json
 import io.pebbletemplates.pebble.loader.ClasspathLoader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.nmsi.assistant.AssistantFactory
+import org.nmsi.assistant.FacilityRecommendation
+import org.nmsi.assistant.SupportAssistant
 import org.nmsi.data.DatabaseFactory
 import org.nmsi.data.SupportRepository
 import java.time.OffsetDateTime
@@ -50,11 +53,14 @@ data class ChatRequest(
 @Serializable
 data class ChatResponse(
     val reply: String,
+    val recommendations: List<FacilityRecommendation>,
+    val mode: String,
 )
 
 fun Application.module() {
     val dataSource = DatabaseFactory.create()
     val repository = SupportRepository(dataSource)
+    val assistant = AssistantFactory.create(repository)
     monitor.subscribe(ApplicationStopped) {
         dataSource.close()
     }
@@ -139,11 +145,14 @@ fun Application.module() {
             call.respondRedirect("/login")
         }
 
-        authenticatedPortalRoutes(repository)
+        authenticatedPortalRoutes(repository, assistant)
     }
 }
 
-private fun Route.authenticatedPortalRoutes(repository: SupportRepository) {
+private fun Route.authenticatedPortalRoutes(
+    repository: SupportRepository,
+    assistant: SupportAssistant,
+) {
     route("") {
         get("/dashboard") {
             val session = call.requireSession() ?: return@get
@@ -252,13 +261,18 @@ private fun Route.authenticatedPortalRoutes(repository: SupportRepository) {
             val session = call.requireSession() ?: return@post
             val request = call.receive<ChatRequest>()
             val message = request.message.trim().take(1200)
-            val reply =
-                if (message.isBlank()) {
-                    "Tell me a little about what is happening, and I will help you narrow down the right support source."
-                } else {
-                    "Thanks, ${session.displayName.substringBefore(" ")}. I can help you compare support sources without needing to know the university category first. The next step is to connect this chat to the support directory."
-                }
-            call.respond(ChatResponse(reply))
+            if (message.isBlank()) {
+                call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Message is required"))
+                return@post
+            }
+            val reply = assistant.respond(session.userId, message)
+            call.respond(
+                ChatResponse(
+                    reply = reply.text,
+                    recommendations = reply.recommendations,
+                    mode = reply.mode,
+                ),
+            )
         }
     }
 }

@@ -186,6 +186,111 @@ class SupportRepository(
             }
         }
 
+    fun recentConversation(
+        userId: Long,
+        limit: Int = 12,
+    ): List<ConversationMessage> =
+        dataSource.connection.use { connection ->
+            connection
+                .prepareStatement(
+                    """
+                    SELECT cm.role, cm.content
+                    FROM conversation_messages cm
+                    JOIN conversations c ON c.id = cm.conversation_id
+                    WHERE c.user_id = ?
+                    ORDER BY cm.created_at DESC, cm.id DESC
+                    LIMIT ?
+                    """.trimIndent(),
+                ).use { statement ->
+                    statement.setLong(1, userId)
+                    statement.setInt(2, limit.coerceIn(1, 30))
+                    statement.executeQuery().use { result ->
+                        buildList {
+                            while (result.next()) {
+                                add(
+                                    ConversationMessage(
+                                        role = result.getString("role"),
+                                        content = result.getString("content"),
+                                    ),
+                                )
+                            }
+                        }.reversed()
+                    }
+                }
+        }
+
+    fun appendConversationMessage(
+        userId: Long,
+        role: String,
+        content: String,
+    ) {
+        require(role in setOf("USER", "ASSISTANT", "TOOL"))
+        dataSource.connection.use { connection ->
+            connection.autoCommit = false
+            try {
+                val conversationId = activeConversationId(connection, userId)
+                connection
+                    .prepareStatement(
+                        """
+                        INSERT INTO conversation_messages (conversation_id, role, content)
+                        VALUES (?, ?, ?)
+                        """.trimIndent(),
+                    ).use { statement ->
+                        statement.setLong(1, conversationId)
+                        statement.setString(2, role)
+                        statement.setString(3, content.take(6000))
+                        statement.executeUpdate()
+                    }
+                connection
+                    .prepareStatement(
+                        "UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    ).use { statement ->
+                        statement.setLong(1, conversationId)
+                        statement.executeUpdate()
+                    }
+                connection.commit()
+            } catch (error: Throwable) {
+                connection.rollback()
+                throw error
+            } finally {
+                connection.autoCommit = true
+            }
+        }
+    }
+
+    private fun activeConversationId(
+        connection: Connection,
+        userId: Long,
+    ): Long {
+        connection
+            .prepareStatement(
+                """
+                SELECT id
+                FROM conversations
+                WHERE user_id = ?
+                ORDER BY updated_at DESC
+                LIMIT 1
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setLong(1, userId)
+                statement.executeQuery().use { result ->
+                    if (result.next()) return result.getLong(1)
+                }
+            }
+        connection
+            .prepareStatement(
+                "INSERT INTO conversations (user_id) VALUES (?)",
+                Statement.RETURN_GENERATED_KEYS,
+            ).use { statement ->
+                statement.setLong(1, userId)
+                statement.executeUpdate()
+                statement.generatedKeys.use { keys ->
+                    check(keys.next()) { "Conversation id was not generated" }
+                    return keys.getLong(1)
+                }
+            }
+    }
+
     private fun appointmentById(
         connection: Connection,
         userId: Long,
@@ -278,4 +383,3 @@ class SupportRepository(
             note = getString("note"),
         )
 }
-

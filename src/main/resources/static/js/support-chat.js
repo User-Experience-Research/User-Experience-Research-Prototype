@@ -34,6 +34,26 @@
         log.scrollTop = log.scrollHeight;
     };
 
+    const appendRecommendations = (recommendations) => {
+        if (!Array.isArray(recommendations) || recommendations.length === 0) {
+            return;
+        }
+        const list = document.createElement("ul");
+        list.className = "chat-recommendations";
+        recommendations.forEach((recommendation) => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = recommendation.detailUrl;
+            link.textContent = recommendation.name;
+            const reason = document.createElement("span");
+            reason.textContent = recommendation.reason;
+            item.append(link, reason);
+            list.append(item);
+        });
+        log.append(list);
+        log.scrollTop = log.scrollHeight;
+    };
+
     const sendMessage = async (message) => {
         appendMessage("user", message);
         status.textContent = "Support Guide is considering your message.";
@@ -50,6 +70,7 @@
             }
             const payload = await response.json();
             appendMessage("assistant", payload.reply);
+            appendRecommendations(payload.recommendations);
             status.textContent = "Support Guide replied.";
         } catch (_error) {
             appendMessage(
@@ -87,4 +108,3 @@
         });
     });
 })();
-

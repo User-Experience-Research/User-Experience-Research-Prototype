@@ -44,3 +44,7 @@ data class UserAccount(
     val email: String,
 )
 
+data class ConversationMessage(
+    val role: String,
+    val content: String,
+)
