@@ -1,5 +1,7 @@
 # Deployment: Render Free Web Service with Neon Free PostgreSQL
 
+**Live service:** [https://nmsi-support-navigator.onrender.com](https://nmsi-support-navigator.onrender.com)
+
 The deployed architecture intentionally separates compute and data:
 
 ```mermaid
@@ -56,6 +58,8 @@ Do not add `DEEPSEEK_API_KEY` yet unless desired. The database-guided fallback k
 7. Open Support Guide and confirm it reports `database-guided fallback` until the DeepSeek key is added.
 8. Check Neon’s Tables view for seeded categories, facilities, slots, appointments, and conversations.
 
+The deployed service passed steps 1–7 on 27 July 2026. The production check created and then cancelled a demonstration appointment, leaving the database record in `CANCELLED` state. The database-guided fallback responded without a DeepSeek key.
+
 ## 4. Add DeepSeek later
 
 In Render:
@@ -71,7 +75,7 @@ Save and redeploy. Never place either database credentials or the DeepSeek key i
 
 ## 5. Retire GitHub Pages
 
-Disable GitHub Pages only after the Render URL passes the verification checklist. The full-stack application cannot be hosted by GitHub Pages because Pages serves static files and cannot run Ktor or connect securely to PostgreSQL.
+GitHub Pages was disabled on 27 July 2026 after the Render URL passed the verification checklist. The full-stack application cannot be hosted by GitHub Pages because Pages serves static files and cannot run Ktor or connect securely to PostgreSQL.
 
 ## Operational notes
 

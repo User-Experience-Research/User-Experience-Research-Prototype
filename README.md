@@ -10,6 +10,8 @@ Students can describe a problem in their own words, search and filter a database
 
 This is a research prototype. It does not provide medical diagnosis, emergency response, or production authentication.
 
+**Live full-stack service:** [https://nmsi-support-navigator.onrender.com](https://nmsi-support-navigator.onrender.com)
+
 ## Research-to-design direction
 
 The interface follows five simulated-pilot themes from the project research plan:
@@ -210,11 +212,11 @@ Standard application:
 ./gradlew clean build
 ```
 
-Runnable fat JAR:
+Runnable application distribution:
 
 ```bash
-./gradlew buildFatJar
-java -jar build/libs/nmsi-support-navigator-all.jar
+./gradlew installDist
+./build/install/nmsi-support-navigator/bin/nmsi-support-navigator
 ```
 
 Docker:
@@ -250,6 +252,8 @@ Deployment order:
 **Render Dashboard → nmsi-support-navigator → Environment → Add Environment Variable**
 
 The application deploys without the AI key in database-guided fallback mode. The Neon database remains allocated without a 30-day deletion deadline, although its compute may sleep while idle and the free usage/storage limits still apply. The Render Free Web Service may also spin down after inactivity.
+
+The live service passed the production verification checklist on 27 July 2026. GitHub Pages has been disabled because it cannot run the Ktor backend.
 
 See [Deployment](docs/deployment.md) for the exact setup and verification checklist.
 
