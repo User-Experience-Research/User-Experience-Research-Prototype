@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NMSI Student Support Navigator</title>
   <style>
     :root {
@@ -12,107 +12,87 @@
       --canvas: #f5f6f5;
       --line: #d7dbd9;
       --muted: #64706c;
-      --green: #0fd2a3;
-      --green-dark: #087d66;
-      --green-soft: #e6fbf5;
-      --charcoal: #242625;
-      --sand: #f4ead1;
+      --accent: #0fd2a3;
+      --accent-dark: #087d66;
+      --accent-soft: #e6fbf5;
+      --cream: #f4ead1;
+      --cream-deep: #e8d6a9;
+      --warning: #a76408;
+      --warning-soft: #fff3db;
+      --success: #167554;
       --shadow: 0 18px 45px rgba(20, 30, 27, 0.12);
       --sidebar: 282px;
     }
 
     * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
 
-    html { color-scheme: light; }
-
-    body {
+    html, body {
       margin: 0;
-      min-width: 320px;
-      background: var(--canvas);
-      color: var(--ink);
+      min-height: 100%;
       font-family: Arial, Helvetica, sans-serif;
       line-height: 1.5;
+      color: var(--ink);
+      background: var(--canvas);
     }
+
+    html.large-font { font-size: 125%; }
 
     button, input, select, textarea { font: inherit; }
-
     button { cursor: pointer; }
-
-    a:focus-visible, input:focus, select:focus, textarea:focus, button:focus-visible {
-      outline: 3px solid #087d66;
-      outline-offset: 3px;
-      border-color: var(--green-dark);
-    }
-
-    h2[tabindex="-1"]:focus { outline: none; }
 
     .skip-link {
       position: fixed;
-      left: 16px;
-      top: -80px;
-      z-index: 100;
-      padding: 12px 18px;
-      background: #ffffff;
+      left: 14px;
+      top: 12px;
+      z-index: 1000;
+      padding: 12px 16px;
+      background: white;
       color: #073d32;
       border: 3px solid #073d32;
-      font-weight: 700;
+      transform: translateY(-160%);
     }
 
-    .skip-link:focus { top: 16px; }
+    .skip-link:focus { transform: none; }
 
-    .screen[hidden] { display: none; }
-
-    .button {
-      min-height: 46px;
-      border: 2px solid transparent;
-      border-radius: 2px;
-      padding: 10px 18px;
-      cursor: pointer;
-      font-weight: 700;
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
     }
 
-    .button--primary {
-      background: var(--green-dark);
-      color: #ffffff;
+    .logo-mark {
+      width: 118px;
+      height: 118px;
+      flex: 0 0 auto;
+      filter: drop-shadow(0 9px 16px rgba(0, 0, 0, 0.2));
     }
 
-    .button--primary:hover { background: #066552; }
-
-    .button--secondary {
-      border-color: #9fa8a4;
-      background: #ffffff;
-      color: var(--green-dark);
-    }
-
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--green-dark);
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-    }
-
-    .muted { color: var(--muted); }
-
-    .login-layout {
-      display: grid;
+    .login-screen {
       min-height: 100vh;
+      display: grid;
       grid-template-columns: minmax(360px, 0.9fr) minmax(470px, 1.1fr);
+      background: #f3f4f3;
     }
 
     .login-brand {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
       min-height: 100vh;
-      padding: 72px 72px 56px;
       background:
         linear-gradient(145deg, rgba(15, 210, 163, 0.15), transparent 42%),
         linear-gradient(180deg, #272a29 0%, #131514 100%);
-      color: #ffffff;
+      color: white;
+      padding: 72px 72px 56px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
     }
 
     .login-brand::after {
@@ -128,32 +108,23 @@
     }
 
     .login-brand__top { position: relative; z-index: 1; }
-
+    .login-brand__top .logo-mark { width: 145px; height: 145px; }
     .login-brand h1 {
       max-width: 560px;
       margin: 32px 0 14px;
       font-size: clamp(2.4rem, 4vw, 4.8rem);
-      line-height: 1.03;
       font-weight: 400;
+      line-height: 1.03;
       letter-spacing: -0.045em;
     }
 
     .login-brand p {
       max-width: 520px;
-      margin: 0;
       color: #cfd6d3;
       font-size: 1.08rem;
       line-height: 1.65;
+      margin: 0;
     }
-
-    .logo-mark {
-      width: 118px;
-      height: 118px;
-      flex: 0 0 auto;
-      filter: drop-shadow(0 9px 16px rgba(0, 0, 0, 0.2));
-    }
-
-    .login-brand .logo-mark { width: 145px; height: 145px; }
 
     .login-brand__foot {
       position: relative;
@@ -166,72 +137,127 @@
       display: grid;
       place-items: center;
       padding: 44px;
-      background: #f3f4f3;
     }
 
     .login-card {
       width: min(520px, 100%);
-      padding: 46px;
+      background: white;
       border: 1px solid #e0e3e2;
-      background: #ffffff;
       box-shadow: var(--shadow);
+      padding: 46px;
+    }
+
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent-dark);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
     }
 
     .login-card h2 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 2rem;
       font-weight: 500;
     }
 
-    .field { margin-top: 26px; }
+    .login-card__intro {
+      margin: 0 0 30px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
 
+    .field { margin: 0 0 19px; }
     .field label {
       display: block;
-      margin-bottom: 8px;
+      margin: 0 0 8px;
+      font-size: 0.9rem;
       font-weight: 700;
     }
 
     .field input,
     .field select,
-    .field textarea {
+    .field textarea,
+    .search-box input,
+    .filter-field select {
       width: 100%;
-      min-height: 46px;
       border: 1px solid #bdc5c1;
-      border-radius: 2px;
-      padding: 12px 13px;
-      background: #ffffff;
+      background: white;
       color: var(--ink);
+      padding: 12px 13px;
+      min-height: 46px;
+      border-radius: 2px;
+      outline: none;
     }
 
-    .login-card .button {
-      width: 100%;
-      margin-top: 28px;
+    .field textarea { min-height: 105px; resize: vertical; }
+
+    a:focus-visible, input:focus, select:focus, textarea:focus, button:focus-visible {
+      outline: 3px solid #087d66;
+      outline-offset: 3px;
+      border-color: var(--accent-dark);
+    }
+
+    h2[tabindex="-1"]:focus {
+      outline: none;
+    }
+
+    .button {
+      border: 1px solid transparent;
+      border-radius: 2px;
+      min-height: 44px;
+      padding: 11px 18px;
+      font-weight: 700;
+      background: var(--ink);
+      color: white;
+      transition: 150ms ease;
+    }
+
+    .button:hover { transform: translateY(-1px); box-shadow: 0 7px 16px rgba(0,0,0,0.13); }
+    .button--accent { background: var(--accent-dark); }
+    .button--outline { background: white; color: var(--ink); border-color: #9fa8a4; }
+    .button--quiet { background: transparent; color: var(--ink); border-color: transparent; }
+    .button--full { width: 100%; }
+
+    .accessibility-toggle {
+      min-height: 44px;
+      padding: 9px 13px;
+      border: 1px solid currentColor;
+      background: white;
+      color: #073d32;
+      font-weight: 700;
+    }
+
+    .login-accessibility {
+      width: min(520px, 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
     }
 
     .prototype-note {
-      margin: 16px 0 0;
+      color: #64706c;
+      font-size: 0.82rem;
       text-align: center;
-      color: var(--muted);
-      font-size: 0.92rem;
+      margin: 18px 0 0;
     }
 
-    .app-shell {
-      display: block;
-      min-height: 100vh;
-    }
+    .portal { display: none; min-height: 100vh; }
+    .portal.is-visible { display: block; }
 
     .sidebar {
       position: fixed;
       inset: 0 auto 0 0;
-      display: flex;
-      height: 100vh;
       width: var(--sidebar);
-      flex-direction: column;
-      padding: 0;
       background: #242625;
-      color: #ffffff;
-      border-right: 1px solid #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
       z-index: 20;
+      border-right: 1px solid #111;
     }
 
     .sidebar-brand {
@@ -256,77 +282,108 @@
       max-width: 205px;
     }
 
-    .nav-list {
+    .profile-strip {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 22px;
+      color: #cbd0ce;
+      border-bottom: 1px solid #171918;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
       display: grid;
-      gap: 8px;
+      place-items: center;
+      background: #68706d;
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+
+    .profile-strip strong { display: block; color: white; font-size: 0.9rem; }
+    .profile-strip span { font-size: 0.76rem; color: #99a39f; }
+
+    .nav-list {
+      list-style: none;
       margin: 0;
       padding: 17px 12px;
-      list-style: none;
+      display: grid;
+      gap: 8px;
     }
 
     .nav-button {
-      display: flex;
       width: 100%;
       min-height: 50px;
+      display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 13px;
       border: 2px solid transparent;
-      border-radius: 3px;
-      padding: 10px 12px;
       background: transparent;
-      color: #eef4f2;
-      cursor: pointer;
+      color: #d5d9d7;
       text-align: left;
+      padding: 10px 12px;
+      border-radius: 3px;
+      font-size: 0.96rem;
     }
 
-    .nav-button[aria-current="page"] {
-      border-color: var(--green);
+    .nav-button:hover { background: #303432; color: white; }
+    .nav-button.is-active {
+      border-color: var(--accent);
+      color: white;
       background: rgba(15, 210, 163, 0.09);
-      box-shadow: inset 4px 0 0 var(--green);
-      font-weight: 700;
+      box-shadow: inset 4px 0 0 var(--accent);
     }
 
     .nav-icon {
-      display: grid;
       width: 27px;
       height: 27px;
+      display: grid;
       place-items: center;
-      border-radius: 50%;
       border: 1px solid currentColor;
-      background: transparent;
+      border-radius: 50%;
+      font-size: 0.72rem;
       font-weight: 700;
     }
 
-    .sidebar-footer {
+    .sidebar-foot {
       margin-top: auto;
       padding: 20px 24px 25px;
-      border-top: 1px solid #303332;
       color: #a8afac;
-      font-size: 0.72rem;
+      border-top: 1px solid #303332;
     }
 
-    .workspace {
-      min-width: 0;
+    .sign-out {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      color: white;
+      background: transparent;
+      padding: 7px 0;
+      font-size: 0.95rem;
+    }
+
+    .legal { margin-top: 15px; font-size: 0.72rem; line-height: 1.5; }
+
+    .main-shell {
       margin-left: var(--sidebar);
       min-height: 100vh;
+      background: var(--canvas);
     }
 
-    .topbar {
-      position: relative;
-      display: flex;
+    .top-banner {
       height: 205px;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 24px;
-      padding: 35px 52px 0 205px;
       background:
         radial-gradient(circle at 82% -20%, rgba(15, 210, 163, 0.16), transparent 36%),
         linear-gradient(180deg, #292b2a 0%, #101211 100%);
+      position: relative;
       color: white;
+      padding: 35px 52px 0 205px;
     }
-
-    .topbar strong { font-size: 1.75rem; font-weight: 400; }
-    .topbar .muted { color: #b8c3bf; margin-top: 8px; }
 
     .seal {
       position: absolute;
@@ -342,48 +399,96 @@
       box-shadow: 0 8px 0 #061c18, 0 15px 28px rgba(0,0,0,0.23);
     }
 
-    .seal .logo-mark { width: 116px; height: 116px; filter: none; }
+    .seal .logo-mark {
+      width: 116px;
+      height: 116px;
+      filter: none;
+    }
 
-    .sign-out {
-      border: 0;
+    .top-banner__meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 25px;
+    }
+
+    .top-banner h1 {
+      margin: 0;
+      font-size: 1.75rem;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+    }
+
+    .top-banner p { margin: 8px 0 0; color: #b8c3bf; font-size: 0.92rem; }
+
+    .banner-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .banner-actions .accessibility-toggle {
       background: transparent;
-      color: var(--green-dark);
-      cursor: pointer;
+      color: white;
+      border-color: #aeb8b4;
+    }
+
+    .message-badge {
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      margin-left: auto;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: #0fd2a3;
+      color: #10231e;
       font-weight: 700;
+      font-size: 0.76rem;
     }
 
     .content {
-      width: min(1260px, 100%);
+      max-width: 1400px;
+      padding: 92px 54px 70px;
       margin: 0 auto;
-      padding: 88px 52px 70px;
     }
+
+    .screen { display: none; animation: enter 180ms ease; }
+    .screen.is-active { display: block; }
+    @keyframes enter { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
     .page-heading {
       display: flex;
       align-items: end;
       justify-content: space-between;
-      gap: 32px;
-      margin-bottom: 32px;
+      gap: 30px;
+      margin-bottom: 27px;
     }
 
     .page-heading h2 {
       margin: 0;
-      font-size: clamp(2rem, 3.3vw, 3.45rem);
-      font-weight: 400;
-      line-height: 1.08;
+      font-size: 2rem;
+      font-weight: 500;
+      letter-spacing: -0.025em;
     }
 
     .page-heading p {
-      max-width: 760px;
-      margin: 12px 0 0;
+      max-width: 720px;
+      margin: 9px 0 0;
       color: var(--muted);
-      font-size: 1.08rem;
+      line-height: 1.55;
     }
 
-    .home-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 26px;
+    .back-link {
+      border: 0;
+      background: transparent;
+      padding: 10px 0;
+      min-height: 44px;
+      color: var(--accent-dark);
+      font-weight: 700;
+      margin-bottom: 18px;
     }
 
     .portal-grid {
@@ -395,7 +500,7 @@
     }
 
     .portal-art {
-      background: var(--sand);
+      background: var(--cream);
       min-height: 405px;
       display: grid;
       place-items: center;
@@ -404,6 +509,7 @@
     }
 
     .portal-art svg { width: 78%; max-width: 540px; height: auto; }
+
     .portal-links { display: grid; grid-template-rows: repeat(4, 1fr); }
 
     .portal-link {
@@ -423,19 +529,13 @@
     .portal-link:last-child { border-bottom: 0; }
     .portal-link:hover { background: white; }
     .portal-link--primary {
-      background: var(--green-soft);
-      border: 2px solid var(--green-dark);
-      box-shadow: inset 5px 0 0 var(--green);
+      background: var(--accent-soft);
+      border: 2px solid var(--accent-dark);
+      box-shadow: inset 5px 0 0 var(--accent);
     }
 
-    .portal-link small {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 0.77rem;
-    }
-
-    .arrow { font-size: 1.25rem; color: var(--green-dark); }
+    .portal-link small { display: block; margin-top: 5px; color: var(--muted); font-size: 0.77rem; }
+    .arrow { font-size: 1.25rem; color: var(--accent-dark); }
 
     .dashboard-lower {
       margin-top: 38px;
@@ -453,197 +553,11 @@
     .info-panel h3 { margin: 0 0 10px; font-size: 1.06rem; }
     .info-panel p { margin: 0; color: var(--muted); line-height: 1.55; }
 
-    .feature-card,
-    .info-card,
-    .search-panel,
-    .service-card,
-    .detail-card,
-    .booking-card,
-    .confirmation-card {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .feature-card {
-      min-height: 360px;
-      padding: 42px;
-      background: linear-gradient(135deg, #e1f1eb, #ffffff 68%);
-    }
-
-    .feature-card h3 {
-      max-width: 700px;
-      margin: 0 0 14px;
-      font-size: clamp(1.75rem, 3vw, 2.8rem);
-    }
-
-    .feature-card p { max-width: 700px; color: var(--muted); }
-
-    .feature-card .button { margin-top: 20px; }
-
-    .info-card { padding: 32px; }
-    .info-card h3 { margin-top: 0; }
-
     .search-panel {
-      display: grid;
-      grid-template-columns: minmax(260px, 1.6fr) repeat(3, minmax(150px, .7fr));
-      gap: 16px;
-      padding: 24px;
-    }
-
-    .search-panel .field { margin: 0; }
-
-    .search-panel .button {
-      align-self: end;
-    }
-
-    .results-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin: 30px 0 16px;
-    }
-
-    .results-meta h3 { margin: 0; }
-
-    .service-list {
-      display: grid;
-      gap: 18px;
-    }
-
-    .service-card {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 28px;
-      padding: 26px;
-    }
-
-    .service-card h3 { margin: 0 0 6px; font-size: 1.45rem; }
-
-    .tag-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
-    }
-
-    .tag {
-      display: inline-flex;
-      min-height: 30px;
-      align-items: center;
-      border: 1px solid #accdc3;
-      border-radius: 999px;
-      padding: 4px 11px;
-      background: var(--green-soft);
-      color: #154f43;
-      font-size: 0.88rem;
-      font-weight: 700;
-    }
-
-    .service-facts {
-      display: grid;
-      min-width: 250px;
-      align-content: start;
-      gap: 8px;
-      color: var(--muted);
-    }
-
-    .service-facts strong { color: var(--ink); }
-
-    .service-card .button { margin-top: 12px; }
-
-    .detail-grid,
-    .booking-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr);
-      gap: 26px;
-    }
-
-    .detail-card,
-    .booking-card,
-    .confirmation-card { padding: 34px; }
-
-    .detail-card h3,
-    .booking-card h3,
-    .confirmation-card h3 {
-      margin-top: 0;
-      font-size: 1.7rem;
-    }
-
-    .boundary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 24px 0;
-    }
-
-    .boundary-box {
-      padding: 20px;
-      border-left: 5px solid var(--green);
-      background: #f3f8f6;
-    }
-
-    .boundary-box--not {
-      border-left-color: #806529;
-      background: var(--sand);
-    }
-
-    .boundary-box h4 { margin: 0 0 10px; }
-
-    .summary-list {
-      display: grid;
-      gap: 12px;
-      margin: 0;
-    }
-
-    .summary-list div {
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .summary-list dt {
-      color: var(--muted);
-      font-size: 0.86rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .summary-list dd {
-      margin: 3px 0 0;
-      font-weight: 700;
-    }
-
-    .status-banner {
-      padding: 16px 18px;
-      border-left: 5px solid var(--green);
-      background: var(--green-soft);
-      color: #154f43;
-      font-weight: 700;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 24px;
-    }
-
-    .empty-state {
-      padding: 42px;
-      border: 1px dashed #92a39d;
-      background: #ffffff;
-      text-align: center;
-    }
-
-    /* Visual parity with the approved Iteration 1 portal. */
-    .search-panel {
-      display: block;
       background: white;
       border: 1px solid var(--line);
       padding: 22px;
       margin-bottom: 22px;
-      box-shadow: none;
     }
 
     .search-row {
@@ -653,14 +567,7 @@
     }
 
     .search-box { position: relative; }
-    .search-box input {
-      width: 100%;
-      min-height: 50px;
-      padding: 12px 13px 12px 42px;
-      border: 1px solid #bdc5c1;
-      border-radius: 2px;
-    }
-
+    .search-box input { padding-left: 42px; min-height: 50px; }
     .search-box::before {
       content: "";
       position: absolute;
@@ -684,9 +591,11 @@
       transform-origin: left center;
     }
 
+    .filter-toggle { display: none; }
+
     .filters {
       display: grid;
-      grid-template-columns: repeat(2, minmax(150px, 1fr));
+      grid-template-columns: repeat(4, minmax(150px, 1fr));
       gap: 12px;
       padding-top: 17px;
     }
@@ -699,13 +608,28 @@
       font-weight: 700;
     }
 
-    .filter-field select {
-      width: 100%;
-      min-height: 46px;
-      border: 1px solid #bdc5c1;
-      border-radius: 2px;
+    .category-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 17px;
+    }
+
+    .category-chip {
+      border: 1px solid #bfc8c4;
       background: white;
-      padding: 12px 13px;
+      color: #38413e;
+      padding: 8px 12px;
+      min-height: 44px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+    }
+
+    .category-chip.is-selected {
+      color: #075542;
+      border-color: var(--accent-dark);
+      background: var(--accent-soft);
+      font-weight: 700;
     }
 
     .results-bar {
@@ -716,90 +640,435 @@
       margin: 25px 0 13px;
     }
 
-    .service-list { gap: 14px; }
+    .results-bar h3 { margin: 0; font-size: 1.1rem; }
+    .results-bar span { color: var(--muted); font-size: 0.82rem; }
 
-    .service-card {
-      grid-template-columns: minmax(0, 1fr) 230px;
+    .support-list { display: grid; gap: 14px; }
+
+    .support-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 190px;
       gap: 22px;
+      background: white;
+      border: 1px solid var(--line);
       padding: 22px;
       box-shadow: 0 3px 12px rgba(22, 33, 29, 0.04);
     }
 
-    .service-card h3 { font-size: 1.17rem; }
-    .service-card p { color: #424b48; }
+    .support-card.is-best { border-left: 5px solid var(--accent-dark); }
+    .support-card h4 { margin: 0; font-size: 1.17rem; }
+    .support-team { color: var(--muted); margin: 5px 0 9px; font-size: 0.88rem; }
+    .support-description { margin: 0; line-height: 1.5; color: #424b48; }
 
-    .service-facts {
-      min-width: 0;
-      padding-left: 20px;
-      border-left: 1px solid #e0e4e2;
-      justify-content: center;
-      font-size: 0.84rem;
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 13px;
     }
 
     .tag {
-      min-height: 0;
+      display: inline-flex;
+      align-items: center;
       gap: 5px;
       border: 1px solid #cbd2cf;
-      border-radius: 3px;
-      padding: 6px 8px;
       background: #f7f8f7;
       color: #3c4642;
+      border-radius: 3px;
+      padding: 6px 8px;
       font-size: 0.75rem;
       line-height: 1.15;
     }
 
-    .detail-card,
+    .tag--fit { background: var(--accent-soft); border-color: #9bdcca; color: #075d49; }
+    .tag--time { background: var(--warning-soft); border-color: #ebc784; color: #724402; }
+
+    .support-card__action {
+      border-left: 1px solid #e0e4e2;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .fit-label {
+      color: var(--accent-dark);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-align: center;
+      min-height: 18px;
+    }
+
+    .empty-state {
+      display: none;
+      border: 1px dashed #aeb7b3;
+      background: white;
+      padding: 34px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .detail-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 350px;
+      gap: 25px;
+      align-items: start;
+    }
+
+    .detail-main,
+    .detail-side,
     .booking-card,
     .confirmation-card {
-      box-shadow: 0 3px 12px rgba(22, 33, 29, 0.04);
+      background: white;
+      border: 1px solid var(--line);
     }
 
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
+    .detail-main { padding: 28px; }
+
+    .provider-heading {
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
     }
 
-    @media (max-width: 1060px) {
-      .login-layout { grid-template-columns: 1fr; }
-      .login-brand { min-height: 420px; }
-      .portal-grid, .home-grid, .detail-grid, .booking-grid { grid-template-columns: 1fr; }
-      .portal-art { border-right: 0; border-bottom: 1px solid #cbd0ce; min-height: 270px; }
-      .service-card { grid-template-columns: 1fr; }
-      .service-facts { border-left: 0; border-top: 1px solid #e0e4e2; padding: 15px 0 0; }
+    .provider-avatar {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #dce9e4;
+      color: #1b4e41;
+      font-size: 1.35rem;
+      font-weight: 700;
     }
 
-    @media (max-width: 720px) {
-      .app-shell { display: block; }
-      .sidebar { position: static; height: auto; }
-      .workspace { margin-left: 0; }
-      .nav-list { grid-template-columns: 1fr 1fr; }
-      .sidebar-footer { display: none; }
-      .topbar {
-        height: auto;
-        min-height: 165px;
-        padding: 28px 22px 28px 118px;
+    .provider-heading h3 { margin: 0; font-size: 1.45rem; }
+    .provider-heading p { margin: 6px 0 0; color: var(--muted); }
+
+    .detail-section { padding-top: 22px; }
+    .detail-section h4 { margin: 0 0 10px; font-size: 1rem; }
+    .detail-section p { margin: 0; line-height: 1.55; color: #45504b; }
+    .detail-section ul { margin: 9px 0 0; padding-left: 20px; line-height: 1.65; color: #45504b; }
+
+    .detail-side { padding: 23px; position: sticky; top: 25px; }
+    .detail-side h3 { margin: 0 0 15px; font-size: 1.05rem; }
+
+    .fact-list { display: grid; gap: 13px; margin-bottom: 20px; }
+    .fact {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 8px;
+      font-size: 0.85rem;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e6e9e8;
+    }
+    .fact span { color: var(--muted); }
+    .fact strong { font-weight: 700; }
+
+    .privacy-note {
+      border-left: 4px solid var(--accent-dark);
+      background: var(--accent-soft);
+      padding: 13px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      margin-bottom: 17px;
+    }
+
+    .booking-card {
+      max-width: 950px;
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+    }
+
+    .booking-form { padding: 28px; }
+    .booking-summary {
+      background: var(--cream);
+      border-left: 1px solid var(--cream-deep);
+      padding: 28px;
+    }
+
+    .booking-summary h3 { margin: 0 0 17px; }
+    .summary-line { margin-bottom: 16px; }
+    .summary-line span { display: block; color: #6e6655; font-size: 0.76rem; margin-bottom: 4px; }
+    .summary-line strong { font-size: 0.95rem; }
+
+    .form-actions { display: flex; gap: 10px; margin-top: 21px; }
+
+    .confirmation-card {
+      max-width: 920px;
+      padding: 32px;
+      border-top: 6px solid var(--success);
+    }
+
+    .success-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--success);
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin-bottom: 17px;
+    }
+
+    .confirmation-card h3 { font-size: 1.55rem; margin: 0 0 8px; }
+    .confirmation-card > p { color: var(--muted); line-height: 1.55; }
+
+    .confirmation-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .confirmation-item {
+      background: #f6f7f6;
+      border: 1px solid var(--line);
+      padding: 15px;
+    }
+
+    .confirmation-item span { display: block; color: var(--muted); font-size: 0.74rem; margin-bottom: 5px; }
+    .confirmation-item strong { font-size: 0.9rem; }
+
+    .next-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .next-step {
+      border: 1px solid var(--line);
+      padding: 17px;
+    }
+
+    .next-step h4 { margin: 0 0 7px; }
+    .next-step p { margin: 0; color: var(--muted); line-height: 1.5; font-size: 0.88rem; }
+
+    .toast {
+      position: fixed;
+      right: 26px;
+      bottom: 25px;
+      max-width: 370px;
+      padding: 14px 17px;
+      color: white;
+      background: #202423;
+      box-shadow: var(--shadow);
+      transform: translateY(130%);
+      opacity: 0;
+      transition: 220ms ease;
+      z-index: 60;
+      border-left: 4px solid var(--accent);
+      line-height: 1.4;
+      font-size: 0.86rem;
+    }
+
+    .toast.is-visible { transform: none; opacity: 1; }
+
+    .records-list,
+    .messages-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .record-card,
+    .message-card,
+    .empty-panel {
+      background: white;
+      border: 1px solid var(--line);
+      padding: 22px;
+    }
+
+    .record-card,
+    .message-card {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .record-card h3,
+    .message-card h3 {
+      margin: 0 0 5px;
+      font-size: 1.1rem;
+    }
+
+    .record-card p,
+    .message-card p,
+    .empty-panel p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .record-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .record-actions {
+      display: flex;
+      gap: 9px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: var(--accent-soft);
+      color: #075d49;
+      border: 1px solid #83cbb8;
+    }
+
+    .status-badge.is-cancelled {
+      background: #f0f1f0;
+      color: #4d5652;
+      border-color: #aeb6b2;
+    }
+
+    .message-card.is-unread {
+      border-left: 5px solid var(--accent-dark);
+    }
+
+    .message-time {
+      display: block;
+      color: var(--muted);
+      font-size: 0.78rem;
+      margin-top: 7px;
+    }
+
+    .record-card .button,
+    .message-card .button { white-space: nowrap; }
+
+    .danger-button {
+      background: white;
+      color: #7a251d;
+      border-color: #9f4137;
+    }
+
+    .confirmation-card.is-cancelled {
+      border-top-color: #67716d;
+    }
+
+    .confirmation-card.is-cancelled .success-icon {
+      background: #eef0ef;
+      color: #48514d;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(10, 16, 14, 0.72);
+    }
+
+    .dialog {
+      width: min(520px, 100%);
+      background: white;
+      color: var(--ink);
+      border: 3px solid #202323;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+      padding: 28px;
+    }
+
+    .dialog h2 { margin: 0 0 10px; font-size: 1.45rem; }
+    .dialog p { margin: 0; color: var(--muted); line-height: 1.6; }
+    .dialog .form-actions { justify-content: flex-end; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
-      .seal { width: 82px; height: 82px; left: 20px; bottom: 24px; border-width: 4px; }
-      .seal .logo-mark { width: 70px; height: 70px; }
-      .page-heading { align-items: flex-start; }
-      .page-heading { flex-direction: column; }
-      .search-row, .filters, .boundary-grid, .dashboard-lower { grid-template-columns: 1fr; }
-      .login-panel { padding: 24px; }
-      .login-brand { padding: 48px 28px; }
-      .content { padding: 54px 16px 45px; }
+    }
+
+    @media (prefers-contrast: more) {
+      :root {
+        --line: #737b77;
+        --muted: #3f4744;
+        --accent-dark: #075f4e;
+      }
+      .button, .nav-button, .tag, .category-chip { border-width: 2px; }
+    }
+
+    @media (forced-colors: active) {
+      .nav-button.is-active,
+      .portal-link--primary,
+      .support-card.is-best,
+      .message-card.is-unread { forced-color-adjust: auto; border: 3px solid Highlight; }
+    }
+
+    @media (max-width: 1000px) {
+      :root { --sidebar: 238px; }
+      .top-banner { padding-left: 175px; }
+      .seal { left: 28px; }
+      .content { padding-left: 35px; padding-right: 35px; }
+      .filters { grid-template-columns: 1fr 1fr; }
+      .portal-grid, .detail-layout, .booking-card { grid-template-columns: 1fr; }
+      .portal-art { border-right: 0; border-bottom: 1px solid #cbd0ce; min-height: 270px; }
+      .portal-art svg { max-height: 240px; }
+      .detail-side { position: static; }
+      .booking-summary { border-left: 0; border-top: 1px solid var(--cream-deep); }
+    }
+
+    @media (max-width: 760px) {
+      .login-screen { grid-template-columns: 1fr; }
+      .login-brand { min-height: auto; padding: 34px 28px; }
+      .login-brand h1 { font-size: 2.25rem; }
+      .login-brand__foot { display: none; }
+      .login-panel { padding: 24px 16px; }
+      .login-card { padding: 29px 24px; }
+      .sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+      .sidebar-brand, .profile-strip, .sidebar-foot { display: none; }
+      .nav-list {
+        display: flex;
+        overflow-x: auto;
+        padding: 9px;
+      }
+      .nav-button { min-width: 154px; min-height: 45px; }
+      .main-shell { margin-left: 0; }
+      .top-banner { height: 145px; padding: 25px 20px 0 110px; }
+      .seal { width: 90px; height: 90px; left: 13px; bottom: -35px; border-width: 4px; }
+      .seal .logo-mark { width: 76px; height: 76px; }
+      .top-banner h1 { font-size: 1.25rem; }
+      .content { padding: 65px 16px 45px; }
+      .page-heading, .results-bar { align-items: flex-start; flex-direction: column; }
+      .dashboard-lower, .confirmation-grid, .next-steps, .record-card, .message-card { grid-template-columns: 1fr; }
+      .search-row { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .support-card { grid-template-columns: 1fr; }
+      .support-card__action { border-left: 0; border-top: 1px solid #e0e4e2; padding-left: 0; padding-top: 15px; }
+      .record-actions { justify-content: flex-start; }
     }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  <div id="status-region" class="sr-only" aria-live="polite"></div>
+  <a class="skip-link" id="skip-link" href="#login-main">Skip to main content</a>
   <svg class="sr-only" aria-hidden="true">
     <symbol id="nmsi-logo" viewBox="0 0 180 180">
       <circle cx="90" cy="90" r="85" fill="#0a4b3d"/>
@@ -820,384 +1089,965 @@
     </symbol>
   </svg>
 
-  <section id="screen-login" class="screen" aria-labelledby="login-heading">
-    <div class="login-layout">
-      <div class="login-brand">
-        <div class="login-brand__top">
-          <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
-          <h1>North-western Medical and Science Institute</h1>
-          <p>A student portal for learning, campus services and practical support. This prototype focuses on helping students find the right source of help without needing to know the university structure first.</p>
-        </div>
-        <div class="login-brand__foot">NMSI student systems · Prototype environment</div>
+  <section id="login-screen" class="login-screen" aria-labelledby="login-heading">
+    <div class="login-brand">
+      <div class="login-brand__top">
+        <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
+        <h1>North-western Medical and Science Institute</h1>
+        <p>A student portal for learning, campus services and practical support. This prototype focuses on helping students find the right source of help without needing to know the university structure first.</p>
       </div>
-      <div class="login-panel">
-        <form class="login-card" onsubmit="logIn(event)">
-          <p class="eyebrow">Student portal</p>
-          <h2 id="login-heading" tabindex="-1">Sign in</h2>
-          <p class="muted">Use any details for this prototype. No username or password is stored.</p>
-          <div class="field">
-            <label for="student-id">Student ID</label>
-            <input id="student-id" name="student-id" type="text" autocomplete="username" placeholder="Enter your student ID">
-          </div>
-          <div class="field">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password">
-          </div>
-          <button id="login-submit" class="button button--primary" type="submit">Log in</button>
-          <p class="prototype-note">Prototype login: both fields may be left blank.</p>
-        </form>
-      </div>
+      <div class="login-brand__foot">NMSI student systems · Prototype environment</div>
     </div>
+
+    <main class="login-panel" id="login-main">
+      <div>
+        <div class="login-accessibility">
+        </div>
+      <form class="login-card" onsubmit="handleLogin(event)" aria-describedby="login-description prototype-login-note">
+        <p class="eyebrow">Student portal</p>
+        <h2 id="login-heading" tabindex="-1">Sign in</h2>
+        <p class="login-card__intro" id="login-description">Use any details for this prototype. No username or password is stored.</p>
+        <div class="field">
+          <label for="student-id">Student ID</label>
+          <input id="student-id" type="text" autocomplete="username" placeholder="Enter your student ID" aria-label="Student ID">
+        </div>
+        <div class="field">
+          <label for="student-password">Password</label>
+          <input id="student-password" type="password" autocomplete="current-password" placeholder="Enter your password" aria-label="Password">
+        </div>
+        <button class="button button--accent button--full" type="submit">Log in</button>
+        <p class="prototype-note" id="prototype-login-note">Prototype login: both fields may be left blank.</p>
+      </form>
+      </div>
+    </main>
   </section>
 
-  <section id="screen-app" class="screen" hidden>
-    <div class="app-shell">
-      <aside class="sidebar" aria-label="Student portal navigation">
-        <div class="sidebar-brand">
-          <div class="sidebar-brand__abbr">NMSI</div>
-          <div class="sidebar-brand__name">North-western Medical and Science Institute</div>
+  <div id="portal" class="portal" aria-hidden="true">
+    <aside class="sidebar" aria-label="Student portal navigation">
+      <div class="sidebar-brand">
+        <div class="sidebar-brand__abbr">NMSI</div>
+        <div class="sidebar-brand__name">North-western Medical and Science Institute</div>
+      </div>
+      <div class="profile-strip">
+        <div class="avatar">ST</div>
+        <div><strong>Student account</strong><span>Prototype session</span></div>
+      </div>
+      <nav aria-label="Primary student portal navigation">
+        <ul class="nav-list">
+          <li><button class="nav-button is-active" type="button" data-nav="dashboard" onclick="showScreen('dashboard')" aria-current="page"><span class="nav-icon" aria-hidden="true">H</span>Home</button></li>
+          <li><button class="nav-button" type="button" data-nav="support" onclick="showScreen('support')"><span class="nav-icon" aria-hidden="true">?</span>Support Navigator</button></li>
+          <li><button class="nav-button" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span class="nav-icon" aria-hidden="true">C</span>Course area</button></li>
+        </ul>
+      </nav>
+      <div class="sidebar-foot">
+        <button class="sign-out" type="button" onclick="signOut()"><span class="nav-icon" aria-hidden="true">↩</span>Sign out</button>
+        <div class="legal">Privacy · Terms · Accessibility</div>
+      </div>
+    </aside>
+
+    <main class="main-shell" id="main-content" tabindex="-1">
+      <header class="top-banner">
+        <div class="seal">
+          <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
         </div>
-        <nav aria-label="Primary navigation">
-          <ul class="nav-list">
-            <li><button class="nav-button" type="button" data-nav="home" onclick="showView('home')"><span class="nav-icon" aria-hidden="true">H</span>Home</button></li>
-            <li><button class="nav-button" type="button" data-nav="support" onclick="showView('support')"><span class="nav-icon" aria-hidden="true">S</span>Support Navigator</button></li>
-          </ul>
-        </nav>
-        <div class="sidebar-footer">Privacy · Terms · Accessibility</div>
-      </aside>
-
-      <div class="workspace">
-        <header class="topbar">
-          <div class="seal">
-            <svg class="logo-mark" role="img" aria-label="NMSI dimensional monogram"><use href="#nmsi-logo"></use></svg>
+        <div class="top-banner__meta">
+          <div>
+            <h1 id="banner-title">Student portal</h1>
+            <p id="banner-subtitle">North-western Medical and Science Institute</p>
           </div>
-          <div><strong>North-western Medical and Science Institute</strong><div class="muted">Student services</div></div>
-          <button class="sign-out" type="button" onclick="signOut()">Sign out</button>
-        </header>
+        </div>
+      </header>
 
-        <main id="main-content" class="content" tabindex="-1">
-          <section id="view-home" class="view" aria-labelledby="home-heading">
-            <div class="page-heading">
-              <div><p class="eyebrow">Home</p><h2 id="home-heading" tabindex="-1">Student services</h2><p>Open the tools you use most. Support Navigator is highlighted as the tested path.</p></div>
+      <div class="content">
+        <section id="screen-dashboard" class="screen is-active" aria-labelledby="dashboard-heading">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Home</p>
+              <h2 id="dashboard-heading" tabindex="-1">Student services</h2>
+              <p>Open the tools you use most. Support Navigator is highlighted because it is the tested path in this prototype.</p>
             </div>
-            <div class="portal-grid">
-              <div class="portal-art" aria-hidden="true">
-                <svg viewBox="0 0 620 390">
-                  <ellipse cx="305" cy="330" rx="215" ry="24" fill="#d7c49b" opacity="0.55"/>
-                  <path d="M154 226 C116 192 130 134 183 129 C203 75 277 66 310 112 C359 91 415 127 415 179 C468 190 474 263 427 286 L190 286 C141 281 118 247 154 226Z" fill="#ffffff" stroke="#97b2b7" stroke-width="12"/>
-                  <path d="M221 184 L306 137 L394 183 L394 280 L221 280Z" fill="#eef2ef"/>
-                  <path d="M221 184 L306 228 L394 183 L306 137Z" fill="#cbd4d0"/>
-                  <path d="M238 192 L306 226 L306 307 L238 270Z" fill="#0b856b"/>
-                  <path d="M306 226 L380 187 L380 270 L306 307Z" fill="#0fd2a3"/>
-                  <rect x="263" y="218" width="34" height="24" fill="#ffffff"/>
-                  <circle cx="250" cy="257" r="20" fill="#f2cda4"/>
-                  <path d="M229 310 C230 274 269 271 275 310Z" fill="#27302d"/>
-                  <rect x="210" y="293" width="83" height="48" rx="4" fill="#ffffff" stroke="#1f2825" stroke-width="3"/>
-                  <line x1="245" y1="307" x2="280" y2="307" stroke="#0b856b" stroke-width="5"/>
-                  <line x1="245" y1="319" x2="274" y2="319" stroke="#aab3af" stroke-width="4"/>
-                </svg>
-              </div>
-              <div class="portal-links">
-                <button id="open-support" class="portal-link portal-link--primary" type="button" onclick="showView('support')" aria-label="Open Student Support Navigator">
-                  <span><strong>Student Support Navigator</strong><small>Describe your issue, compare suitable sources and book a conversation.</small></span>
-                  <span class="arrow" aria-hidden="true">→</span>
-                </button>
-                <button class="portal-link" type="button" onclick="announce('Learning modules are outside this prototype.')"><span><strong>Learning modules</strong><small>View course materials.</small></span><span aria-hidden="true">›</span></button>
-                <button class="portal-link" type="button" onclick="announce('University email is outside this prototype.')"><span><strong>University email</strong><small>Open your inbox.</small></span><span aria-hidden="true">›</span></button>
-                <button class="portal-link" type="button" onclick="announce('My timetable is outside this prototype.')"><span><strong>My timetable</strong><small>View teaching activity.</small></span><span aria-hidden="true">›</span></button>
-              </div>
-            </div>
-            <div class="dashboard-lower">
-              <div class="info-panel">
-                <h3>Not sure where your issue belongs?</h3>
-                <p>Start with the words you would normally use. The navigator compares service scope, access and expected response time.</p>
-              </div>
-              <div class="info-panel">
-                <h3>Urgent or immediate risk?</h3>
-                <p>Emergency help is not simulated here. In a live portal, urgent and crisis routes would always remain visible.</p>
-              </div>
-            </div>
-          </section>
+          </div>
 
-          <section id="view-support" class="view" aria-labelledby="support-heading" hidden>
-            <div class="page-heading">
-              <div><p class="eyebrow">Student services</p><h2 id="support-heading" tabindex="-1">Student Support Navigator</h2><p>Search in your own words, then compare what each source handles, who provides it and how easily you can access it.</p></div>
+          <div class="portal-grid">
+            <div class="portal-art" aria-hidden="true">
+              <svg viewBox="0 0 620 390">
+                <ellipse cx="305" cy="330" rx="215" ry="24" fill="#d7c49b" opacity="0.55"/>
+                <path d="M154 226 C116 192 130 134 183 129 C203 75 277 66 310 112 C359 91 415 127 415 179 C468 190 474 263 427 286 L190 286 C141 281 118 247 154 226Z" fill="#ffffff" stroke="#97b2b7" stroke-width="12"/>
+                <path d="M221 184 L306 137 L394 183 L394 280 L221 280Z" fill="#eef2ef"/>
+                <path d="M221 184 L306 228 L394 183 L306 137Z" fill="#cbd4d0"/>
+                <path d="M238 192 L306 226 L306 307 L238 270Z" fill="#0b856b"/>
+                <path d="M306 226 L380 187 L380 270 L306 307Z" fill="#0fd2a3"/>
+                <rect x="263" y="218" width="34" height="24" fill="#ffffff"/>
+                <circle cx="250" cy="257" r="20" fill="#f2cda4"/>
+                <path d="M229 310 C230 274 269 271 275 310Z" fill="#27302d"/>
+                <rect x="210" y="293" width="83" height="48" rx="4" fill="#ffffff" stroke="#1f2825" stroke-width="3"/>
+                <line x1="245" y1="307" x2="280" y2="307" stroke="#0b856b" stroke-width="5"/>
+                <line x1="245" y1="319" x2="274" y2="319" stroke="#aab3af" stroke-width="4"/>
+              </svg>
             </div>
-            <form class="search-panel" onsubmit="applySearch(event)">
-              <div class="search-row">
-                <div class="search-box">
-                  <label class="sr-only" for="support-query">What do you need help with?</label>
-                  <input id="support-query" type="search" placeholder="For example: falling behind and feeling stressed">
-                </div>
-                <button class="button button--primary" type="submit">Search support</button>
+            <div class="portal-links">
+              <button class="portal-link portal-link--primary" type="button" onclick="showScreen('support')" aria-label="Open Student Support Navigator">
+                <span><strong>Student Support Navigator</strong><small>Describe your issue, compare suitable sources and book a conversation.</small></span>
+                <span class="arrow" aria-hidden="true">→</span>
+              </button>
+              <button class="portal-link" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span>Course area</span><span aria-hidden="true">›</span></button>
+            </div>
+          </div>
+
+          <div class="dashboard-lower">
+            <div class="info-panel">
+              <h3>Not sure where your issue belongs?</h3>
+              <p>Start with the words you would normally use. The navigator compares service scope, access and expected response time.</p>
+            </div>
+            <div class="info-panel">
+              <h3>Urgent or immediate risk?</h3>
+              <p>Emergency help is not simulated here. In a live portal, urgent and crisis routes would always remain visible.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="screen-support" class="screen" aria-labelledby="support-heading" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Student services</p>
+              <h2 id="support-heading" tabindex="-1">Student Support Navigator</h2>
+              <p>Search in your own words, then compare what each source handles, how quickly they respond and how you can reach them.</p>
+            </div>
+          </div>
+
+          <div class="search-panel">
+            <div class="search-row">
+              <div class="search-box">
+                <label class="sr-only" for="support-search">Describe what you need help with</label>
+                <input id="support-search" type="search" placeholder="Try “extension”, “module choice” or “technical access”" oninput="applyFilters()">
               </div>
-              <div class="filters">
-                <div class="filter-field">
-                  <label for="filter-topic">Support type</label>
-                  <select id="filter-topic">
-                    <option value="all">All types</option>
-                    <option value="academic">Academic progress</option>
-                    <option value="wellbeing">Emotional wellbeing</option>
-                    <option value="programme">Programme decisions</option>
-                  </select>
+              <button class="button button--accent" type="button" onclick="applyFilters()">Search support</button>
+            </div>
+
+            <div class="filters" id="filters">
+              <div class="filter-field">
+                <label for="issue-filter">Issue category</label>
+                <select id="issue-filter" onchange="applyFilters()">
+                  <option value="all">All categories</option>
+                  <option value="academic">Academic work</option>
+                  <option value="programme">Programme choices</option>
+                  <option value="wellbeing">Wellbeing and practical support</option>
+                  <option value="technical">Technical access</option>
+                  <option value="funding">Fees and funding</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label for="mode-filter">Access method</label>
+                <select id="mode-filter" onchange="applyFilters()">
+                  <option value="all">Any method</option>
+                  <option value="online">Online</option>
+                  <option value="in-person">In person</option>
+                  <option value="chat">Live chat</option>
+                  <option value="email">Email</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label for="response-filter">Response time</label>
+                <select id="response-filter" onchange="applyFilters()">
+                  <option value="all">Any response time</option>
+                  <option value="today">Today</option>
+                  <option value="one-day">Within 1 day</option>
+                  <option value="two-days">Within 2 days</option>
+                </select>
+              </div>
+              <div class="filter-field">
+                <label for="sort-filter">Sort results</label>
+                <select id="sort-filter" onchange="applyFilters()">
+                  <option value="fit">Best task fit</option>
+                  <option value="distance">Nearest first</option>
+                  <option value="response">Fastest response</option>
+                  <option value="rating">Highest rating</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="category-row" role="group" aria-label="Quick support categories">
+              <button class="category-chip is-selected" type="button" data-category="all" onclick="chooseCategory('all')" aria-pressed="true">All support</button>
+              <button class="category-chip" type="button" data-category="academic" onclick="chooseCategory('academic')" aria-pressed="false">Deadlines and study</button>
+              <button class="category-chip" type="button" data-category="programme" onclick="chooseCategory('programme')" aria-pressed="false">Programme choices</button>
+              <button class="category-chip" type="button" data-category="wellbeing" onclick="chooseCategory('wellbeing')" aria-pressed="false">Personal support</button>
+              <button class="category-chip" type="button" data-category="technical" onclick="chooseCategory('technical')" aria-pressed="false">Digital access</button>
+            </div>
+          </div>
+
+          <div class="results-bar">
+            <h3 id="result-heading" aria-live="polite">Suggested support options</h3>
+            <span>Suggestions prioritise service fit and availability; ratings are secondary.</span>
+          </div>
+          <div id="support-list" class="support-list" aria-labelledby="result-heading" aria-live="polite"></div>
+          <div id="empty-state" class="empty-state">
+            <strong>No exact match yet.</strong>
+            <p>Try a broader phrase or reset one of the filters.</p>
+            <button class="button button--outline" onclick="resetFilters()">Reset filters</button>
+          </div>
+        </section>
+
+        <section id="screen-detail" class="screen" aria-labelledby="detail-title" hidden>
+          <button class="back-link" onclick="showScreen('support')">← Back to support options</button>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Support option</p>
+              <h2 id="detail-title" tabindex="-1">Academic Skills &amp; Extensions</h2>
+              <p id="detail-intro">Check service scope and access details before choosing this source.</p>
+            </div>
+          </div>
+
+          <div class="detail-layout">
+            <article class="detail-main">
+              <div class="provider-heading">
+                <div class="provider-avatar" id="detail-initials" aria-hidden="true">MC</div>
+                <div>
+                  <h3 id="detail-provider">Dr Maya Chen</h3>
+                  <p id="detail-role">Academic Skills Adviser</p>
+                  <div id="detail-tags" class="tag-row"></div>
                 </div>
-                <div class="filter-field">
-                  <label for="filter-access">Access</label>
-                  <select id="filter-access">
-                    <option value="all">Any access</option>
-                    <option value="online">Online available</option>
-                    <option value="campus">On campus</option>
-                  </select>
-                </div>
+              </div>
+              <section class="detail-section">
+                <h4>What this service can help with</h4>
+                <ul id="detail-scope"></ul>
+              </section>
+              <section class="detail-section">
+                <h4>Before you contact them</h4>
+                <p id="detail-preparation"></p>
+              </section>
+              <section class="detail-section">
+                <h4>When another source may be better</h4>
+                <p id="detail-not-for"></p>
+              </section>
+            </article>
+
+            <aside class="detail-side">
+              <h3>Practical details</h3>
+              <div class="fact-list">
+                <div class="fact"><span>Provider</span><strong id="fact-provider">Dr Maya Chen</strong></div>
+                <div class="fact"><span>Location</span><strong id="fact-location">0.2 km · Student Services, Room 1.14</strong></div>
+                <div class="fact"><span>Access</span><strong id="fact-mode">Online or in person</strong></div>
+                <div class="fact"><span>Response</span><strong id="fact-response">Usually within 1 day</strong></div>
+                <div class="fact"><span>Rating</span><strong id="fact-rating">4.8 / 5</strong></div>
+              </div>
+              <div class="privacy-note">Your appointment note is visible only to the selected support team. Add only the detail needed to prepare.</div>
+              <button class="button button--accent button--full" onclick="openBooking()">Book a conversation</button>
+            </aside>
+          </div>
+        </section>
+
+        <section id="screen-booking" class="screen" aria-labelledby="booking-heading" hidden>
+          <button class="back-link" onclick="showScreen('detail')">← Back to service details</button>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Prototype booking</p>
+              <h2 id="booking-heading" tabindex="-1">Choose an appointment</h2>
+              <p>Select a time and access method. No real appointment or personal information is submitted.</p>
+            </div>
+          </div>
+
+          <div class="booking-card">
+            <form class="booking-form" onsubmit="confirmAppointment(event)">
+              <div class="field">
+                <label for="appointment-date">Date</label>
+                <select id="appointment-date">
+                  <option>Friday 24 July 2026</option>
+                  <option>Monday 27 July 2026</option>
+                  <option>Tuesday 28 July 2026</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="appointment-time">Time</label>
+                <select id="appointment-time">
+                  <option>10:30–10:50</option>
+                  <option>13:00–13:20</option>
+                  <option>15:10–15:30</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="appointment-mode">Access method</label>
+                <select id="appointment-mode">
+                  <option>Online meeting</option>
+                  <option>In person</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="issue-summary">Short summary for the adviser <span style="font-weight:400;color:#64706c;">(optional)</span></label>
+                <textarea id="issue-summary" placeholder="For example: I am unsure whether my extension request belongs with my lecturer or student support."></textarea>
+              </div>
+              <div class="form-actions">
+                <button class="button button--accent" type="submit">Confirm appointment</button>
+                <button class="button button--outline" type="button" onclick="showScreen('detail')">Back</button>
               </div>
             </form>
-            <div class="results-meta results-bar">
-              <h3 id="results-heading">Suggested sources</h3>
-              <span id="result-count" class="muted">3 services</span>
-            </div>
-            <div id="service-list" class="service-list" aria-labelledby="results-heading"></div>
-          </section>
+            <aside class="booking-summary">
+              <p class="eyebrow">Selected support</p>
+              <h3 id="booking-service">Academic Skills &amp; Extensions</h3>
+              <div class="summary-line"><span>Provider</span><strong id="booking-provider">Dr Maya Chen</strong></div>
+              <div class="summary-line"><span>Best for</span><strong id="booking-category">Deadlines, extensions and study planning</strong></div>
+              <div class="summary-line"><span>Expected response</span><strong id="booking-response">Usually within 1 day</strong></div>
+              <div class="privacy-note">If this team cannot resolve your issue, your summary can be passed to the next suitable team so you do not have to start again.</div>
+            </aside>
+          </div>
+        </section>
 
-          <section id="view-detail" class="view" aria-labelledby="detail-heading" hidden>
-            <div class="page-heading">
-              <div><p class="eyebrow">Compare service</p><h2 id="detail-heading" tabindex="-1">Academic Skills Hub</h2><p>Check the service boundary before choosing a time.</p></div>
+        <section id="screen-confirmation" class="screen" aria-labelledby="confirmation-heading" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Request status</p>
+              <h2 id="confirmation-heading" tabindex="-1">Appointment confirmed</h2>
+              <p>The prototype shows clear routing, response expectations and a fallback path after submission.</p>
             </div>
-            <div class="detail-grid">
-              <article class="detail-card">
-                <h3>What this source can help with</h3>
-                <div class="boundary-grid">
-                  <div class="boundary-box">
-                    <h4>Good fit</h4>
-                    <ul><li>Planning assignments</li><li>Study routines and workload</li><li>Academic writing strategies</li></ul>
-                  </div>
-                  <div class="boundary-box boundary-box--not">
-                    <h4>Usually handled elsewhere</h4>
-                    <ul><li>Clinical mental-health support</li><li>Formal programme changes</li><li>Emergency or crisis support</li></ul>
-                  </div>
-                </div>
-                <h3>Who you will meet</h3>
-                <p>Learning advisers who specialise in study planning, academic writing and building manageable work routines.</p>
-                <div class="tag-row"><span class="tag">Academic planning</span><span class="tag">Workload</span><span class="tag">Study strategies</span></div>
-              </article>
-              <aside class="detail-card">
-                <h3>Practical details</h3>
-                <dl class="summary-list">
-                  <div><dt>Distance</dt><dd>0.3 km · Learning Centre</dd></div>
-                  <div><dt>Access</dt><dd>In person or video call</dd></div>
-                  <div><dt>Response</dt><dd>Usually within 2 working days</dd></div>
-                  <div><dt>Provider</dt><dd>Learning adviser</dd></div>
-                  <div><dt>Rating</dt><dd>4.7 / 5 from 86 student reviews</dd></div>
-                </dl>
-                <div class="button-row">
-                  <button id="choose-source" class="button button--primary" type="button" onclick="showView('booking')">Choose this source</button>
-                  <button class="button button--secondary" type="button" onclick="showView('support')">Back to results</button>
-                </div>
-              </aside>
-            </div>
-          </section>
+          </div>
 
-          <section id="view-booking" class="view" aria-labelledby="booking-heading" hidden>
-            <div class="page-heading">
-              <div><p class="eyebrow">Book support</p><h2 id="booking-heading" tabindex="-1">Choose an appointment</h2><p>This booking is only stored for the current prototype session.</p></div>
+          <div class="confirmation-card" id="confirmation-card">
+            <div class="success-icon" id="confirmation-icon" aria-hidden="true">✓</div>
+            <h3 id="confirmation-title">Your request went to Academic Skills &amp; Extensions</h3>
+            <p id="confirmation-description">A confirmation has been created for this prototype session. Nothing has been sent to a live university system.</p>
+            <div class="confirmation-grid">
+              <div class="confirmation-item"><span id="confirmation-appointment-label">Appointment</span><strong id="confirmation-time">Friday 24 July 2026 · 10:30–10:50</strong></div>
+              <div class="confirmation-item"><span>Access</span><strong id="confirmation-mode">Online meeting</strong></div>
+              <div class="confirmation-item"><span id="confirmation-response-label">Expected reply</span><strong id="confirmation-response">Usually within 1 day</strong></div>
             </div>
-            <div class="booking-grid">
-              <form class="booking-card" onsubmit="confirmBooking(event)">
-                <h3>Appointment details</h3>
-                <div class="field">
-                  <label for="appointment-mode">Access method</label>
-                  <select id="appointment-mode"><option>In person</option><option>Video call</option></select>
-                </div>
-                <div class="field">
-                  <label for="appointment-time">Available time</label>
-                  <select id="appointment-time"><option>Monday 27 July, 10:30</option><option>Monday 27 July, 14:00</option><option>Tuesday 28 July, 09:30</option></select>
-                </div>
-                <div class="field">
-                  <label for="appointment-note">What would you like the adviser to know? <span class="muted">(optional)</span></label>
-                  <textarea id="appointment-note" rows="4" placeholder="I am behind on two assignments and need a manageable plan."></textarea>
-                </div>
-                <button id="confirm-booking" class="button button--primary" type="submit">Confirm booking</button>
-              </form>
-              <aside class="booking-card">
-                <h3>Selected source</h3>
-                <dl class="summary-list">
-                  <div><dt>Service</dt><dd>Academic Skills Hub</dd></div>
-                  <div><dt>Provider</dt><dd>Learning adviser</dd></div>
-                  <div><dt>Location</dt><dd>Learning Centre · 0.3 km</dd></div>
-                </dl>
-                <div class="button-row"><button class="button button--secondary" type="button" onclick="showView('detail')">Review service details</button></div>
-              </aside>
-            </div>
-          </section>
-
-          <section id="view-confirmation" class="view" aria-labelledby="confirmation-heading" hidden>
-            <div class="page-heading">
-              <div><p class="eyebrow">Booking complete</p><h2 id="confirmation-heading" tabindex="-1">Your appointment is confirmed</h2><p>The prototype confirms the selected source and route, but does not yet provide an appointment-management area.</p></div>
-            </div>
-            <article class="confirmation-card">
-              <div class="status-banner" role="status">Booked with Academic Skills Hub</div>
-              <h3>Confirmation</h3>
-              <dl class="summary-list">
-                <div><dt>Service</dt><dd>Academic Skills Hub</dd></div>
-                <div><dt>Time</dt><dd id="confirmation-time">Monday 27 July, 10:30</dd></div>
-                <div><dt>Access</dt><dd id="confirmation-mode">In person</dd></div>
-                <div><dt>Location</dt><dd>Learning Centre</dd></div>
-              </dl>
-              <p class="muted">This early prototype does not include appointment history, cancellation or messages.</p>
-              <div class="button-row">
-                <button class="button button--primary" type="button" onclick="showView('support')">Find another source</button>
-                <button class="button button--secondary" type="button" onclick="showView('home')">Return home</button>
+            <div class="next-steps" id="confirmation-next-steps">
+              <div class="next-step">
+                <h4>What happens next</h4>
+                <p>The selected team reviews your summary and sends joining details. The request status would update here in a live service.</p>
               </div>
-            </article>
-          </section>
-        </main>
+              <div class="next-step">
+                <h4>If this is not the right team</h4>
+                <p>Your summary can be redirected with the request, and the interface will name the next suitable source instead of restarting the search.</p>
+              </div>
+            </div>
+            <div class="form-actions">
+            </div>
+          </div>
+        </section>
+
       </div>
-    </div>
-  </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="screen-announcer" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
   <script>
-    const services = [
+    const supportOptions = [
       {
-        id: "academic",
-        name: "Academic Skills Hub",
-        description: "Practical help with workload, study planning, writing and learning strategies.",
-        topics: ["academic"],
-        access: ["online", "campus"],
-        tags: ["Academic planning", "Workload", "Study strategies"],
-        provider: "Learning adviser",
-        distance: "0.3 km",
-        rating: "4.7 / 5",
-        response: "2 working days"
+        id: 1,
+        title: "Academic Skills & Extensions",
+        provider: "Dr Maya Chen",
+        role: "Academic Skills Adviser",
+        initials: "MC",
+        category: "academic",
+        keywords: "extension deadline assessment study planning essay academic lecturer tutor",
+        fit: "Deadlines, extensions and study planning",
+        description: "Clarifies extension routes, study planning and the evidence or form needed before an academic request.",
+        distance: 0.2,
+        location: "Student Services, Room 1.14",
+        rating: 4.8,
+        responseKey: "one-day",
+        responseRank: 2,
+        response: "Usually within 1 day",
+        modes: ["online", "in-person", "email"],
+        modeLabel: "Online or in person",
+        scope: ["Extension and deadline questions", "Study planning and academic skills", "Which form or evidence an academic request needs"],
+        preparation: "Bring the module code, deadline and any message already received from your lecturer. You do not need to know the formal policy name.",
+        notFor: "Use Programme Advice for degree structure or module-choice questions. Use urgent wellbeing support when immediate personal safety is involved."
       },
       {
-        id: "wellbeing",
-        name: "Student Wellbeing Service",
-        description: "Confidential support when stress, anxiety or personal circumstances affect university life.",
-        topics: ["wellbeing", "academic"],
-        access: ["online", "campus"],
-        tags: ["Stress", "Anxiety", "Personal support"],
-        provider: "Wellbeing practitioner",
-        distance: "0.8 km",
-        rating: "4.8 / 5",
-        response: "1–3 working days"
+        id: 2,
+        title: "Programme Advice",
+        provider: "Professor Daniel Reed",
+        role: "Programme Tutor",
+        initials: "DR",
+        category: "programme",
+        keywords: "module choice programme degree requirement prerequisite course tutor academic",
+        fit: "Module choices and degree requirements",
+        description: "Helps students understand programme rules, optional modules and how a choice fits their degree.",
+        distance: 0.4,
+        location: "Science Building, Room 2.08",
+        rating: 4.9,
+        responseKey: "one-day",
+        responseRank: 2,
+        response: "Usually within 1 day",
+        modes: ["online", "email", "in-person"],
+        modeLabel: "Email, online or in person",
+        scope: ["Module selection and programme fit", "Degree requirements and prerequisites", "Academic progression questions"],
+        preparation: "Have your programme title and the module code ready. A draft timetable is helpful but not required.",
+        notFor: "Use Academic Skills & Extensions for deadline or study-planning support, and the Digital Access Desk for system problems."
       },
       {
-        id: "programme",
-        name: "Programme Advice Desk",
-        description: "Advice about modules, programme rules, progression and formal academic options.",
-        topics: ["programme", "academic"],
-        access: ["online", "campus"],
-        tags: ["Programme rules", "Module choices", "Progression"],
-        provider: "Programme adviser",
-        distance: "0.5 km",
-        rating: "4.5 / 5",
-        response: "3 working days"
+        id: 3,
+        title: "Student Support & Wellbeing",
+        provider: "Amara Lewis",
+        role: "Student Support Adviser",
+        initials: "AL",
+        category: "wellbeing",
+        keywords: "wellbeing stress personal practical housing urgent support anxiety health finance",
+        fit: "Personal, practical and wellbeing support",
+        description: "Offers a first conversation for personal or practical concerns and explains who can see sensitive information.",
+        distance: 0.6,
+        location: "Wellbeing Centre, Ground Floor",
+        rating: 4.7,
+        responseKey: "today",
+        responseRank: 1,
+        response: "Same-day drop-in available",
+        modes: ["in-person", "online"],
+        modeLabel: "In person or online",
+        scope: ["Personal or practical concerns affecting study", "Wellbeing support and referral", "Confidentiality and available next steps"],
+        preparation: "No documents are required for a first conversation. Share only what you are comfortable sharing.",
+        notFor: "This prototype does not handle emergencies. A live service would keep crisis and emergency routes visible at every stage."
+      },
+      {
+        id: 4,
+        title: "Digital Access Desk",
+        provider: "NMSI IT Support Team",
+        role: "Digital Services",
+        initials: "IT",
+        category: "technical",
+        keywords: "technical login access password software module portal email wifi computer",
+        fit: "Accounts, access and university systems",
+        description: "Supports account access, learning-platform errors and software or connectivity issues.",
+        distance: 0.1,
+        location: "Library Help Point",
+        rating: 4.6,
+        responseKey: "today",
+        responseRank: 1,
+        response: "Live chat available now",
+        modes: ["chat", "in-person", "online"],
+        modeLabel: "Live chat or in person",
+        scope: ["Login and account access", "Learning-platform or university-system errors", "Software and campus connectivity"],
+        preparation: "Have the device, error message and a screenshot ready if possible. Never include your password.",
+        notFor: "Use Programme Advice for academic rules or module choices; Digital Services cannot interpret programme requirements."
+      },
+      {
+        id: 5,
+        title: "Fees & Funding Advice",
+        provider: "Jordan Patel",
+        role: "Student Finance Adviser",
+        initials: "JP",
+        category: "funding",
+        keywords: "fees funding tuition payment scholarship bursary money finance invoice",
+        fit: "Fees, funding and payment questions",
+        description: "Explains tuition charges, funding routes, payment dates and which evidence may be required.",
+        distance: 0.5,
+        location: "Student Services, Room 1.06",
+        rating: 4.7,
+        responseKey: "two-days",
+        responseRank: 3,
+        response: "Usually within 2 days",
+        modes: ["email", "in-person"],
+        modeLabel: "Email or in person",
+        scope: ["Tuition fee and payment questions", "Funding, bursaries and scholarships", "Documents needed for a finance query"],
+        preparation: "Bring your student number and the reference shown on any invoice. Do not include bank passwords or full card details.",
+        notFor: "Use Student Support & Wellbeing if a wider personal situation is affecting your studies and you need broader support."
       }
     ];
 
-    function announce(message) {
-      const region = document.getElementById("status-region");
-      region.textContent = "";
-      window.setTimeout(() => { region.textContent = message; }, 20);
+    const storageKeys = {
+      largeFont: "nmsi-large-font",
+      appointments: "nmsi-appointments",
+      messages: "nmsi-messages"
+    };
+
+    let activeCategory = "all";
+    let selectedSupport = supportOptions[0];
+    let toastTimer;
+    let currentAppointmentId = null;
+    let pendingCancelId = null;
+    let lastFocusedElement = null;
+    let appointments = [];
+    let messages = [];
+
+    function readStoredJSON(key, fallback) {
+      try {
+        const stored = window.localStorage.getItem(key);
+        return stored ? JSON.parse(stored) : fallback;
+      } catch (error) {
+        return fallback;
+      }
     }
 
-    function logIn(event) {
+    function writeStoredJSON(key, value) {
+      // Iteration state remains in memory until browser persistence is introduced.
+    }
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, character => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      })[character]);
+    }
+
+    function getLargeFontPreference() {
+      try {
+        return window.localStorage.getItem(storageKeys.largeFont) === "true";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function setLargeFont(enabled) {
+      document.documentElement.classList.toggle("large-font", enabled);
+      document.querySelectorAll("[data-font-toggle]").forEach(button => {
+        button.setAttribute("aria-pressed", String(enabled));
+        button.setAttribute("aria-label", enabled ? "Turn large font off" : "Turn large font on");
+        button.textContent = enabled ? "Large font: On" : "Large font: Off";
+      });
+      try {
+        window.localStorage.setItem(storageKeys.largeFont, String(enabled));
+      } catch (error) {
+        fakeAction("This browser could not save the font setting.");
+      }
+    }
+
+    function toggleLargeFont() {
+      setLargeFont(!document.documentElement.classList.contains("large-font"));
+      document.getElementById("screen-announcer").textContent =
+        document.documentElement.classList.contains("large-font") ? "Large font turned on." : "Large font turned off.";
+    }
+
+    function resetPrototypeData() {
+      try {
+        window.localStorage.removeItem(storageKeys.appointments);
+        window.localStorage.removeItem(storageKeys.messages);
+        appointments = [];
+        messages = [];
+        currentAppointmentId = null;
+        pendingCancelId = null;
+        document.getElementById("screen-announcer").textContent =
+          "Prototype appointments and messages have been cleared. The large font setting was kept.";
+        fakeAction("Prototype appointments and messages cleared.");
+      } catch (error) {
+        document.getElementById("screen-announcer").textContent =
+          "Prototype data could not be cleared in this browser.";
+        fakeAction("Prototype data could not be cleared.");
+      }
+    }
+
+    function handleLogin(event) {
       event.preventDefault();
-      document.getElementById("screen-login").hidden = true;
-      document.getElementById("screen-app").hidden = false;
-      showView("home");
-      announce("Signed in to the NMSI prototype.");
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("login-screen").setAttribute("aria-hidden", "true");
+      document.getElementById("portal").classList.add("is-visible");
+      document.getElementById("portal").setAttribute("aria-hidden", "false");
+      document.getElementById("skip-link").setAttribute("href", "#main-content");
+      showScreen("dashboard");
     }
 
     function signOut() {
-      document.getElementById("screen-app").hidden = true;
-      document.getElementById("screen-login").hidden = false;
+      document.getElementById("portal").classList.remove("is-visible");
+      document.getElementById("portal").setAttribute("aria-hidden", "true");
+      document.getElementById("login-screen").style.display = "grid";
+      document.getElementById("login-screen").setAttribute("aria-hidden", "false");
+      document.getElementById("skip-link").setAttribute("href", "#login-main");
+      document.getElementById("student-id").value = "";
+      document.getElementById("student-password").value = "";
       document.getElementById("login-heading").focus();
-      announce("Signed out.");
     }
 
-    function showView(name) {
-      document.querySelectorAll(".view").forEach(view => { view.hidden = true; });
-      const target = document.getElementById(`view-${name}`);
-      if (!target) return;
-      target.hidden = false;
-
-      document.querySelectorAll("[data-nav]").forEach(button => {
-        if (button.dataset.nav === name || (name !== "home" && button.dataset.nav === "support")) {
-          button.setAttribute("aria-current", "page");
-        } else {
-          button.removeAttribute("aria-current");
-        }
+    function showScreen(name) {
+      const target = document.getElementById(`screen-${name}`) || document.getElementById("screen-dashboard");
+      document.querySelectorAll(".screen").forEach(screen => {
+        const active = screen === target;
+        screen.classList.toggle("is-active", active);
+        screen.hidden = !active;
+        screen.setAttribute("aria-hidden", String(!active));
       });
 
-      if (name === "support") renderServices(services);
-      const heading = target.querySelector("h2");
-      if (heading) heading.focus();
-      document.getElementById("main-content").scrollIntoView({ block: "start" });
+      const navMap = {
+        dashboard: "dashboard",
+        support: "support",
+        detail: "support",
+        booking: "support",
+        confirmation: "support",
+      };
+      document.querySelectorAll("[data-nav]").forEach(button => {
+        const active = button.dataset.nav === navMap[name];
+        button.classList.toggle("is-active", active);
+        if (active) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+
+      const titles = {
+        dashboard: ["Student portal", "North-western Medical and Science Institute"],
+        support: ["Student Support Navigator", "Find the right source without knowing the university structure"],
+        detail: ["Support option", "Compare scope, access and expected response"],
+        booking: ["Book a conversation", "Prototype appointment flow"],
+        confirmation: ["Appointment record", "Booking status, access details and fallback"],
+      };
+      const pageTitle = titles[name] || titles.dashboard;
+      document.getElementById("banner-title").textContent = pageTitle[0];
+      document.getElementById("banner-subtitle").textContent = pageTitle[1];
+
+      if (name === "support") renderSupportOptions();
+
+      window.scrollTo({ top: 0, behavior: "instant" });
+      document.getElementById("screen-announcer").textContent = `${pageTitle[0]} page loaded.`;
+      window.requestAnimationFrame(() => {
+        const heading = target.querySelector("h2");
+        if (heading) heading.focus();
+      });
     }
 
-    function renderServices(items) {
-      const list = document.getElementById("service-list");
-      const count = document.getElementById("result-count");
-      count.textContent = `${items.length} ${items.length === 1 ? "service" : "services"}`;
+    function fakeAction(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("is-visible"), 3200);
+    }
 
-      if (!items.length) {
-        list.innerHTML = '<div class="empty-state"><h3>No exact match</h3><p>Try broader terms or remove one filter.</p></div>';
+    function chooseCategory(category) {
+      activeCategory = category;
+      document.getElementById("issue-filter").value = category;
+      document.querySelectorAll(".category-chip").forEach(chip => {
+        const selected = chip.dataset.category === category;
+        chip.classList.toggle("is-selected", selected);
+        chip.setAttribute("aria-pressed", String(selected));
+      });
+      applyFilters();
+    }
+
+    function resetFilters() {
+      activeCategory = "all";
+      document.getElementById("support-search").value = "";
+      document.getElementById("issue-filter").value = "all";
+      document.getElementById("mode-filter").value = "all";
+      document.getElementById("response-filter").value = "all";
+      document.getElementById("sort-filter").value = "fit";
+      document.querySelectorAll(".category-chip").forEach(chip => {
+        const selected = chip.dataset.category === "all";
+        chip.classList.toggle("is-selected", selected);
+        chip.setAttribute("aria-pressed", String(selected));
+      });
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const issue = document.getElementById("issue-filter").value;
+      activeCategory = issue;
+      document.querySelectorAll(".category-chip").forEach(chip => {
+        const selected = chip.dataset.category === issue;
+        chip.classList.toggle("is-selected", selected);
+        chip.setAttribute("aria-pressed", String(selected));
+      });
+      renderSupportOptions();
+    }
+
+    function getFilteredOptions() {
+      const search = document.getElementById("support-search").value.trim().toLowerCase();
+      const issue = document.getElementById("issue-filter").value;
+      const mode = document.getElementById("mode-filter").value;
+      const response = document.getElementById("response-filter").value;
+      const sort = document.getElementById("sort-filter").value;
+
+      const terms = search.split(/\s+/).filter(Boolean);
+      const list = supportOptions.filter(option => {
+        const searchable = `${option.title} ${option.provider} ${option.role} ${option.keywords} ${option.fit} ${option.description}`.toLowerCase();
+        const searchMatch = terms.every(term => searchable.includes(term));
+        const issueMatch = issue === "all" || option.category === issue;
+        const modeMatch = mode === "all" || option.modes.includes(mode);
+        const responseMatch = response === "all" || option.responseKey === response || (response === "one-day" && option.responseRank <= 2) || (response === "two-days" && option.responseRank <= 3);
+        return searchMatch && issueMatch && modeMatch && responseMatch;
+      });
+
+      list.sort((a, b) => {
+        if (sort === "distance") return a.distance - b.distance;
+        if (sort === "response") return a.responseRank - b.responseRank;
+        if (sort === "rating") return b.rating - a.rating;
+        if (search.includes("extension")) return (a.id === 1 ? -1 : 1);
+        return a.id - b.id;
+      });
+      return list;
+    }
+
+    function renderSupportOptions() {
+      const list = getFilteredOptions();
+      const container = document.getElementById("support-list");
+      const empty = document.getElementById("empty-state");
+      const query = document.getElementById("support-search").value.trim();
+      document.getElementById("result-heading").textContent = query ? `Matches for “${query}”` : "Suggested support options";
+      container.innerHTML = "";
+      empty.style.display = list.length ? "none" : "block";
+
+      list.forEach((option, index) => {
+        const card = document.createElement("article");
+        const headingId = `support-option-${option.id}`;
+        card.className = `support-card ${index === 0 ? "is-best" : ""}`;
+        card.setAttribute("aria-labelledby", headingId);
+        card.innerHTML = `
+          <div>
+            <h4 id="${headingId}">${escapeHTML(option.title)}</h4>
+            <div class="support-team">${escapeHTML(option.provider)} · ${escapeHTML(option.role)}</div>
+            <p class="support-description">${escapeHTML(option.description)}</p>
+            <div class="tag-row" aria-label="Support option details">
+              <span class="tag tag--fit">Best for: ${escapeHTML(option.fit)}</span>
+              <span class="tag">Provider: ${escapeHTML(option.provider)}</span>
+              <span class="tag">Distance: ${option.distance.toFixed(1)} km</span>
+              <span class="tag">Rating: ${option.rating.toFixed(1)} out of 5</span>
+              <span class="tag tag--time">${escapeHTML(option.response)}</span>
+            </div>
+          </div>
+          <div class="support-card__action">
+            <div class="fit-label">${index === 0 ? "Suggested first" : ""}</div>
+            <button class="button button--accent" type="button" onclick="selectSupport(${option.id})" aria-label="View ${escapeHTML(option.title)} details">View support option</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+      document.getElementById("screen-announcer").textContent = `${list.length} support option${list.length === 1 ? "" : "s"} found.`;
+    }
+
+    function selectSupport(id) {
+      selectedSupport = supportOptions.find(option => option.id === id) || supportOptions[0];
+      populateDetail();
+      showScreen("detail");
+    }
+
+    function populateDetail() {
+      const option = selectedSupport;
+      document.getElementById("detail-title").textContent = option.title;
+      document.getElementById("detail-provider").textContent = option.provider;
+      document.getElementById("detail-role").textContent = option.role;
+      document.getElementById("detail-initials").textContent = option.initials;
+      document.getElementById("detail-tags").innerHTML = `
+        <span class="tag tag--fit">${escapeHTML(option.fit)}</span>
+        <span class="tag">${option.distance.toFixed(1)} km away</span>
+        <span class="tag">Rating ${option.rating.toFixed(1)} out of 5</span>
+      `;
+      document.getElementById("detail-scope").innerHTML = option.scope.map(item => `<li>${escapeHTML(item)}</li>`).join("");
+      document.getElementById("detail-preparation").textContent = option.preparation;
+      document.getElementById("detail-not-for").textContent = option.notFor;
+      document.getElementById("fact-provider").textContent = option.provider;
+      document.getElementById("fact-location").textContent = `${option.distance.toFixed(1)} km · ${option.location}`;
+      document.getElementById("fact-mode").textContent = option.modeLabel;
+      document.getElementById("fact-response").textContent = option.response;
+      document.getElementById("fact-rating").textContent = `${option.rating.toFixed(1)} out of 5`;
+    }
+
+    function openBooking() {
+      const option = selectedSupport;
+      document.getElementById("booking-service").textContent = option.title;
+      document.getElementById("booking-provider").textContent = option.provider;
+      document.getElementById("booking-category").textContent = option.fit;
+      document.getElementById("booking-response").textContent = option.response;
+      showScreen("booking");
+    }
+
+    function createAppointmentId() {
+      return `NMSI-${Date.now().toString().slice(-8)}`;
+    }
+
+    function createMessage(type, appointment) {
+      const confirmed = type === "confirmed";
+      const message = {
+        id: `MSG-${Date.now()}-${messages.length + 1}`,
+        type,
+        appointmentId: appointment.id,
+        title: confirmed ? "Appointment confirmed" : "Appointment cancelled",
+        body: confirmed
+          ? `You successfully booked ${appointment.service}. Open the appointment confirmation record for full details.`
+          : `Your appointment with ${appointment.service} was cancelled. Open the cancellation record for full details.`,
+        createdAt: new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }),
+        read: false
+      };
+      messages.unshift(message);
+      writeStoredJSON(storageKeys.messages, messages);
+      renderMessageBadge();
+    }
+
+    function confirmAppointment(event) {
+      event.preventDefault();
+      const appointment = {
+        id: createAppointmentId(),
+        supportId: selectedSupport.id,
+        service: selectedSupport.title,
+        provider: selectedSupport.provider,
+        date: document.getElementById("appointment-date").value,
+        time: document.getElementById("appointment-time").value,
+        mode: document.getElementById("appointment-mode").value,
+        response: selectedSupport.response,
+        summary: document.getElementById("issue-summary").value.trim(),
+        status: "confirmed",
+        createdAt: new Date().toISOString(),
+        cancelledAt: null
+      };
+      currentAppointmentId = appointment.id;
+      renderAppointmentRecord(appointment);
+      document.getElementById("issue-summary").value = "";
+      showScreen("confirmation");
+      fakeAction("Appointment confirmed.");
+    }
+
+    function renderAppointments() {
+      const container = document.getElementById("appointments-list");
+      if (!appointments.length) {
+        container.innerHTML = `
+          <div class="empty-panel">
+            <h3>No appointments yet</h3>
+            <p>Choose a support source and book a conversation. Confirmed and cancelled records will appear here.</p>
+            <div class="form-actions"><button class="button button--accent" type="button" onclick="showScreen('support')">Find support</button></div>
+          </div>
+        `;
         return;
       }
 
-      list.innerHTML = items.map(service => `
-        <article class="service-card">
-          <div>
-            <h3>${service.name}</h3>
-            <p>${service.description}</p>
-            <div class="tag-row">${service.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
+      container.innerHTML = appointments.map(appointment => {
+        const cancelled = appointment.status === "cancelled";
+        return `
+          <article class="record-card" aria-labelledby="appointment-${escapeHTML(appointment.id)}">
+            <div>
+              <span class="status-badge ${cancelled ? "is-cancelled" : ""}">${cancelled ? "Cancelled" : "Confirmed"}</span>
+              <h3 id="appointment-${escapeHTML(appointment.id)}">${escapeHTML(appointment.service)}</h3>
+              <p>${escapeHTML(appointment.provider)}</p>
+              <div class="record-meta" aria-label="Appointment details">
+                <span class="tag">${escapeHTML(appointment.date)} · ${escapeHTML(appointment.time)}</span>
+                <span class="tag">${escapeHTML(appointment.mode)}</span>
+                <span class="tag">Reference ${escapeHTML(appointment.id)}</span>
+              </div>
+            </div>
+            <div class="record-actions">
+              <button class="button button--accent" type="button" onclick="openAppointmentRecord('${escapeHTML(appointment.id)}')" aria-label="Open ${cancelled ? "cancellation" : "confirmation"} record for ${escapeHTML(appointment.service)}">View record</button>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderMessages() {
+      const container = document.getElementById("messages-list");
+      if (!messages.length) {
+        container.innerHTML = `
+          <div class="empty-panel">
+            <h3>No messages yet</h3>
+            <p>Booking confirmations and cancellation notices will appear here and link to the appointment record.</p>
           </div>
-          <div class="service-facts">
-            <span><strong>Provider:</strong> ${service.provider}</span>
-            <span><strong>Distance:</strong> ${service.distance}</span>
-            <span><strong>Rating:</strong> ${service.rating}</span>
-            <span><strong>Response:</strong> ${service.response}</span>
-            <button id="compare-${service.id}" class="button button--secondary" type="button" onclick="openService('${service.id}')">Compare this source</button>
+        `;
+        renderMessageBadge();
+        return;
+      }
+
+      container.innerHTML = messages.map(message => `
+        <article class="message-card ${message.read ? "" : "is-unread"}" aria-labelledby="message-${escapeHTML(message.id)}">
+          <div>
+            <h3 id="message-${escapeHTML(message.id)}">${escapeHTML(message.title)}</h3>
+            <p>${escapeHTML(message.body)}</p>
+            <span class="message-time">${escapeHTML(message.createdAt)}${message.read ? "" : " · Unread"}</span>
+          </div>
+          <div class="record-actions">
+            <button class="button button--accent" type="button" onclick="openMessage('${escapeHTML(message.id)}')">${message.type === "confirmed" ? "Open confirmation" : "Open cancellation record"}</button>
           </div>
         </article>
       `).join("");
+      renderMessageBadge();
     }
 
-    function applySearch(event) {
-      event.preventDefault();
-      const query = document.getElementById("support-query").value.trim().toLowerCase();
-      const topic = document.getElementById("filter-topic").value;
-      const access = document.getElementById("filter-access").value;
-
-      const filtered = services.filter(service => {
-        const searchable = `${service.name} ${service.description} ${service.tags.join(" ")}`.toLowerCase();
-        const queryMatch = !query || searchable.includes(query) || query.split(/\s+/).some(term => searchable.includes(term));
-        const topicMatch = topic === "all" || service.topics.includes(topic);
-        const accessMatch = access === "all" || service.access.includes(access);
-        return queryMatch && topicMatch && accessMatch;
-      });
-
-      renderServices(filtered);
-      announce(`${filtered.length} support sources shown.`);
-      document.getElementById("results-heading").focus?.();
+    function renderMessageBadge() {
+      const unread = messages.filter(message => !message.read).length;
+      const badge = document.getElementById("message-badge");
+      badge.textContent = String(unread);
+      badge.hidden = unread === 0;
+      badge.setAttribute("aria-label", `${unread} unread message${unread === 1 ? "" : "s"}`);
     }
 
-    function openService(id) {
-      if (id !== "academic") {
-        announce("This prototype opens the Academic Skills Hub detail route for testing.");
+    function openMessage(messageId) {
+      const message = messages.find(item => item.id === messageId);
+      if (!message) return;
+      message.read = true;
+      writeStoredJSON(storageKeys.messages, messages);
+      renderMessageBadge();
+      openAppointmentRecord(message.appointmentId);
+    }
+
+    function openAppointmentRecord(appointmentId) {
+      const appointment = appointments.find(item => item.id === appointmentId);
+      if (!appointment) {
+        fakeAction("This appointment record is not available.");
+        return;
       }
-      showView("detail");
+      currentAppointmentId = appointment.id;
+      renderAppointmentRecord(appointment);
+      showScreen("confirmation");
     }
 
-    function confirmBooking(event) {
-      event.preventDefault();
-      document.getElementById("confirmation-time").textContent = document.getElementById("appointment-time").value;
-      document.getElementById("confirmation-mode").textContent = document.getElementById("appointment-mode").value;
-      showView("confirmation");
-      announce("Appointment confirmed.");
+    function renderAppointmentRecord(appointment) {
+      const cancelled = appointment.status === "cancelled";
+      const card = document.getElementById("confirmation-card");
+      card.classList.toggle("is-cancelled", cancelled);
+      document.getElementById("confirmation-heading").textContent = cancelled ? "Appointment cancelled" : "Appointment confirmed";
+      document.getElementById("confirmation-icon").textContent = cancelled ? "×" : "✓";
+      document.getElementById("confirmation-title").textContent = cancelled
+        ? `Your appointment with ${appointment.service} was cancelled`
+        : `Your request went to ${appointment.service}`;
+      document.getElementById("confirmation-description").textContent = cancelled
+        ? "The booking is no longer active. This record remains available in My appointments."
+        : "This record shows where the request went. Nothing has been sent to a live university system.";
+      document.getElementById("confirmation-appointment-label").textContent = cancelled ? "Cancelled appointment" : "Appointment";
+      document.getElementById("confirmation-time").textContent = `${appointment.date} · ${appointment.time}`;
+      document.getElementById("confirmation-mode").textContent = appointment.mode;
+      document.getElementById("confirmation-response-label").textContent = cancelled ? "Record reference" : "Expected reply";
+      document.getElementById("confirmation-response").textContent = cancelled ? appointment.id : appointment.response;
+      document.getElementById("confirmation-next-steps").innerHTML = cancelled
+        ? `
+          <div class="next-step"><h4>Cancellation recorded</h4><p>The appointment remains visible in My appointments so the student can verify what changed.</p></div>
+          <div class="next-step"><h4>Need another source?</h4><p>Return to Support Navigator to compare another service without losing this record.</p></div>
+        `
+        : `
+          <div class="next-step"><h4>What happens next</h4><p>The selected team reviews the summary and sends joining details. The status would update here in a live service.</p></div>
+          <div class="next-step"><h4>If this is not the right team</h4><p>The summary can move with the request, and the interface will name the next source instead of restarting the search.</p></div>
+        `;
     }
 
-    renderServices(services);
+    function cancelCurrentAppointment() {
+      if (currentAppointmentId) requestCancelAppointment(currentAppointmentId);
+    }
+
+    function requestCancelAppointment(appointmentId) {
+      const appointment = appointments.find(item => item.id === appointmentId);
+      if (!appointment || appointment.status === "cancelled") return;
+      pendingCancelId = appointment.id;
+      lastFocusedElement = document.activeElement;
+      document.getElementById("cancel-dialog-description").textContent =
+        `Cancel the appointment with ${appointment.service} on ${appointment.date} at ${appointment.time}? The booking will remain visible as a cancelled record, and a cancellation message will be created.`;
+      document.getElementById("portal").inert = true;
+      document.getElementById("portal").setAttribute("aria-hidden", "true");
+      document.getElementById("cancel-dialog-backdrop").hidden = false;
+      document.getElementById("confirm-cancel-button").focus();
+    }
+
+    function closeCancelDialog() {
+      document.getElementById("cancel-dialog-backdrop").hidden = true;
+      document.getElementById("portal").inert = false;
+      document.getElementById("portal").setAttribute("aria-hidden", "false");
+      pendingCancelId = null;
+      if (lastFocusedElement && typeof lastFocusedElement.focus === "function") lastFocusedElement.focus();
+    }
+
+    function confirmCancellation() {
+      const appointment = appointments.find(item => item.id === pendingCancelId);
+      if (!appointment || appointment.status === "cancelled") {
+        closeCancelDialog();
+        return;
+      }
+
+      appointment.status = "cancelled";
+      appointment.cancelledAt = new Date().toISOString();
+      currentAppointmentId = appointment.id;
+      document.getElementById("cancel-dialog-backdrop").hidden = true;
+      document.getElementById("portal").inert = false;
+      document.getElementById("portal").setAttribute("aria-hidden", "false");
+      pendingCancelId = null;
+      renderAppointmentRecord(appointment);
+      showScreen("confirmation");
+      fakeAction("Appointment cancelled.");
+    }
+
+    populateDetail();
   </script>
 </body>
 </html>
