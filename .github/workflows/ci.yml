@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ktlint-detekt-test-a11y:
+    name: ktlint-detekt-test-a11y
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Make Gradle executable
+        run: chmod +x ./gradlew
+
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Run detekt
+        run: ./gradlew detekt
+
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium --with-deps
+
+      - name: Start application
+        run: |
+          ./gradlew run &
+          echo $! > app.pid
+
+      - name: Wait for application
+        run: |
+          for i in {1..30}; do
+            if curl -s http://localhost:8080/login > /dev/null; then
+              echo "App is ready"
+              exit 0
+            fi
+            echo "Waiting for app..."
+            sleep 2
+          done
+          echo "App did not start in time"
+          exit 1
+
+      - name: Run axe accessibility check
+        run: npm run a11y:axe
+
+      - name: Stop application
+        if: always()
+        run: |
+          if [ -f app.pid ]; then
+            kill $(cat app.pid) || true
+          fi

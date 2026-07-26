@@ -61,4 +61,3 @@ object DatabaseFactory {
         val password: String?,
     )
 }
-

@@ -1,0 +1,23 @@
+complexity:
+  CyclomaticComplexMethod:
+    active: false
+  LongMethod:
+    active: false
+  NestedBlockDepth:
+    active: false
+  TooManyFunctions:
+    active: false
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+performance:
+  ForEachOnRange:
+    active: false
+
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false

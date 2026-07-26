@@ -13,7 +13,12 @@ object AssistantFactory {
                 DeepSeekSupportAssistant(
                     repository = repository,
                     apiKey = apiKey,
-                    model = System.getenv("DEEPSEEK_MODEL")?.trim().orEmpty().ifBlank { "deepseek-v4-flash" },
+                    model =
+                        System
+                            .getenv("DEEPSEEK_MODEL")
+                            ?.trim()
+                            .orEmpty()
+                            .ifBlank { "deepseek-v4-flash" },
                 ),
             fallback = fallback,
         )

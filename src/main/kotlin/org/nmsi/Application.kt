@@ -1,6 +1,7 @@
 package org.nmsi
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.application.call
@@ -11,8 +12,8 @@ import io.ktor.server.pebble.PebbleContent
 import io.ktor.server.plugins.calllogging.CallLogging
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
-import io.ktor.server.request.receive
 import io.ktor.server.request.path
+import io.ktor.server.request.receive
 import io.ktor.server.request.receiveParameters
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -28,7 +29,6 @@ import io.ktor.server.sessions.cookie
 import io.ktor.server.sessions.get
 import io.ktor.server.sessions.sessions
 import io.ktor.server.sessions.set
-import io.ktor.serialization.kotlinx.json.json
 import io.pebbletemplates.pebble.loader.ClasspathLoader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -78,7 +78,8 @@ fun Application.module() {
     }
     install(StatusPages) {
         exception<Throwable> { call, cause ->
-            call.application.environment.log.error("Unhandled request failure", cause)
+            call.application.environment.log
+                .error("Unhandled request failure", cause)
             call.respond(
                 HttpStatusCode.InternalServerError,
                 PebbleContent(

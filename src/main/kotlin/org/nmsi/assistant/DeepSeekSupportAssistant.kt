@@ -59,12 +59,20 @@ class DeepSeekSupportAssistant(
                 val toolCalls = responseMessage["tool_calls"]?.jsonArray.orEmpty()
 
                 if (toolCalls.isEmpty()) {
-                    val text = responseMessage["content"]?.jsonPrimitive?.contentOrNull.orEmpty().trim()
+                    val text =
+                        responseMessage["content"]
+                            ?.jsonPrimitive
+                            ?.contentOrNull
+                            .orEmpty()
+                            .trim()
                     check(text.isNotBlank()) { "DeepSeek returned no assistant text" }
                     repository.appendConversationMessage(userId, "ASSISTANT", text)
                     return@withContext AssistantReply(
                         text = text,
-                        recommendations = toolContext.facilities.values.take(3).map(::recommendation),
+                        recommendations =
+                            toolContext.facilities.values
+                                .take(3)
+                                .map(::recommendation),
                         mode = "DeepSeek V4 Flash",
                     )
                 }
@@ -77,9 +85,10 @@ class DeepSeekSupportAssistant(
                     val name = function.getValue("name").jsonPrimitive.content
                     val arguments =
                         runCatching {
-                            json.parseToJsonElement(
-                                function["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
-                            ).jsonObject
+                            json
+                                .parseToJsonElement(
+                                    function["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
+                                ).jsonObject
                         }.getOrElse { JsonObject(emptyMap()) }
                     val output = executeTool(userId, name, arguments, toolContext)
                     repository.appendConversationMessage(userId, "TOOL", "$name: $output")

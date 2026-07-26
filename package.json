@@ -1,0 +1,13 @@
+{
+  "name": "nmsi-support-navigator-quality",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Browser-level accessibility checks for the NMSI Support Navigator.",
+  "scripts": {
+    "a11y:axe": "node scripts/a11y-axe.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "playwright": "1.55.1"
+  }
+}

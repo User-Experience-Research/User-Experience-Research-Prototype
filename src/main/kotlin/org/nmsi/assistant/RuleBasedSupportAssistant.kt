@@ -46,7 +46,8 @@ class RuleBasedSupportAssistant(
     private fun appointmentSummary(userId: Long): String {
         val appointments = repository.listAppointments(userId).filter { it.status == "BOOKED" }
         if (appointments.isEmpty()) {
-            return "You have no booked support appointments. Tell me what you need help with and I can suggest a source; without a DeepSeek API key, complete booking actions through the facility page."
+            return "You have no booked support appointments. Tell me what you need help with and I can suggest a source; " +
+                "without a DeepSeek API key, complete booking actions through the facility page."
         }
         val summary =
             appointments.joinToString("; ") { appointment ->

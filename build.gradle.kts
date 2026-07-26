@@ -3,6 +3,8 @@ plugins {
     kotlin("plugin.serialization") version "2.2.20"
     application
     id("io.ktor.plugin") version "3.5.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
 
 group = "org.nmsi"
@@ -45,4 +47,10 @@ kotlin {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    config.setFrom(files("config/detekt/detekt.yml"))
 }
