@@ -2,10 +2,8 @@ package org.nmsi.assistant
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonArray
@@ -35,6 +33,7 @@ class DeepSeekSupportAssistant(
             .connectTimeout(Duration.ofSeconds(15))
             .build()
     private val json = Json { ignoreUnknownKeys = true }
+    private val toolExecutor = AssistantToolExecutor(repository, json)
     private val systemPrompt by lazy(::loadSystemPrompt)
 
     override suspend fun respond(
@@ -90,13 +89,14 @@ class DeepSeekSupportAssistant(
                                     function["arguments"]?.jsonPrimitive?.contentOrNull ?: "{}",
                                 ).jsonObject
                         }.getOrElse { JsonObject(emptyMap()) }
-                    val output = executeTool(userId, name, arguments, toolContext)
-                    repository.appendConversationMessage(userId, "TOOL", "$name: $output")
+                    val execution = toolExecutor.execute(userId, name, arguments)
+                    execution.facilities.forEach { facility -> toolContext.facilities[facility.id] = facility }
+                    repository.appendConversationMessage(userId, "TOOL", "$name: ${execution.output}")
                     messages.add(
                         buildJsonObject {
                             put("role", JsonPrimitive("tool"))
                             put("tool_call_id", JsonPrimitive(callId))
-                            put("content", JsonPrimitive(output))
+                            put("content", JsonPrimitive(execution.output))
                         },
                     )
                 }
@@ -164,8 +164,18 @@ class DeepSeekSupportAssistant(
         return json.parseToJsonElement(response.body()).jsonObject
     }
 
-    private fun tools(): JsonArray =
-        buildJsonArray {
+    private fun tools(): JsonArray {
+        val categorySlugs = listOf("") + repository.listCategories().map { category -> category.slug }
+        return buildJsonArray {
+            add(
+                functionTool(
+                    name = "list_categories",
+                    description =
+                        "List the complete current NMSI support taxonomy. Use this when a category is uncertain; never invent a category slug.",
+                    properties = buildJsonObject {},
+                    required = emptyList(),
+                ),
+            )
             add(
                 functionTool(
                     name = "search_facilities",
@@ -184,7 +194,13 @@ class DeepSeekSupportAssistant(
                                 "category_slug",
                                 buildJsonObject {
                                     put("type", JsonPrimitive("string"))
-                                    put("description", JsonPrimitive("A category slug when known, or an empty string."))
+                                    put(
+                                        "description",
+                                        JsonPrimitive(
+                                            "One exact slug from list_categories, or an empty string when uncertain.",
+                                        ),
+                                    )
+                                    put("enum", JsonArray(categorySlugs.map(::JsonPrimitive)))
                                 },
                             )
                         },
@@ -262,8 +278,20 @@ class DeepSeekSupportAssistant(
                                     put("description", JsonPrimitive("Optional note from the student, or an empty string."))
                                 },
                             )
+                            put(
+                                "confirmed",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("boolean"))
+                                    put(
+                                        "description",
+                                        JsonPrimitive(
+                                            "True only after the student explicitly confirmed this facility and exact time.",
+                                        ),
+                                    )
+                                },
+                            )
                         },
-                    required = listOf("facility_id", "starts_at", "note"),
+                    required = listOf("facility_id", "starts_at", "note", "confirmed"),
                 ),
             )
             add(
@@ -280,11 +308,24 @@ class DeepSeekSupportAssistant(
                                     put("description", JsonPrimitive("Appointment id returned by list_user_appointments."))
                                 },
                             )
+                            put(
+                                "confirmed",
+                                buildJsonObject {
+                                    put("type", JsonPrimitive("boolean"))
+                                    put(
+                                        "description",
+                                        JsonPrimitive(
+                                            "True only after the student explicitly confirmed cancellation of this appointment.",
+                                        ),
+                                    )
+                                },
+                            )
                         },
-                    required = listOf("appointment_id"),
+                    required = listOf("appointment_id", "confirmed"),
                 ),
             )
         }
+    }
 
     private fun functionTool(
         name: String,
@@ -312,123 +353,6 @@ class DeepSeekSupportAssistant(
             )
         }
 
-    private fun executeTool(
-        userId: Long,
-        name: String,
-        arguments: JsonObject,
-        context: ToolContext,
-    ): String =
-        when (name) {
-            "search_facilities" -> {
-                val query = arguments["query"]?.jsonPrimitive?.contentOrNull
-                val category =
-                    arguments["category_slug"]
-                        ?.jsonPrimitive
-                        ?.contentOrNull
-                        ?.takeIf(String::isNotBlank)
-                val facilities = repository.searchFacilities(query, category).take(6)
-                facilities.forEach { context.facilities[it.id] = it }
-                json.encodeToString(facilities.map(::facilityPayload))
-            }
-            "get_facility" -> {
-                val id = arguments["facility_id"]?.jsonPrimitive?.content?.toLongOrNull()
-                val facility = id?.let(repository::facilityById)
-                if (facility == null) {
-                    """{"error":"Facility not found"}"""
-                } else {
-                    context.facilities[facility.id] = facility
-                    json.encodeToString(facilityPayload(facility))
-                }
-            }
-            "list_user_appointments" ->
-                json.encodeToString(
-                    repository.listAppointments(userId).map { appointment ->
-                        mapOf(
-                            "appointment_id" to JsonPrimitive(appointment.id),
-                            "facility_id" to JsonPrimitive(appointment.facilityId),
-                            "facility_name" to JsonPrimitive(appointment.facilityName),
-                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
-                            "status" to JsonPrimitive(appointment.status),
-                            "note" to JsonPrimitive(appointment.note.orEmpty()),
-                        )
-                    },
-                )
-            "get_available_slots" -> {
-                val facilityId = arguments["facility_id"]?.jsonPrimitive?.content?.toLongOrNull()
-                val slots = facilityId?.let(repository::availableSlots).orEmpty()
-                json.encodeToString(
-                    slots.map { slot ->
-                        mapOf(
-                            "slot_id" to JsonPrimitive(slot.id),
-                            "facility_id" to JsonPrimitive(slot.facilityId),
-                            "starts_at" to JsonPrimitive(slot.startsAt.toString()),
-                        )
-                    },
-                )
-            }
-            "book_appointment" -> {
-                val facilityId = arguments["facility_id"]?.jsonPrimitive?.content?.toLongOrNull()
-                val startsAt =
-                    arguments["starts_at"]
-                        ?.jsonPrimitive
-                        ?.contentOrNull
-                        ?.let(java.time.OffsetDateTime::parse)
-                val note = arguments["note"]?.jsonPrimitive?.contentOrNull?.takeIf(String::isNotBlank)
-                if (facilityId == null || startsAt == null || repository.facilityById(facilityId) == null) {
-                    """{"error":"Invalid facility or appointment time"}"""
-                } else {
-                    val appointment = repository.bookAppointment(userId, facilityId, startsAt, note)
-                    json.encodeToString(
-                        mapOf(
-                            "appointment_id" to JsonPrimitive(appointment.id),
-                            "facility_name" to JsonPrimitive(appointment.facilityName),
-                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
-                            "status" to JsonPrimitive(appointment.status),
-                        ),
-                    )
-                }
-            }
-            "cancel_appointment" -> {
-                val appointmentId = arguments["appointment_id"]?.jsonPrimitive?.content?.toLongOrNull()
-                val appointment = appointmentId?.let { repository.cancelAppointment(userId, it) }
-                if (appointment == null) {
-                    """{"error":"Booked appointment not found for the signed-in student"}"""
-                } else {
-                    json.encodeToString(
-                        mapOf(
-                            "appointment_id" to JsonPrimitive(appointment.id),
-                            "facility_name" to JsonPrimitive(appointment.facilityName),
-                            "starts_at" to JsonPrimitive(appointment.startsAt.toString()),
-                            "status" to JsonPrimitive(appointment.status),
-                        ),
-                    )
-                }
-            }
-            else -> """{"error":"Unsupported tool"}"""
-        }
-
-    private fun facilityPayload(facility: Facility): Map<String, JsonElement> =
-        mapOf(
-            "id" to JsonPrimitive(facility.id),
-            "name" to JsonPrimitive(facility.name),
-            "scope" to JsonPrimitive(facility.summary),
-            "provider" to JsonPrimitive(facility.provider),
-            "location" to JsonPrimitive(facility.location),
-            "distance_minutes" to JsonPrimitive(facility.distanceMinutes),
-            "rating" to JsonPrimitive(facility.rating),
-            "response_time" to JsonPrimitive(facility.responseTime),
-            "contact_mode" to JsonPrimitive(facility.contactMode),
-            "eligibility" to JsonPrimitive(facility.eligibility),
-            "preparation" to JsonPrimitive(facility.preparation),
-            "categories" to JsonArray(facility.categories.map { JsonPrimitive(it.name) }),
-            "available_slots" to
-                JsonArray(
-                    repository.availableSlots(facility.id).map { slot ->
-                        JsonPrimitive(slot.startsAt.toString())
-                    },
-                ),
-        )
-
     private fun recommendation(facility: Facility) =
         FacilityRecommendation(
             id = facility.id,
@@ -455,6 +379,6 @@ class DeepSeekSupportAssistant(
     )
 
     private companion object {
-        const val MAX_TOOL_ROUNDS = 4
+        const val MAX_TOOL_ROUNDS = 6
     }
 }
