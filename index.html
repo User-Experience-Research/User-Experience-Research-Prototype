@@ -1137,6 +1137,7 @@
           <li><button class="nav-button is-active" type="button" data-nav="dashboard" onclick="showScreen('dashboard')" aria-current="page"><span class="nav-icon" aria-hidden="true">H</span>Home</button></li>
           <li><button class="nav-button" type="button" data-nav="support" onclick="showScreen('support')"><span class="nav-icon" aria-hidden="true">?</span>Support Navigator</button></li>
           <li><button class="nav-button" type="button" data-nav="appointments" onclick="showScreen('appointments')"><span class="nav-icon" aria-hidden="true">A</span>My appointments</button></li>
+          <li><button class="nav-button" type="button" data-nav="messages" onclick="showScreen('messages')"><span class="nav-icon" aria-hidden="true">M</span>Messages <span id="message-badge" class="message-badge" aria-label="0 unread messages" hidden>0</span></button></li>
           <li><button class="nav-button" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span class="nav-icon" aria-hidden="true">C</span>Course area</button></li>
         </ul>
       </nav>
@@ -1192,6 +1193,7 @@
                 <span class="arrow" aria-hidden="true">→</span>
               </button>
               <button class="portal-link" type="button" onclick="showScreen('appointments')"><span><strong>My appointments</strong><small>Review active and cancelled support appointments.</small></span><span aria-hidden="true">›</span></button>
+              <button class="portal-link" type="button" onclick="showScreen('messages')"><span><strong>Messages</strong><small>Open booking confirmations and cancellation records.</small></span><span aria-hidden="true">›</span></button>
               <button class="portal-link" type="button" onclick="fakeAction('Course area is outside this prototype.')"><span>Course area</span><span aria-hidden="true">›</span></button>
             </div>
           </div>
@@ -1424,6 +1426,7 @@
             <div class="form-actions">
               <button class="button button--accent" type="button" onclick="showScreen('appointments')">View my appointments</button>
               <button class="button danger-button" id="confirmation-cancel" type="button" onclick="cancelCurrentAppointment()">Cancel appointment</button>
+              <button class="button button--outline" type="button" onclick="showScreen('messages')">Open messages</button>
             </div>
           </div>
         </section>
@@ -1439,6 +1442,16 @@
           <div id="appointments-list" class="records-list" aria-live="polite"></div>
         </section>
 
+        <section id="screen-messages" class="screen" aria-labelledby="messages-heading" hidden>
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">Student portal</p>
+              <h2 id="messages-heading" tabindex="-1">Messages</h2>
+              <p>Booking and cancellation messages link back to the complete appointment record.</p>
+            </div>
+          </div>
+          <div id="messages-list" class="messages-list" aria-live="polite"></div>
+        </section>
       </div>
     </main>
   </div>
@@ -1446,7 +1459,7 @@
   <div id="cancel-dialog-backdrop" class="modal-backdrop" hidden>
     <div class="dialog" id="cancel-dialog" role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title" aria-describedby="cancel-dialog-description" tabindex="-1">
       <h2 id="cancel-dialog-title">Cancel this appointment?</h2>
-      <p id="cancel-dialog-description">The booking will remain visible as a cancelled record in My appointments.</p>
+      <p id="cancel-dialog-description">The booking will remain visible as a cancelled record, and a cancellation message will be created.</p>
       <div class="form-actions">
         <button class="button button--outline" id="keep-appointment-button" type="button" onclick="closeCancelDialog()">Keep appointment</button>
         <button class="button danger-button" id="confirm-cancel-button" type="button" onclick="confirmCancellation()">Cancel appointment</button>
@@ -1646,6 +1659,8 @@
         currentAppointmentId = null;
         pendingCancelId = null;
         renderAppointments();
+        renderMessages();
+        renderMessageBadge();
         document.getElementById("screen-announcer").textContent =
           "Prototype appointments and messages have been cleared. The large font setting was kept.";
         fakeAction("Prototype appointments and messages cleared.");
@@ -1663,6 +1678,7 @@
       document.getElementById("portal").classList.add("is-visible");
       document.getElementById("portal").setAttribute("aria-hidden", "false");
       document.getElementById("skip-link").setAttribute("href", "#main-content");
+      renderMessageBadge();
       showScreen("dashboard");
     }
 
@@ -1693,6 +1709,7 @@
         booking: "support",
         confirmation: "appointments",
         appointments: "appointments",
+        messages: "messages"
       };
       document.querySelectorAll("[data-nav]").forEach(button => {
         const active = button.dataset.nav === navMap[name];
@@ -1708,6 +1725,7 @@
         booking: ["Book a conversation", "Prototype appointment flow"],
         confirmation: ["Appointment record", "Booking status, access details and fallback"],
         appointments: ["My appointments", "Review or cancel support bookings"],
+        messages: ["Messages", "Booking confirmations and cancellation records"]
       };
       const pageTitle = titles[name] || titles.dashboard;
       document.getElementById("banner-title").textContent = pageTitle[0];
@@ -1715,6 +1733,7 @@
 
       if (name === "support") renderSupportOptions();
       if (name === "appointments") renderAppointments();
+      if (name === "messages") renderMessages();
 
       window.scrollTo({ top: 0, behavior: "instant" });
       document.getElementById("screen-announcer").textContent = `${pageTitle[0]} page loaded.`;
@@ -1908,11 +1927,12 @@
         cancelledAt: null
       };
       appointments.unshift(appointment);
+      createMessage("confirmed", appointment);
       currentAppointmentId = appointment.id;
       renderAppointmentRecord(appointment);
       document.getElementById("issue-summary").value = "";
       showScreen("confirmation");
-      fakeAction("Appointment confirmed.");
+      fakeAction("Appointment confirmed. A new message is available.");
     }
 
     function renderAppointments() {
@@ -2017,8 +2037,8 @@
         ? `Your appointment with ${appointment.service} was cancelled`
         : `Your request went to ${appointment.service}`;
       document.getElementById("confirmation-description").textContent = cancelled
-        ? "The booking is no longer active. This record remains available in My appointments."
-        : "This record shows where the request went. Nothing has been sent to a live university system.";
+        ? "The booking is no longer active. A cancellation message links back to this record."
+        : "A confirmation message links back to this record. Nothing has been sent to a live university system.";
       document.getElementById("confirmation-appointment-label").textContent = cancelled ? "Cancelled appointment" : "Appointment";
       document.getElementById("confirmation-time").textContent = `${appointment.date} · ${appointment.time}`;
       document.getElementById("confirmation-mode").textContent = appointment.mode;
@@ -2046,7 +2066,7 @@
       pendingCancelId = appointment.id;
       lastFocusedElement = document.activeElement;
       document.getElementById("cancel-dialog-description").textContent =
-        `Cancel the appointment with ${appointment.service} on ${appointment.date} at ${appointment.time}? The booking will remain visible as a cancelled record in My appointments.`;
+        `Cancel the appointment with ${appointment.service} on ${appointment.date} at ${appointment.time}? The booking will remain visible as a cancelled record, and a cancellation message will be created.`;
       document.getElementById("portal").inert = true;
       document.getElementById("portal").setAttribute("aria-hidden", "true");
       document.getElementById("cancel-dialog-backdrop").hidden = false;
@@ -2070,6 +2090,7 @@
 
       appointment.status = "cancelled";
       appointment.cancelledAt = new Date().toISOString();
+      createMessage("cancelled", appointment);
       currentAppointmentId = appointment.id;
       document.getElementById("cancel-dialog-backdrop").hidden = true;
       document.getElementById("portal").inert = false;
@@ -2077,7 +2098,7 @@
       pendingCancelId = null;
       renderAppointmentRecord(appointment);
       showScreen("confirmation");
-      fakeAction("Appointment cancelled.");
+      fakeAction("Appointment cancelled. A cancellation message is available.");
     }
 
     document.addEventListener("keydown", event => {
@@ -2104,6 +2125,8 @@
 
     populateDetail();
     renderAppointments();
+    renderMessages();
+    renderMessageBadge();
   </script>
 </body>
 </html>
