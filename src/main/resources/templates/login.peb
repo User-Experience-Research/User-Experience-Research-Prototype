@@ -11,7 +11,7 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" class="login-shell">
     <section class="institution-panel" aria-labelledby="institution-name">
-        <div class="nmsi-mark" aria-hidden="true">
+        <div class="nmsi-logo nmsi-logo--login" aria-hidden="true">
             <span>N</span><span>M</span><span>S</span><span>I</span>
         </div>
         <h1 id="institution-name">North-western Medical and Science Institute</h1>
@@ -36,4 +36,3 @@
 </main>
 </body>
 </html>
-

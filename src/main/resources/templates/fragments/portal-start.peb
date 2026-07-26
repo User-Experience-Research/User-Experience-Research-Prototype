@@ -14,7 +14,9 @@
     <aside id="portal-sidebar" class="portal-sidebar" aria-label="Student portal" tabindex="-1">
         <div class="sidebar-topbar">
             <a class="portal-brand" href="/dashboard" aria-label="NMSI student portal home">
-                <span class="mini-mark" aria-hidden="true">N<span>MSI</span></span>
+                <span class="nmsi-logo nmsi-logo--sidebar" aria-hidden="true">
+                    <span>N</span><span>M</span><span>S</span><span>I</span>
+                </span>
                 <span>NMSI</span>
             </a>
             <button
@@ -83,6 +85,8 @@
             <button class="font-toggle font-toggle--header" type="button" data-font-toggle aria-pressed="false">Large font: Off</button>
         </header>
         <div class="portal-hero" aria-hidden="true">
-            <span class="mini-mark mini-mark--hero">N<span>MSI</span></span>
+            <span class="nmsi-logo nmsi-logo--hero">
+                <span>N</span><span>M</span><span>S</span><span>I</span>
+            </span>
         </div>
         <main id="main-content" class="portal-main">
