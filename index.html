@@ -1423,6 +1423,7 @@
             </div>
             <div class="form-actions">
               <button class="button button--accent" type="button" onclick="showScreen('appointments')">View my appointments</button>
+              <button class="button danger-button" id="confirmation-cancel" type="button" onclick="cancelCurrentAppointment()">Cancel appointment</button>
             </div>
           </div>
         </section>
@@ -1440,6 +1441,17 @@
 
       </div>
     </main>
+  </div>
+
+  <div id="cancel-dialog-backdrop" class="modal-backdrop" hidden>
+    <div class="dialog" id="cancel-dialog" role="dialog" aria-modal="true" aria-labelledby="cancel-dialog-title" aria-describedby="cancel-dialog-description" tabindex="-1">
+      <h2 id="cancel-dialog-title">Cancel this appointment?</h2>
+      <p id="cancel-dialog-description">The booking will remain visible as a cancelled record in My appointments.</p>
+      <div class="form-actions">
+        <button class="button button--outline" id="keep-appointment-button" type="button" onclick="closeCancelDialog()">Keep appointment</button>
+        <button class="button danger-button" id="confirm-cancel-button" type="button" onclick="confirmCancellation()">Cancel appointment</button>
+      </div>
+    </div>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -1932,6 +1944,7 @@
             </div>
             <div class="record-actions">
               <button class="button button--accent" type="button" onclick="openAppointmentRecord('${escapeHTML(appointment.id)}')" aria-label="Open ${cancelled ? "cancellation" : "confirmation"} record for ${escapeHTML(appointment.service)}">View record</button>
+              ${cancelled ? "" : `<button class="button danger-button" type="button" onclick="requestCancelAppointment('${escapeHTML(appointment.id)}')" aria-label="Cancel appointment with ${escapeHTML(appointment.service)}">Cancel appointment</button>`}
             </div>
           </article>
         `;
@@ -2011,6 +2024,7 @@
       document.getElementById("confirmation-mode").textContent = appointment.mode;
       document.getElementById("confirmation-response-label").textContent = cancelled ? "Record reference" : "Expected reply";
       document.getElementById("confirmation-response").textContent = cancelled ? appointment.id : appointment.response;
+      document.getElementById("confirmation-cancel").hidden = cancelled;
       document.getElementById("confirmation-next-steps").innerHTML = cancelled
         ? `
           <div class="next-step"><h4>Cancellation recorded</h4><p>The appointment remains visible in My appointments so the student can verify what changed.</p></div>
@@ -2032,7 +2046,7 @@
       pendingCancelId = appointment.id;
       lastFocusedElement = document.activeElement;
       document.getElementById("cancel-dialog-description").textContent =
-        `Cancel the appointment with ${appointment.service} on ${appointment.date} at ${appointment.time}? The booking will remain visible as a cancelled record, and a cancellation message will be created.`;
+        `Cancel the appointment with ${appointment.service} on ${appointment.date} at ${appointment.time}? The booking will remain visible as a cancelled record in My appointments.`;
       document.getElementById("portal").inert = true;
       document.getElementById("portal").setAttribute("aria-hidden", "true");
       document.getElementById("cancel-dialog-backdrop").hidden = false;
@@ -2065,6 +2079,28 @@
       showScreen("confirmation");
       fakeAction("Appointment cancelled.");
     }
+
+    document.addEventListener("keydown", event => {
+      const backdrop = document.getElementById("cancel-dialog-backdrop");
+      if (backdrop.hidden) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeCancelDialog();
+        return;
+      }
+      if (event.key === "Tab") {
+        const focusable = [
+          document.getElementById("keep-appointment-button"),
+          document.getElementById("confirm-cancel-button")
+        ];
+        const currentIndex = focusable.indexOf(document.activeElement);
+        const nextIndex = event.shiftKey
+          ? (currentIndex <= 0 ? focusable.length - 1 : currentIndex - 1)
+          : (currentIndex >= focusable.length - 1 ? 0 : currentIndex + 1);
+        event.preventDefault();
+        focusable[nextIndex].focus();
+      }
+    });
 
     populateDetail();
     renderAppointments();
