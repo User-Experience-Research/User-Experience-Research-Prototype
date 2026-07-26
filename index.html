@@ -1102,6 +1102,7 @@
     <main class="login-panel" id="login-main">
       <div>
         <div class="login-accessibility">
+          <button class="accessibility-toggle" type="button" data-font-toggle onclick="toggleLargeFont()" aria-pressed="false" aria-label="Turn large font on">Large font: Off</button>
         </div>
       <form class="login-card" onsubmit="handleLogin(event)" aria-describedby="login-description prototype-login-note">
         <p class="eyebrow">Student portal</p>
@@ -1156,6 +1157,9 @@
           <div>
             <h1 id="banner-title">Student portal</h1>
             <p id="banner-subtitle">North-western Medical and Science Institute</p>
+          </div>
+          <div class="banner-actions">
+            <button class="accessibility-toggle" type="button" data-font-toggle onclick="toggleLargeFont()" aria-pressed="false" aria-label="Turn large font on">Large font: Off</button>
           </div>
         </div>
       </header>
@@ -2129,6 +2133,7 @@
       }
     });
 
+    setLargeFont(getLargeFontPreference());
     populateDetail();
     renderAppointments();
     renderMessages();
