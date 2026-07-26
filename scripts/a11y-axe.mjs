@@ -42,6 +42,14 @@ try {
   ]) {
     await checkPage(name, path);
   }
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
+  const menuButton = page.getByRole("button", { name: "Open student portal menu" });
+  await menuButton.click();
+  await page.getByRole("complementary", { name: "Student portal" }).waitFor();
+  await page.getByRole("button", { name: "Close student portal menu" }).first().click();
+  await checkPage("Mobile dashboard", "/dashboard");
 } finally {
   await browser.close();
 }

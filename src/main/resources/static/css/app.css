@@ -230,21 +230,44 @@ button:hover,
     height: 100vh;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 0;
+    padding: 0;
     color: #ffffff;
     background: var(--dark);
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebar-topbar {
+    min-height: 5.25rem;
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #4b5552;
 }
 
 .portal-brand {
+    min-width: 0;
+    flex: 1;
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0 1.25rem 1.5rem;
-    border-bottom: 1px solid #4b5552;
+    padding: 1rem 1.25rem;
     color: #ffffff;
     font-size: 1.35rem;
     font-weight: 700;
     text-decoration: none;
+}
+
+.sidebar-close {
+    width: 4rem;
+    min-height: 0;
+    display: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid #4b5552;
+    color: #ffffff;
+    background: transparent;
+    font-size: 1.75rem;
 }
 
 .mini-mark {
@@ -282,10 +305,20 @@ button:hover,
     min-height: 3.25rem;
     display: flex;
     align-items: center;
+    gap: 0.85rem;
     padding: 0.75rem 1.25rem;
     border-left: 0.35rem solid transparent;
     color: #ffffff;
     text-decoration: none;
+}
+
+.nav-icon {
+    width: 1.8rem;
+    flex: 0 0 1.8rem;
+    color: #dce6e2;
+    font-size: 1.35rem;
+    line-height: 1;
+    text-align: center;
 }
 
 .portal-sidebar nav a:hover {
@@ -303,14 +336,38 @@ button:hover,
     cursor: not-allowed;
 }
 
+.sidebar-footer {
+    margin-top: auto;
+    padding: 1rem 1.25rem 1.2rem;
+}
+
+.sidebar-footer p {
+    margin: 1rem 0 0;
+    color: #aab5b1;
+    font-size: 0.78rem;
+}
+
+.sidebar-footer a {
+    color: #d6dedb;
+}
+
 .logout-form {
-    margin: auto 1.25rem 0;
+    margin: 0;
 }
 
 .sidebar-action {
     width: 100%;
+    gap: 0.7rem;
+    justify-content: flex-start;
+    margin: 0;
     border-color: #dce6e2;
     background: transparent;
+}
+
+.sidebar-backdrop,
+.mobile-menu-toggle,
+.mobile-page-title {
+    display: none;
 }
 
 .portal-workspace {
@@ -867,25 +924,99 @@ button:hover,
     }
 
     .portal-sidebar {
-        position: static;
-        height: auto;
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(20rem, calc(100vw - 3rem));
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform 180ms ease;
+        box-shadow: 1rem 0 2.5rem rgb(0 0 0 / 28%);
+    }
+
+    .sidebar-open {
+        overflow: hidden;
+    }
+
+    .sidebar-open .portal-sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-close {
+        display: inline-flex;
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        z-index: 90;
+        inset: 0;
+        width: 100%;
+        min-height: 100%;
+        display: block;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: rgb(5 12 10 / 62%);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+    }
+
+    .sidebar-open .sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     .portal-sidebar nav {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: 1fr;
     }
 
     .portal-sidebar nav a {
-        justify-content: center;
-        text-align: center;
+        justify-content: flex-start;
+        text-align: left;
     }
 
-    .portal-sidebar nav a[aria-disabled="true"] {
+    .portal-header {
+        position: sticky;
+        z-index: 40;
+        top: 0;
+        min-height: 4.25rem;
+        display: grid;
+        grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+        padding: 0.5rem 0.75rem;
+        box-shadow: 0 0.2rem 0.8rem rgb(17 23 21 / 12%);
+    }
+
+    .mobile-menu-toggle {
+        width: 3.25rem;
+        min-height: 3.25rem;
+        display: inline-grid;
+        place-items: center;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        color: var(--ink);
+        background: transparent;
+        font-size: 1.65rem;
+    }
+
+    .mobile-menu-toggle:hover {
+        color: #ffffff;
+    }
+
+    .institution-name {
         display: none;
     }
 
-    .logout-form {
-        margin: 1rem 1.25rem 0;
+    .mobile-page-title {
+        min-width: 0;
+        display: block;
+        overflow: hidden;
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .feature-card,
@@ -924,10 +1055,6 @@ button:hover,
     .portal-footer {
         align-items: stretch;
         flex-direction: column;
-    }
-
-    .portal-sidebar nav {
-        grid-template-columns: 1fr;
     }
 
     .comparison-grid,
