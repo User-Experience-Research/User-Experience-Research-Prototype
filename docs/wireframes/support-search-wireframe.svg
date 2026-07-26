@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="720" viewBox="0 0 1100 720" role="img" aria-labelledby="title desc">
+  <title id="title">Support search wireframe</title>
+  <desc id="desc">Black and white line drawing of search, category filter, comparison cards and Support Guide launcher.</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#000"/></marker><style>.box{fill:#fff;stroke:#000;stroke-width:3}.thin{fill:none;stroke:#000;stroke-width:2}.dash{fill:#fff;stroke:#000;stroke-width:2;stroke-dasharray:8 6}.t{font-family:Arial,sans-serif;fill:#000;font-size:19px}.s{font-family:Arial,sans-serif;fill:#000;font-size:15px}.h{font-family:Arial,sans-serif;fill:#000;font-size:28px;font-weight:700}.line{fill:none;stroke:#000;stroke-width:2;marker-end:url(#arrow)}</style></defs>
+  <rect width="1100" height="720" fill="#fff"/>
+  <text x="35" y="42" class="h">S1 — Find and compare support sources</text>
+  <rect x="35" y="75" width="790" height="590" class="box"/>
+  <rect x="35" y="75" width="170" height="590" class="box"/>
+  <text x="65" y="115" class="h">NMSI</text><text x="58" y="170" class="s">Home</text>
+  <rect x="50" y="190" width="140" height="45" class="box"/><text x="61" y="218" class="s">Support Navigator</text>
+  <text x="58" y="270" class="s">My appointments</text><text x="58" y="620" class="s">Sign out</text>
+  <rect x="205" y="75" width="620" height="52" class="box"/><text x="225" y="107" class="s">Institute header</text>
+  <text x="235" y="165" class="h">Student Support Navigator</text>
+  <text x="235" y="193" class="s">Search in your own words, then compare plausible sources.</text>
+  <rect x="235" y="215" width="555" height="96" class="box"/>
+  <text x="252" y="241" class="s">What would you like help with?</text>
+  <rect x="252" y="252" width="285" height="40" class="box"/><text x="263" y="277" class="s">deadline stress...</text>
+  <rect x="548" y="252" width="145" height="40" class="box"/><text x="558" y="277" class="s">Need area ▾</text>
+  <rect x="704" y="252" width="70" height="40" class="box"/><text x="716" y="277" class="s">Search</text>
+  <text x="235" y="342" class="t">3 support sources</text>
+  <rect x="235" y="360" width="555" height="82" class="box"/>
+  <rect x="252" y="372" width="90" height="22" class="box"/><text x="260" y="388" class="s">Academic</text>
+  <text x="252" y="420" class="t">Academic Skills &amp; Extensions</text>
+  <text x="552" y="385" class="s">Provider • 8 min</text><text x="552" y="410" class="s">Same day • 4.7/5</text>
+  <rect x="235" y="452" width="555" height="82" class="box"/>
+  <rect x="252" y="464" width="88" height="22" class="box"/><text x="260" y="480" class="s">Wellbeing</text>
+  <text x="252" y="512" class="t">Student Wellbeing</text>
+  <text x="552" y="477" class="s">Counsellor • Online</text><text x="552" y="502" class="s">2 days • 4.6/5</text>
+  <rect x="235" y="544" width="555" height="82" class="box"/>
+  <text x="252" y="576" class="t">Programme Advice Hub</text>
+  <text x="552" y="569" class="s">Adviser • 5 min</text><text x="552" y="594" class="s">Next day • 4.4/5</text>
+  <circle cx="785" cy="630" r="25" class="box"/><text x="777" y="637" class="t">?</text>
+  <rect x="855" y="105" width="215" height="120" class="dash"/>
+  <text x="873" y="137" class="s">Search spans category</text><text x="873" y="161" class="s">keywords and facility scope,</text><text x="873" y="185" class="s">not only official names.</text>
+  <path d="M855 180 C825 205 795 240 690 260" class="line"/>
+  <rect x="855" y="300" width="215" height="145" class="dash"/>
+  <text x="873" y="332" class="s">Cards expose tie-breakers:</text><text x="873" y="357" class="s">provider, distance, response,</text><text x="873" y="382" class="s">channel and rating.</text><text x="873" y="417" class="s">Rating remains secondary.</text>
+  <path d="M855 392 C835 420 812 425 760 420" class="line"/>
+  <text x="45" y="700" class="s">Evidence: overlap T04–T07; practical tie-breakers T08–T11; task fit over rating T12–T15.</text>
+</svg>

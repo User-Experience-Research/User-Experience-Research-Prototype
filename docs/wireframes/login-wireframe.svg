@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" role="img" aria-labelledby="title desc">
+  <title id="title">Login page wireframe</title>
+  <desc id="desc">Black and white line drawing of the NMSI institution panel, sign-in form and persistent large-font control.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#000"/></marker>
+    <style>
+      .box{fill:#fff;stroke:#000;stroke-width:3}.thin{fill:none;stroke:#000;stroke-width:2}.note{fill:#fff;stroke:#000;stroke-width:2;stroke-dasharray:8 6}.t{font-family:Arial,sans-serif;fill:#000;font-size:20px}.s{font-family:Arial,sans-serif;fill:#000;font-size:16px}.h{font-family:Arial,sans-serif;fill:#000;font-size:30px;font-weight:700}.line{fill:none;stroke:#000;stroke-width:2;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1000" height="680" fill="#fff"/>
+  <text x="40" y="45" class="h">L1 — Demonstration login</text>
+  <rect x="55" y="85" width="640" height="520" class="box"/>
+  <line x1="365" y1="85" x2="365" y2="605" class="thin"/>
+  <circle cx="180" cy="190" r="70" class="box"/>
+  <text x="126" y="202" class="h">NMSI</text>
+  <text x="85" y="315" class="t">North-western Medical</text>
+  <text x="93" y="345" class="t">and Science Institute</text>
+  <text x="95" y="390" class="s">Student portal context</text>
+  <rect x="520" y="108" width="145" height="42" class="box"/>
+  <text x="540" y="135" class="s">Large font</text>
+  <rect x="405" y="175" width="250" height="365" class="box"/>
+  <text x="430" y="215" class="s">STUDENT PORTAL</text>
+  <text x="430" y="255" class="h">Sign in</text>
+  <text x="430" y="300" class="s">Student ID</text>
+  <rect x="430" y="315" width="200" height="42" class="box"/>
+  <text x="430" y="395" class="s">Password</text>
+  <rect x="430" y="410" width="200" height="42" class="box"/>
+  <rect x="430" y="475" width="200" height="45" class="box"/>
+  <text x="505" y="504" class="t">Log in</text>
+  <rect x="735" y="95" width="225" height="100" class="note"/>
+  <text x="755" y="125" class="s">Large-font state persists</text>
+  <text x="755" y="150" class="s">after route change or refresh.</text>
+  <path d="M735 150 C710 150 690 140 665 130" class="line"/>
+  <rect x="735" y="260" width="225" height="125" class="note"/>
+  <text x="755" y="292" class="s">Prototype login accepts</text>
+  <text x="755" y="317" class="s">blank fields and creates</text>
+  <text x="755" y="342" class="s">the demo-user session.</text>
+  <path d="M735 330 C705 360 695 470 630 495" class="line"/>
+  <text x="60" y="650" class="s">Research role: enter the support flow without adding authentication friction.</text>
+</svg>

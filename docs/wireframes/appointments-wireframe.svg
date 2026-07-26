@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" role="img" aria-labelledby="title desc">
+  <title id="title">My appointments wireframe</title>
+  <desc id="desc">Black and white appointments page with booking confirmation, status, details and cancel control.</desc>
+  <defs><marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#000"/></marker><style>.box{fill:#fff;stroke:#000;stroke-width:3}.thin{fill:none;stroke:#000;stroke-width:2}.dash{fill:#fff;stroke:#000;stroke-width:2;stroke-dasharray:8 6}.t{font-family:Arial,sans-serif;fill:#000;font-size:19px}.s{font-family:Arial,sans-serif;fill:#000;font-size:15px}.h{font-family:Arial,sans-serif;fill:#000;font-size:28px;font-weight:700}.line{fill:none;stroke:#000;stroke-width:2;marker-end:url(#arrow)}</style></defs>
+  <rect width="1000" height="680" fill="#fff"/>
+  <text x="35" y="42" class="h">A1 — My appointments</text>
+  <rect x="35" y="75" width="700" height="540" class="box"/>
+  <rect x="35" y="75" width="165" height="540" class="box"/>
+  <text x="65" y="115" class="h">NMSI</text><text x="55" y="180" class="s">Home</text><text x="55" y="225" class="s">Support Navigator</text>
+  <rect x="50" y="245" width="135" height="45" class="box"/><text x="62" y="273" class="s">My appointments</text>
+  <text x="55" y="575" class="s">Sign out</text>
+  <rect x="200" y="75" width="535" height="52" class="box"/><text x="220" y="107" class="s">Institute header + Large font</text>
+  <text x="230" y="170" class="h">My appointments</text>
+  <text x="230" y="198" class="s">Review and cancel support appointments.</text>
+  <rect x="230" y="222" width="465" height="50" class="box"/>
+  <text x="250" y="253" class="s">Status: Your appointment was booked.</text>
+  <rect x="230" y="295" width="465" height="150" class="box"/>
+  <rect x="250" y="312" width="80" height="25" class="box"/><text x="262" y="330" class="s">BOOKED</text>
+  <text x="250" y="372" class="t">Academic Skills &amp; Extensions</text>
+  <text x="250" y="403" class="s">30 July 2026 • 10:00</text>
+  <rect x="520" y="380" width="145" height="42" class="box"/><text x="538" y="407" class="s">Cancel appointment</text>
+  <rect x="230" y="465" width="465" height="100" class="box"/>
+  <rect x="250" y="482" width="95" height="25" class="box"/><text x="258" y="500" class="s">CANCELLED</text>
+  <text x="250" y="540" class="t">Digital Access Desk</text>
+  <rect x="775" y="145" width="195" height="120" class="dash"/>
+  <text x="793" y="177" class="s">Confirmation and status</text><text x="793" y="202" class="s">show that the request reached</text><text x="793" y="227" class="s">the selected source.</text>
+  <path d="M775 210 C750 220 725 235 695 245" class="line"/>
+  <rect x="775" y="350" width="195" height="135" class="dash"/>
+  <text x="793" y="382" class="s">Cancel is user-scoped.</text><text x="793" y="407" class="s">The server changes status</text><text x="793" y="432" class="s">and releases the slot in one</text><text x="793" y="457" class="s">transaction.</text>
+  <path d="M775 420 C735 430 700 410 665 402" class="line"/>
+  <text x="45" y="650" class="s">Evidence: routing confirmation, status and fallback T16–T18.</text>
+</svg>
