@@ -23,7 +23,10 @@
             </div>
             {% if appointment.status == "BOOKED" %}
                 <form method="post" action="/appointments/{{ appointment.id }}/cancel">
-                    <button class="danger-button" type="submit">Cancel appointment</button>
+                    <button class="danger-button button-with-icon" type="submit">
+                        <span aria-hidden="true">×</span>
+                        <span>Cancel appointment</span>
+                    </button>
                 </form>
             {% endif %}
         </article>
@@ -31,7 +34,10 @@
         <div class="empty-state">
             <h2>No appointments yet</h2>
             <p>Search the support directory and open a source to make a demonstration booking.</p>
-            <a class="button-link" href="/support">Find support</a>
+            <a class="button-link button-with-icon" href="/support">
+                <span aria-hidden="true">⌕</span>
+                <span>Find support</span>
+            </a>
         </div>
     {% endfor %}
 </section>

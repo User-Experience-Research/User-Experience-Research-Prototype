@@ -5,7 +5,7 @@
     aria-controls="support-chat-panel"
     aria-expanded="false"
 >
-    <span aria-hidden="true">?</span>
+    <span class="chat-launcher__icon" aria-hidden="true">✦</span>
     <span>Ask Support Guide</span>
 </button>
 
@@ -33,9 +33,18 @@
         </div>
     </div>
     <div class="chat-suggestions" aria-label="Example questions">
-        <button type="button" data-chat-suggestion="I am stressed about a deadline and I am not sure who to ask.">Deadline stress</button>
-        <button type="button" data-chat-suggestion="My laptop cannot connect to the university Wi-Fi.">Digital access</button>
-        <button type="button" data-chat-suggestion="Can you show me my appointments?">My appointments</button>
+        <button type="button" data-chat-suggestion="I am stressed about a deadline and I am not sure who to ask.">
+            <span aria-hidden="true">⌁</span>
+            <span>Deadline stress</span>
+        </button>
+        <button type="button" data-chat-suggestion="My laptop cannot connect to the university Wi-Fi.">
+            <span aria-hidden="true">⌘</span>
+            <span>Digital access</span>
+        </button>
+        <button type="button" data-chat-suggestion="Can you show me my appointments?">
+            <span aria-hidden="true">▣</span>
+            <span>My appointments</span>
+        </button>
     </div>
     <form id="support-chat-form" class="chat-form">
         <label for="support-chat-input">Your message</label>
@@ -48,9 +57,11 @@
                 required
                 placeholder="Describe your situation"
             ></textarea>
-            <button type="submit">Send</button>
+            <button class="chat-send" type="submit">
+                <span>Send</span>
+                <span aria-hidden="true">↑</span>
+            </button>
         </div>
         <p id="support-chat-status" class="chat-status" role="status" aria-live="polite"></p>
     </form>
 </section>
-

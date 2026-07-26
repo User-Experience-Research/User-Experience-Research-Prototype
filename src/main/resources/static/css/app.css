@@ -4,11 +4,12 @@
     --ink: #17201e;
     --muted: #4c5b57;
     --surface: #ffffff;
-    --canvas: #f3f5f4;
-    --brand: #087b65;
-    --brand-dark: #064f43;
-    --dark: #111715;
-    --line: #c9d1ce;
+    --canvas: #f6f6f5;
+    --brand: #008d74;
+    --brand-bright: #08cfa7;
+    --brand-dark: #07584b;
+    --dark: #202321;
+    --line: #cfd2d0;
     --focus: #ffbf47;
 }
 
@@ -199,6 +200,15 @@ button,
     cursor: pointer;
 }
 
+.button-with-icon {
+    gap: 0.65rem;
+}
+
+.button-with-icon > span:first-child {
+    font-size: 1.3em;
+    line-height: 1;
+}
+
 button:hover,
 .button-link:hover {
     background: var(--brand-dark);
@@ -221,7 +231,7 @@ button:hover,
 .portal-shell {
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 18rem minmax(0, 1fr);
+    grid-template-columns: 19rem minmax(0, 1fr);
 }
 
 .portal-sidebar {
@@ -326,9 +336,14 @@ button:hover,
 }
 
 .portal-sidebar nav a[aria-current="page"] {
-    border-color: #30d2ad;
-    background: #0d6655;
+    border-color: #84f5dc;
+    color: #061915;
+    background: var(--brand-bright);
     font-weight: 700;
+}
+
+.portal-sidebar nav a[aria-current="page"] .nav-icon {
+    color: #061915;
 }
 
 .portal-sidebar nav a[aria-disabled="true"] {
@@ -377,14 +392,15 @@ button:hover,
 }
 
 .portal-header {
-    min-height: 5.5rem;
+    min-height: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
     padding: 1rem clamp(1.5rem, 4vw, 4rem);
-    border-bottom: 1px solid var(--line);
-    background: #ffffff;
+    color: #ffffff;
+    border-bottom: 1px solid #3a3d3b;
+    background: var(--dark);
 }
 
 .portal-header p {
@@ -394,12 +410,31 @@ button:hover,
 
 .font-toggle--header {
     flex: 0 0 auto;
+    color: #ffffff;
+    border-color: #d9e2df;
+    background: transparent;
+}
+
+.portal-hero {
+    min-height: 10.5rem;
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid #2d302e;
+    background: linear-gradient(180deg, #292c2a 0%, #171917 70%, #090a09 100%);
+}
+
+.mini-mark--hero {
+    width: 7.5rem;
+    height: 7.5rem;
+    font-size: 3rem;
+    box-shadow: 0.65rem 0.65rem 0 rgb(0 0 0 / 25%);
 }
 
 .portal-main {
-    width: min(92rem, 100%);
+    width: min(86rem, 100%);
     flex: 1;
-    padding: clamp(2rem, 5vw, 4.5rem);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.75rem);
 }
 
 .page-heading {
@@ -409,7 +444,7 @@ button:hover,
 .page-heading h1 {
     max-width: 22ch;
     margin: 0.2rem 0 0.5rem;
-    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-size: clamp(2.4rem, 4vw, 3.65rem);
     font-weight: 400;
     line-height: 1.08;
 }
@@ -426,7 +461,8 @@ button:hover,
 }
 
 .service-section h2 {
-    font-size: 1.7rem;
+    font-size: 1.65rem;
+    font-weight: 400;
 }
 
 .section-heading-row,
@@ -466,6 +502,144 @@ button:hover,
 .feature-card h3 {
     margin-top: 0;
     font-size: 2rem;
+}
+
+.service-directory {
+    display: grid;
+    grid-template-columns: minmax(18rem, 1fr) minmax(22rem, 1fr);
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.directory-visual {
+    min-height: 25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: clamp(2rem, 5vw, 4rem);
+    color: #24312e;
+    background:
+        linear-gradient(135deg, rgb(255 255 255 / 38%), transparent 48%),
+        #eee2c4;
+}
+
+.directory-visual__icon {
+    width: 7rem;
+    height: 7rem;
+    flex: 0 0 7rem;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    background: var(--brand);
+    box-shadow: 1rem 1rem 0 #a6c2c8;
+    font-size: 4rem;
+    font-weight: 300;
+}
+
+.directory-visual h3 {
+    margin: 0.3rem 0 0.75rem;
+    font-size: 2rem;
+    font-weight: 400;
+    line-height: 1.15;
+}
+
+.directory-visual p:last-child {
+    margin-bottom: 0;
+}
+
+.directory-links {
+    display: grid;
+    align-content: stretch;
+}
+
+.directory-link {
+    min-height: 6.25rem;
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    background: #f4f4f4;
+    text-decoration: none;
+}
+
+.directory-link:last-child {
+    border-bottom: 0;
+}
+
+.directory-link:hover {
+    background: #e9efed;
+}
+
+.directory-link--featured {
+    color: #061915;
+    background: #c9f5e9;
+    box-shadow: inset 0.35rem 0 0 var(--brand);
+}
+
+.directory-link--disabled {
+    color: #5d6663;
+    background: #efefef;
+}
+
+.directory-link__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    color: var(--brand-dark);
+    border: 1px solid #93a19d;
+    font-size: 1.25rem;
+}
+
+.directory-link strong,
+.directory-link small {
+    display: block;
+}
+
+.directory-link strong {
+    font-size: 1.08rem;
+}
+
+.directory-link small {
+    margin-top: 0.2rem;
+    color: #53605c;
+}
+
+.directory-link__arrow {
+    color: var(--brand-dark);
+    font-size: 1.5rem;
+}
+
+.guidance-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem 1.75rem;
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.guidance-strip p {
+    margin: 0;
+}
+
+.text-action,
+.detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--brand-dark);
+    font-weight: 700;
+    text-decoration-thickness: 0.1em;
+    text-underline-offset: 0.18em;
+}
+
+.text-action {
+    flex: 0 0 auto;
 }
 
 .plain-list {
@@ -516,8 +690,10 @@ button:hover,
     gap: 1rem;
     margin-bottom: 2.5rem;
     padding: 1.5rem;
-    border: 1px solid var(--line);
+    border: 1px solid #aeb7b4;
+    border-top: 0.35rem solid var(--brand);
     background: #ffffff;
+    box-shadow: 0 0.5rem 1.5rem rgb(17 35 30 / 7%);
 }
 
 .search-panel label {
@@ -548,7 +724,8 @@ button:hover,
 .facility-card {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.3fr);
-    border: 1px solid var(--line);
+    border: 1px solid #bfc6c3;
+    border-left: 0.3rem solid var(--brand);
     background: #ffffff;
 }
 
@@ -559,7 +736,30 @@ button:hover,
 
 .facility-card__action {
     border-left: 1px solid var(--line);
-    background: #edf3f1;
+    background: #f0f2f1;
+}
+
+.facility-card__action > p {
+    margin-top: 0;
+}
+
+.detail-link {
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 1rem;
+    border-top: 1px solid #c8cecb;
+    text-decoration: none;
+}
+
+.detail-link strong,
+.detail-link small {
+    display: block;
+}
+
+.detail-link small {
+    margin-top: 0.15rem;
+    color: var(--muted);
+    font-weight: 400;
 }
 
 .tag-row {
@@ -626,8 +826,12 @@ button:hover,
 .detail-card,
 .booking-card {
     padding: clamp(1.5rem, 4vw, 2.5rem);
-    border: 1px solid var(--line);
+    border: 1px solid #bcc4c1;
     background: #ffffff;
+}
+
+.detail-card {
+    border-top: 0.35rem solid var(--brand);
 }
 
 .detail-list {
@@ -669,7 +873,8 @@ button:hover,
     justify-content: space-between;
     gap: 2rem;
     padding: 1.5rem;
-    border: 1px solid var(--line);
+    border: 1px solid #bcc4c1;
+    border-left: 0.3rem solid var(--brand);
     background: #ffffff;
 }
 
@@ -728,7 +933,7 @@ button:hover,
     box-shadow: 0 0.7rem 2rem rgb(11 43 36 / 25%);
 }
 
-.chat-launcher span[aria-hidden="true"] {
+.chat-launcher__icon {
     width: 1.6rem;
     height: 1.6rem;
     display: grid;
@@ -746,7 +951,8 @@ button:hover,
     width: min(28rem, calc(100vw - 2rem));
     max-height: min(44rem, calc(100vh - 2rem));
     overflow: hidden;
-    border: 2px solid var(--brand-dark);
+    border: 1px solid #2b554b;
+    border-radius: 0.35rem;
     background: #ffffff;
     box-shadow: 0 1.2rem 4rem rgb(11 43 36 / 30%);
 }
@@ -861,6 +1067,7 @@ button:hover,
 .chat-suggestions button {
     min-height: 2.5rem;
     flex: 0 0 auto;
+    gap: 0.45rem;
     margin: 0;
     padding: 0.45rem 0.7rem;
     color: var(--brand-dark);
@@ -893,6 +1100,10 @@ button:hover,
 
 .chat-form button {
     margin: 0;
+}
+
+.chat-send {
+    gap: 0.55rem;
 }
 
 .chat-status {
@@ -983,6 +1194,8 @@ button:hover,
         display: grid;
         grid-template-columns: 3.25rem minmax(0, 1fr) auto;
         padding: 0.5rem 0.75rem;
+        color: var(--ink);
+        background: #ffffff;
         box-shadow: 0 0.2rem 0.8rem rgb(17 23 21 / 12%);
     }
 
@@ -1003,6 +1216,12 @@ button:hover,
         color: #ffffff;
     }
 
+    .font-toggle--header {
+        color: var(--brand-dark);
+        border-color: var(--brand-dark);
+        background: #ffffff;
+    }
+
     .institution-name {
         display: none;
     }
@@ -1019,10 +1238,19 @@ button:hover,
         white-space: nowrap;
     }
 
+    .portal-hero {
+        min-height: 9.5rem;
+    }
+
     .feature-card,
+    .service-directory,
     .facility-card,
     .detail-layout {
         grid-template-columns: 1fr;
+    }
+
+    .directory-visual {
+        min-height: 18rem;
     }
 
     .facility-card__action {
@@ -1040,6 +1268,11 @@ button:hover,
 
     .tool-grid {
         grid-template-columns: 1fr;
+    }
+
+    .guidance-strip {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .booking-card {
@@ -1062,9 +1295,28 @@ button:hover,
         grid-template-columns: 1fr;
     }
 
+    .directory-visual {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
     .chat-launcher {
+        width: 3.5rem;
+        min-height: 3.5rem;
         right: 1rem;
         bottom: 1rem;
+        margin: 0;
+        padding: 0;
+        border-radius: 50%;
+    }
+
+    .chat-launcher > span:last-child {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
     }
 
     .chat-panel {

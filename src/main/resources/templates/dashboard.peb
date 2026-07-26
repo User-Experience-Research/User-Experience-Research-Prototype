@@ -2,38 +2,63 @@
 <header class="page-heading">
     <p class="eyebrow">Home</p>
     <h1>Student services</h1>
-    <p>Open the tools you use most. Support Navigator is highlighted because it is the tested path in this prototype.</p>
+    <p>Open a student service or continue with a support request.</p>
 </header>
 
 <section class="service-section" aria-labelledby="student-support-heading">
-    <div class="section-heading-row">
-        <div>
-            <p class="eyebrow">Student support</p>
-            <h2 id="student-support-heading">Start with your situation, not the university structure</h2>
+    <h2 id="student-support-heading">Support and student systems</h2>
+    <div class="service-directory">
+        <div class="directory-visual">
+            <span class="directory-visual__icon" aria-hidden="true">＋</span>
+            <div>
+                <p class="eyebrow">Recommended route</p>
+                <h3>Start with what is happening</h3>
+                <p>Search across services, compare practical details and choose a next step.</p>
+            </div>
         </div>
-        <span class="tested-path">Recommended starting point</span>
-    </div>
-    <div class="feature-card">
-        <div>
-            <h3>Student Support Navigator</h3>
-            <p>Describe what is happening in your own words, compare overlapping support sources and choose a next step.</p>
-            <ul class="plain-list">
-                <li>Search across unclear or overlapping categories</li>
-                <li>Compare scope, provider, access and response time</li>
-                <li>Book a support appointment when you are ready</li>
-            </ul>
+        <div class="directory-links">
+            <a class="directory-link directory-link--featured" href="/support">
+                <span class="directory-link__icon" aria-hidden="true">⌕</span>
+                <span>
+                    <strong>Student Support Navigator</strong>
+                    <small>Describe a concern and compare overlapping support sources</small>
+                </span>
+                <span class="directory-link__arrow" aria-hidden="true">→</span>
+            </a>
+            <a class="directory-link" href="/appointments">
+                <span class="directory-link__icon" aria-hidden="true">▣</span>
+                <span>
+                    <strong>My appointments</strong>
+                    <small>{{ appointments | length }} active support appointment(s)</small>
+                </span>
+                <span class="directory-link__arrow" aria-hidden="true">→</span>
+            </a>
+            <div class="directory-link directory-link--disabled">
+                <span class="directory-link__icon" aria-hidden="true">▤</span>
+                <span>
+                    <strong>Learning materials</strong>
+                    <small>Courses and assessments</small>
+                </span>
+            </div>
+            <div class="directory-link directory-link--disabled">
+                <span class="directory-link__icon" aria-hidden="true">◷</span>
+                <span>
+                    <strong>My timetable</strong>
+                    <small>Teaching schedule</small>
+                </span>
+            </div>
         </div>
-        <a class="button-link" href="/support">Open Support Navigator</a>
     </div>
 </section>
 
 <section class="service-section" aria-labelledby="tools-heading">
-    <h2 id="tools-heading">Other university tools</h2>
-    <div class="tool-grid">
-        <a class="tool-card muted-tool" href="#" aria-disabled="true"><strong>Learning materials</strong><span>Courses and assessments</span></a>
-        <a class="tool-card muted-tool" href="#" aria-disabled="true"><strong>My timetable</strong><span>Teaching schedule</span></a>
-        <a class="tool-card" href="/appointments"><strong>My appointments</strong><span>{{ appointments | length }} active support appointment(s)</span></a>
+    <h2 id="tools-heading">Before you choose a support source</h2>
+    <div class="guidance-strip">
+        <p><strong>Compare more than the title.</strong> Scope, provider, response time, access mode and location can help separate services that sound similar.</p>
+        <a class="text-action" href="/support">
+            <span>Browse the support directory</span>
+            <span aria-hidden="true">→</span>
+        </a>
     </div>
 </section>
 {% include "fragments/portal-end" %}
-

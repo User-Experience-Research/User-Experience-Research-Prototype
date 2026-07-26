@@ -44,7 +44,10 @@
             </select>
             <label for="appointment-note">Anything useful to share? <span>(optional)</span></label>
             <textarea id="appointment-note" name="note" rows="4" maxlength="500"></textarea>
-            <button type="submit">Book appointment</button>
+            <button class="button-with-icon" type="submit">
+                <span aria-hidden="true">＋</span>
+                <span>Book appointment</span>
+            </button>
         </form>
     </section>
 </div>

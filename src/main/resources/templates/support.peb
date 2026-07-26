@@ -19,7 +19,10 @@
             {% endfor %}
         </select>
     </div>
-    <button type="submit">Search and compare</button>
+    <button class="button-with-icon" type="submit">
+        <span aria-hidden="true">⌕</span>
+        <span>Search and compare</span>
+    </button>
 </form>
 
 <div class="results-heading">
@@ -49,16 +52,24 @@
             </div>
             <div class="facility-card__action">
                 <p><strong>{{ facility.contactMode }}</strong></p>
-                <a class="secondary-link" href="/support/{{ facility.id }}">View scope and booking</a>
+                <a class="detail-link" href="/support/{{ facility.id }}">
+                    <span>
+                        <strong>View source details</strong>
+                        <small>Scope, access and booking</small>
+                    </span>
+                    <span aria-hidden="true">→</span>
+                </a>
             </div>
         </article>
     {% else %}
         <div class="empty-state">
             <h2>No exact matches</h2>
             <p>Try a shorter phrase or clear the category filter. You can also compare all sources.</p>
-            <a class="button-link" href="/support">Show all support sources</a>
+            <a class="button-link button-with-icon" href="/support">
+                <span aria-hidden="true">↻</span>
+                <span>Show all support sources</span>
+            </a>
         </div>
     {% endfor %}
 </section>
 {% include "fragments/portal-end" %}
-

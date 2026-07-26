@@ -82,4 +82,7 @@
             <p class="mobile-page-title">{{ pageTitle }}</p>
             <button class="font-toggle font-toggle--header" type="button" data-font-toggle aria-pressed="false">Large font: Off</button>
         </header>
+        <div class="portal-hero" aria-hidden="true">
+            <span class="mini-mark mini-mark--hero">N<span>MSI</span></span>
+        </div>
         <main id="main-content" class="portal-main">
