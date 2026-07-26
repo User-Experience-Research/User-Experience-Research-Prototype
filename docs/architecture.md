@@ -7,7 +7,8 @@ flowchart LR
     Student["Student browser"] --> Pages["Pebble pages<br/>HTML, CSS, accessible JavaScript"]
     Pages --> Routes["Ktor routes<br/>login, search, details, appointments, chat"]
     Routes --> Repo["SupportRepository"]
-    Repo --> Database[("H2 local<br/>PostgreSQL deployed")]
+    Repo --> LocalDatabase[("H2 local")]
+    Repo --> Neon[("External Neon Free<br/>PostgreSQL deployed")]
     Routes --> Assistant["Support Assistant"]
     Assistant --> Fallback["Database-guided fallback"]
     Assistant --> DeepSeek["DeepSeek V4 Flash"]
@@ -24,6 +25,10 @@ flowchart LR
 5. Chat sends recent user-scoped context to the assistant.
 6. DeepSeek may request a named tool. The server validates the arguments, injects the current user, executes the repository call, and returns only the tool result.
 7. If no AI key is configured, a deterministic repository-backed assistant supplies basic routing guidance.
+
+## Deployment boundary
+
+Render runs only the Docker web service. Persistent relational data is stored in an external Neon Free PostgreSQL project, so the database does not inherit Render Free PostgreSQL's 30-day expiry. `DATABASE_URL` is a Render secret and uses TLS plus required channel binding.
 
 ## Security boundaries
 

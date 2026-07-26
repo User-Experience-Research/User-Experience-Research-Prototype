@@ -156,13 +156,17 @@ The model never receives database credentials. Tool calls are executed server-si
 
 The default local database is H2 in PostgreSQL compatibility mode.
 
-For PostgreSQL, provide either a standard PostgreSQL URL:
+Production deployment uses an external Neon Free PostgreSQL project. Neon Free has no time limit or credit-card requirement; its current allowance is 0.5 GB storage and 100 CU-hours per project each month, with compute scaling to zero while idle.
+
+From the Neon project dashboard, choose **Connect**, select the direct connection rather than the `-pooler` hostname, and copy the TLS connection string:
 
 ```bash
-export DATABASE_URL="postgresql://user:password@host:5432/nmsi"
+export DATABASE_URL="postgresql://user:password@ep-example.neon.tech/neondb?sslmode=require&channel_binding=require"
 ```
 
-or a JDBC URL with separate credentials:
+The application converts Neon’s `channel_binding` parameter to the pgJDBC `channelBinding` form. The project uses pgJDBC 42.7.13, which includes the current channel-binding enforcement fixes. A direct connection is used because Flyway applies migrations during application startup; the application’s Hikari pool already limits connections.
+
+Alternatively, provide a JDBC URL with separate credentials:
 
 ```bash
 export DATABASE_URL="jdbc:postgresql://host:5432/nmsi"
@@ -170,7 +174,7 @@ export DATABASE_USER="user"
 export DATABASE_PASSWORD="password"
 ```
 
-Flyway migrations are in `src/main/resources/db/migration`.
+Flyway migrations are in `src/main/resources/db/migration` and automatically create and seed an empty Neon database on first startup.
 
 ## Quality checks
 
@@ -224,21 +228,30 @@ docker run --rm -p 8080:8080 \
 
 ## Deploy the full stack
 
-The repository includes a [Render Blueprint](render.yaml) and [Dockerfile](Dockerfile). The Blueprint creates:
+The repository includes a [Render Blueprint](render.yaml) and [Dockerfile](Dockerfile). The deployment uses:
 
 - a free Docker web service in Singapore;
-- a free PostgreSQL database;
-- an internal database connection;
+- an external Neon Free PostgreSQL project with no 30-day expiry;
+- a secret `DATABASE_URL` supplied during Render Blueprint creation;
+- a three-connection Hikari pool suitable for the prototype workload;
 - a generated session secret;
 - HTTPS-only session cookies;
 - `/health` application checks;
 - automatic deploys after GitHub CI succeeds.
 
-Create the Blueprint from this repository, then add `DEEPSEEK_API_KEY` under:
+Deployment order:
+
+1. Create a Neon Free project.
+2. Copy its direct TLS connection string.
+3. Create the Render Blueprint from this repository.
+4. Paste the Neon string into the requested `DATABASE_URL` secret.
+5. Add `DEEPSEEK_API_KEY` later under:
 
 **Render Dashboard → nmsi-support-navigator → Environment → Add Environment Variable**
 
-The application deploys without the key in database-guided fallback mode, so the secret can be added later. A free Render web service may spin down after inactivity, and a free Render PostgreSQL database expires after 30 days; use a paid datastore before treating the prototype as persistent.
+The application deploys without the AI key in database-guided fallback mode. The Neon database remains allocated without a 30-day deletion deadline, although its compute may sleep while idle and the free usage/storage limits still apply. The Render Free Web Service may also spin down after inactivity.
+
+See [Deployment](docs/deployment.md) for the exact setup and verification checklist.
 
 ## Documentation
 
@@ -246,6 +259,7 @@ The application deploys without the key in database-guided fallback mode, so the
 - [Wireframes](docs/wireframes/README.md)
 - [System architecture](docs/architecture.md)
 - [Database ERD](docs/database-erd.md)
+- [Deployment](docs/deployment.md)
 - [AI integration](docs/deepseek-integration.md)
 - [Usability testing and retrospective](docs/usability-testing.md)
 

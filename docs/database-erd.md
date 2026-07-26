@@ -2,6 +2,8 @@
 
 The schema supports overlapping categories through a many-to-many relationship between facilities and categories. Appointment slots are separate from appointments so availability can be changed transactionally. Conversations are linked to the current demo user, not to a client-supplied identity.
 
+Locally, Flyway applies this schema to H2 in PostgreSQL compatibility mode. Deployment applies the same migrations to an external Neon Free PostgreSQL project. Render hosts only the web service.
+
 ```mermaid
 erDiagram
     USERS ||--o{ APPOINTMENTS : books
@@ -82,3 +84,16 @@ erDiagram
 - facility scope and access fields hold the comparison details requested in T08–T15 and T19.
 - slots and appointment status support confirmation, review, and cancellation in T16–T18.
 - conversation history lets the guide retain the student's current decision context without exposing unrelated users.
+
+## Neon connection
+
+The Render service receives a direct Neon TLS connection string through the secret `DATABASE_URL`. The application:
+
+- converts `postgresql://` to the pgJDBC URL form;
+- preserves `sslmode=require`;
+- normalizes Neon’s `channel_binding=require` to pgJDBC `channelBinding=require`;
+- uses pgJDBC 42.7.13;
+- limits Hikari to three connections in deployment;
+- runs Flyway before serving requests.
+
+Do not commit the connection string because it contains the database role password.
