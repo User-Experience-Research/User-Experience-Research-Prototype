@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ pageTitle }} | NMSI Student Portal</title>
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <script src="/assets/js/accessibility.js" defer></script>
+</head>
+<body class="portal-page">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<div class="portal-shell">
+    <aside class="portal-sidebar" aria-label="Student portal">
+        <a class="portal-brand" href="/dashboard" aria-label="NMSI student portal home">
+            <span class="mini-mark" aria-hidden="true">N<span>MSI</span></span>
+            <span>NMSI</span>
+        </a>
+        <p class="student-name">{{ session.displayName }}</p>
+        <nav aria-label="Primary">
+            <a href="/dashboard" {% if activePage == "dashboard" %}aria-current="page"{% endif %}>Home</a>
+            <a href="/support" {% if activePage == "support" %}aria-current="page"{% endif %}>Support Navigator</a>
+            <a href="/appointments" {% if activePage == "appointments" %}aria-current="page"{% endif %}>My appointments</a>
+            <a href="#" aria-disabled="true">Learning</a>
+            <a href="#" aria-disabled="true">My timetable</a>
+        </nav>
+        <form class="logout-form" method="post" action="/logout">
+            <button class="sidebar-action" type="submit">Sign out</button>
+        </form>
+    </aside>
+    <div class="portal-workspace">
+        <header class="portal-header">
+            <p>North-western Medical and Science Institute</p>
+            <button class="font-toggle font-toggle--header" type="button" data-font-toggle aria-pressed="false">Large font: Off</button>
+        </header>
+        <main id="main-content" class="portal-main">
+

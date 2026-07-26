@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ pageTitle }} | NMSI Student Portal</title>
     <link rel="stylesheet" href="/assets/css/app.css">
+    <script src="/assets/js/accessibility.js" defer></script>
 </head>
 <body class="login-page">
 <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -16,17 +17,21 @@
         <h1 id="institution-name">North-western Medical and Science Institute</h1>
         <p>A student portal for learning, campus services and practical support.</p>
     </section>
-    <section class="login-panel" aria-labelledby="sign-in-title">
-        <p class="eyebrow">Student portal</p>
-        <h2 id="sign-in-title">Sign in</h2>
-        <p>This server-rendered prototype uses a demonstration student account.</p>
-        <form method="post" action="/login">
-            <label for="student-id">Student ID</label>
-            <input id="student-id" name="studentId" autocomplete="username">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" autocomplete="current-password">
-            <button type="submit">Log in</button>
-        </form>
+    <section class="login-side">
+        <button class="font-toggle" type="button" data-font-toggle aria-pressed="false">Large font: Off</button>
+        <div class="login-panel" aria-labelledby="sign-in-title">
+            <p class="eyebrow">Student portal</p>
+            <h2 id="sign-in-title">Sign in</h2>
+            <p>Use any details for this prototype. The server opens the demonstration student account.</p>
+            <form method="post" action="/login">
+                <label for="student-id">Student ID</label>
+                <input id="student-id" name="studentId" autocomplete="username">
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password">
+                <button type="submit">Log in</button>
+            </form>
+            <p class="form-note">Prototype login: both fields may be left blank.</p>
+        </div>
     </section>
 </main>
 </body>

@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.2.20"
+    kotlin("plugin.serialization") version "2.2.20"
     application
     id("io.ktor.plugin") version "3.5.0"
 }
@@ -18,6 +19,8 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:3.5.0")
     implementation("io.ktor:ktor-server-status-pages-jvm:3.5.0")
     implementation("io.ktor:ktor-server-pebble-jvm:3.5.0")
+    implementation("io.ktor:ktor-server-sessions-jvm:3.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("com.zaxxer:HikariCP:6.3.2")
     implementation("org.flywaydb:flyway-core:11.13.2")
     implementation("org.flywaydb:flyway-database-postgresql:11.13.2")

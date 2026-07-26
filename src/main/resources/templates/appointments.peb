@@ -1,0 +1,38 @@
+{% include "fragments/portal-start" %}
+<header class="page-heading">
+    <p class="eyebrow">Student services</p>
+    <h1>My appointments</h1>
+    <p>Review support appointments and cancel a booking that you no longer need.</p>
+</header>
+
+{% if booked %}
+    <div class="status-message" role="status">Your appointment was booked.</div>
+{% endif %}
+{% if cancelled %}
+    <div class="status-message" role="status">Your appointment was cancelled.</div>
+{% endif %}
+
+<section class="appointment-list" aria-label="Appointments">
+    {% for appointment in appointments %}
+        <article class="appointment-card">
+            <div>
+                <span class="status status--{{ appointment.status | lower }}">{{ appointment.status }}</span>
+                <h2>{{ appointment.facilityName }}</h2>
+                <p><strong>{{ appointment.startsAt }}</strong></p>
+                {% if appointment.note %}<p>{{ appointment.note }}</p>{% endif %}
+            </div>
+            {% if appointment.status == "BOOKED" %}
+                <form method="post" action="/appointments/{{ appointment.id }}/cancel">
+                    <button class="danger-button" type="submit">Cancel appointment</button>
+                </form>
+            {% endif %}
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <h2>No appointments yet</h2>
+            <p>Search the support directory and open a source to make a demonstration booking.</p>
+            <a class="button-link" href="/support">Find support</a>
+        </div>
+    {% endfor %}
+</section>
+{% include "fragments/portal-end" %}

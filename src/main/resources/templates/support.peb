@@ -1,0 +1,64 @@
+{% include "fragments/portal-start" %}
+<header class="page-heading">
+    <p class="eyebrow">Student services</p>
+    <h1>Student Support Navigator</h1>
+    <p>Search in your own words, then compare what each source handles, how quickly it responds and how you can reach it.</p>
+</header>
+
+<form class="search-panel" method="get" action="/support" role="search">
+    <div class="search-field">
+        <label for="support-search">What would you like help with?</label>
+        <input id="support-search" name="q" type="search" value="{{ query }}" placeholder="For example: deadline stress, visa, money or laptop access">
+    </div>
+    <div class="filter-field">
+        <label for="category-filter">Filter by need area</label>
+        <select id="category-filter" name="category">
+            <option value="">All need areas</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if selectedCategory == category.slug %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit">Search and compare</button>
+</form>
+
+<div class="results-heading">
+    <h2>{{ facilities | length }} support source(s)</h2>
+    {% if query or selectedCategory %}
+        <a href="/support">Clear search and filter</a>
+    {% endif %}
+</div>
+
+<section class="facility-list" aria-label="Support sources">
+    {% for facility in facilities %}
+        <article class="facility-card">
+            <div class="facility-card__main">
+                <div class="tag-row">
+                    {% for category in facility.categories %}
+                        <span class="tag">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+                <h3><a href="/support/{{ facility.id }}">{{ facility.name }}</a></h3>
+                <p>{{ facility.summary }}</p>
+                <dl class="comparison-grid">
+                    <div><dt>Provider</dt><dd>{{ facility.provider }}</dd></div>
+                    <div><dt>Distance</dt><dd>{{ facility.distanceMinutes }} minutes</dd></div>
+                    <div><dt>Response</dt><dd>{{ facility.responseTime }}</dd></div>
+                    <div><dt>Rating</dt><dd>{{ facility.rating }} / 5</dd></div>
+                </dl>
+            </div>
+            <div class="facility-card__action">
+                <p><strong>{{ facility.contactMode }}</strong></p>
+                <a class="secondary-link" href="/support/{{ facility.id }}">View scope and booking</a>
+            </div>
+        </article>
+    {% else %}
+        <div class="empty-state">
+            <h2>No exact matches</h2>
+            <p>Try a shorter phrase or clear the category filter. You can also compare all sources.</p>
+            <a class="button-link" href="/support">Show all support sources</a>
+        </div>
+    {% endfor %}
+</section>
+{% include "fragments/portal-end" %}
+

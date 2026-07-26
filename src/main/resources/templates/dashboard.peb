@@ -1,0 +1,39 @@
+{% include "fragments/portal-start" %}
+<header class="page-heading">
+    <p class="eyebrow">Home</p>
+    <h1>Student services</h1>
+    <p>Open the tools you use most. Support Navigator is highlighted because it is the tested path in this prototype.</p>
+</header>
+
+<section class="service-section" aria-labelledby="student-support-heading">
+    <div class="section-heading-row">
+        <div>
+            <p class="eyebrow">Student support</p>
+            <h2 id="student-support-heading">Start with your situation, not the university structure</h2>
+        </div>
+        <span class="tested-path">Recommended starting point</span>
+    </div>
+    <div class="feature-card">
+        <div>
+            <h3>Student Support Navigator</h3>
+            <p>Describe what is happening in your own words, compare overlapping support sources and choose a next step.</p>
+            <ul class="plain-list">
+                <li>Search across unclear or overlapping categories</li>
+                <li>Compare scope, provider, access and response time</li>
+                <li>Book a support appointment when you are ready</li>
+            </ul>
+        </div>
+        <a class="button-link" href="/support">Open Support Navigator</a>
+    </div>
+</section>
+
+<section class="service-section" aria-labelledby="tools-heading">
+    <h2 id="tools-heading">Other university tools</h2>
+    <div class="tool-grid">
+        <a class="tool-card muted-tool" href="#" aria-disabled="true"><strong>Learning materials</strong><span>Courses and assessments</span></a>
+        <a class="tool-card muted-tool" href="#" aria-disabled="true"><strong>My timetable</strong><span>Teaching schedule</span></a>
+        <a class="tool-card" href="/appointments"><strong>My appointments</strong><span>{{ appointments | length }} active support appointment(s)</span></a>
+    </div>
+</section>
+{% include "fragments/portal-end" %}
+

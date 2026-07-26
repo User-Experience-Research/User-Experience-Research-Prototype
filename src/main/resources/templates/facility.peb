@@ -1,0 +1,52 @@
+{% include "fragments/portal-start" %}
+<nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="/support">Support Navigator</a>
+    <span aria-hidden="true">/</span>
+    <span aria-current="page">{{ facility.name }}</span>
+</nav>
+
+<header class="page-heading facility-heading">
+    <div class="tag-row">
+        {% for category in facility.categories %}
+            <span class="tag">{{ category.name }}</span>
+        {% endfor %}
+    </div>
+    <h1>{{ facility.name }}</h1>
+    <p>{{ facility.summary }}</p>
+</header>
+
+<div class="detail-layout">
+    <section class="detail-card" aria-labelledby="compare-heading">
+        <h2 id="compare-heading">What to know before you choose</h2>
+        <dl class="detail-list">
+            <div><dt>Provider</dt><dd>{{ facility.provider }}</dd></div>
+            <div><dt>Location and distance</dt><dd>{{ facility.location }} · about {{ facility.distanceMinutes }} minutes</dd></div>
+            <div><dt>Response time</dt><dd>{{ facility.responseTime }}</dd></div>
+            <div><dt>How to access</dt><dd>{{ facility.contactMode }}</dd></div>
+            <div><dt>Who can use it</dt><dd>{{ facility.eligibility }}</dd></div>
+            <div><dt>What to prepare</dt><dd>{{ facility.preparation }}</dd></div>
+            <div><dt>Student rating</dt><dd>{{ facility.rating }} out of 5</dd></div>
+        </dl>
+    </section>
+
+    <section class="booking-card" aria-labelledby="booking-heading">
+        <p class="eyebrow">Optional next step</p>
+        <h2 id="booking-heading">Book a demonstration appointment</h2>
+        <p>Choose one available prototype slot. No confirmation is sent outside this project.</p>
+        <form method="post" action="/appointments">
+            <input type="hidden" name="facilityId" value="{{ facility.id }}">
+            <label for="starts-at">Available time</label>
+            <select id="starts-at" name="startsAt" required>
+                <option value="">Choose a time</option>
+                <option value="2026-07-28T10:00:00+08:00">Tuesday 28 July, 10:00</option>
+                <option value="2026-07-29T14:30:00+08:00">Wednesday 29 July, 14:30</option>
+                <option value="2026-07-30T11:00:00+08:00">Thursday 30 July, 11:00</option>
+            </select>
+            <label for="appointment-note">Anything useful to share? <span>(optional)</span></label>
+            <textarea id="appointment-note" name="note" rows="4" maxlength="500"></textarea>
+            <button type="submit">Book appointment</button>
+        </form>
+    </section>
+</div>
+{% include "fragments/portal-end" %}
+

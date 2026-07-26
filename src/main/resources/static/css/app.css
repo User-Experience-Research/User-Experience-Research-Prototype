@@ -24,7 +24,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
     font: inherit;
 }
 
@@ -117,6 +119,27 @@ input {
     box-shadow: 0 1.5rem 4rem rgb(19 40 34 / 12%);
 }
 
+.login-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 2rem;
+}
+
+.font-toggle {
+    min-height: 2.75rem;
+    margin: 0;
+    border: 2px solid var(--brand-dark);
+    color: var(--brand-dark);
+    background: #ffffff;
+}
+
+.font-toggle:hover {
+    color: #ffffff;
+}
+
 .eyebrow {
     margin: 0;
     color: var(--brand-dark);
@@ -151,6 +174,15 @@ form input {
     background: #ffffff;
 }
 
+form select,
+form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #7b8884;
+    color: var(--ink);
+    background: #ffffff;
+}
+
 button,
 .button-link {
     min-height: 3.25rem;
@@ -180,6 +212,458 @@ button:hover,
     border: 1px solid var(--line);
 }
 
+.form-note {
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.portal-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 18rem minmax(0, 1fr);
+}
+
+.portal-sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+    color: #ffffff;
+    background: var(--dark);
+}
+
+.portal-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 1.25rem 1.5rem;
+    border-bottom: 1px solid #4b5552;
+    color: #ffffff;
+    font-size: 1.35rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.mini-mark {
+    width: 3.25rem;
+    height: 3.25rem;
+    display: inline-grid;
+    place-items: center;
+    border: 2px solid #24c3a3;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #0b3d34;
+    font-size: 1.6rem;
+}
+
+.mini-mark span {
+    display: block;
+    margin-top: -0.5rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.06em;
+}
+
+.student-name {
+    margin: 0;
+    padding: 1.2rem 1.25rem;
+    color: #d6dedb;
+    border-bottom: 1px solid #4b5552;
+}
+
+.portal-sidebar nav {
+    display: grid;
+    padding-top: 1rem;
+}
+
+.portal-sidebar nav a {
+    min-height: 3.25rem;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    border-left: 0.35rem solid transparent;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.portal-sidebar nav a:hover {
+    background: #26302d;
+}
+
+.portal-sidebar nav a[aria-current="page"] {
+    border-color: #30d2ad;
+    background: #0d6655;
+    font-weight: 700;
+}
+
+.portal-sidebar nav a[aria-disabled="true"] {
+    color: #aab5b1;
+    cursor: not-allowed;
+}
+
+.logout-form {
+    margin: auto 1.25rem 0;
+}
+
+.sidebar-action {
+    width: 100%;
+    border-color: #dce6e2;
+    background: transparent;
+}
+
+.portal-workspace {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-header {
+    min-height: 5.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem clamp(1.5rem, 4vw, 4rem);
+    border-bottom: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.portal-header p {
+    margin: 0;
+    font-weight: 700;
+}
+
+.font-toggle--header {
+    flex: 0 0 auto;
+}
+
+.portal-main {
+    width: min(92rem, 100%);
+    flex: 1;
+    padding: clamp(2rem, 5vw, 4.5rem);
+}
+
+.page-heading {
+    margin-bottom: 2.5rem;
+}
+
+.page-heading h1 {
+    max-width: 22ch;
+    margin: 0.2rem 0 0.5rem;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    font-weight: 400;
+    line-height: 1.08;
+}
+
+.page-heading > p:last-child {
+    max-width: 62rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 1.25rem;
+}
+
+.service-section {
+    margin-top: 3rem;
+}
+
+.service-section h2 {
+    font-size: 1.7rem;
+}
+
+.section-heading-row,
+.results-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.section-heading-row h2 {
+    margin: 0.25rem 0 0.8rem;
+}
+
+.tested-path,
+.tag,
+.status {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border: 1px solid var(--brand-dark);
+    color: var(--brand-dark);
+    background: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.feature-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 2rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border: 3px solid var(--brand);
+    background: #ffffff;
+}
+
+.feature-card h3 {
+    margin-top: 0;
+    font-size: 2rem;
+}
+
+.plain-list {
+    padding-left: 1.25rem;
+}
+
+.tool-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.tool-card {
+    min-height: 9rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: #ffffff;
+    text-decoration: none;
+}
+
+.tool-card:hover {
+    border-color: var(--brand);
+}
+
+.tool-card strong {
+    font-size: 1.2rem;
+}
+
+.tool-card span {
+    color: var(--muted);
+}
+
+.muted-tool {
+    color: #53605c;
+    background: #e9edeb;
+    cursor: not-allowed;
+}
+
+.search-panel {
+    display: grid;
+    grid-template-columns: minmax(16rem, 2fr) minmax(14rem, 1fr) auto;
+    align-items: end;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.search-panel label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-weight: 700;
+}
+
+.search-panel input,
+.search-panel select {
+    min-height: 3.25rem;
+}
+
+.search-panel button {
+    margin: 0;
+}
+
+.results-heading {
+    margin-bottom: 1rem;
+}
+
+.facility-list,
+.appointment-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.facility-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(14rem, 0.3fr);
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.facility-card__main,
+.facility-card__action {
+    padding: 1.5rem;
+}
+
+.facility-card__action {
+    border-left: 1px solid var(--line);
+    background: #edf3f1;
+}
+
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.facility-card h3 {
+    margin: 0.8rem 0 0.35rem;
+    font-size: 1.55rem;
+}
+
+.facility-card h3 a,
+.secondary-link,
+.breadcrumb a,
+.results-heading a,
+.portal-footer a {
+    color: #075f50;
+    text-decoration-thickness: 0.12em;
+    text-underline-offset: 0.15em;
+}
+
+.comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1rem;
+    margin: 1.25rem 0 0;
+}
+
+.comparison-grid div {
+    min-width: 0;
+}
+
+.comparison-grid dt,
+.detail-list dt {
+    font-weight: 700;
+}
+
+.comparison-grid dd,
+.detail-list dd {
+    margin: 0.2rem 0 0;
+    color: var(--muted);
+}
+
+.breadcrumb {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 2rem;
+}
+
+.facility-heading {
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(20rem, 0.7fr);
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.detail-card,
+.booking-card {
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.detail-list {
+    display: grid;
+    gap: 0;
+}
+
+.detail-list div {
+    display: grid;
+    grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.booking-card {
+    position: sticky;
+    top: 1rem;
+}
+
+.booking-card h2 {
+    margin: 0.25rem 0 0.5rem;
+}
+
+.booking-card label span {
+    font-weight: 400;
+}
+
+.status-message {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+    border-left: 0.4rem solid var(--brand);
+    background: #e2f4ee;
+}
+
+.appointment-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.appointment-card h2 {
+    margin: 0.7rem 0 0.25rem;
+}
+
+.status--booked {
+    color: #075f50;
+    background: #e2f4ee;
+}
+
+.status--cancelled {
+    color: #5f3b08;
+    border-color: #8b5b17;
+    background: #fff3dc;
+}
+
+.danger-button {
+    color: #ffffff;
+    border-color: #7a1420;
+    background: #a62030;
+}
+
+.danger-button:hover {
+    background: #75131e;
+}
+
+.empty-state {
+    padding: 2.5rem;
+    border: 1px dashed #74817d;
+    background: #ffffff;
+}
+
+.portal-footer {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem clamp(1.5rem, 4vw, 4rem);
+    border-top: 1px solid var(--line);
+    background: #ffffff;
+}
+
+.portal-footer p {
+    margin-right: auto;
+}
+
+.large-font {
+    font-size: 118%;
+}
+
 @media (max-width: 54rem) {
     .login-shell {
         grid-template-columns: 1fr;
@@ -192,5 +676,77 @@ button:hover,
     .login-panel {
         margin: 2rem auto;
     }
+
+    .portal-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .portal-sidebar {
+        position: static;
+        height: auto;
+    }
+
+    .portal-sidebar nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .portal-sidebar nav a {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .portal-sidebar nav a[aria-disabled="true"] {
+        display: none;
+    }
+
+    .logout-form {
+        margin: 1rem 1.25rem 0;
+    }
+
+    .feature-card,
+    .facility-card,
+    .detail-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .facility-card__action {
+        border-top: 1px solid var(--line);
+        border-left: 0;
+    }
+
+    .search-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .tool-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .booking-card {
+        position: static;
+    }
 }
 
+@media (max-width: 36rem) {
+    .portal-header,
+    .section-heading-row,
+    .results-heading,
+    .appointment-card,
+    .portal-footer {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .portal-sidebar nav {
+        grid-template-columns: 1fr;
+    }
+
+    .comparison-grid,
+    .detail-list div {
+        grid-template-columns: 1fr;
+    }
+}
