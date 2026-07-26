@@ -3,7 +3,9 @@ package org.nmsi.data
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Statement
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import javax.sql.DataSource
 
 class SupportRepository(
@@ -153,6 +155,73 @@ class SupportRepository(
                 }
         }
 
+    fun ensureFutureSlots(
+        now: OffsetDateTime = OffsetDateTime.now(INSTITUTE_ZONE),
+        numberOfDays: Int = 14,
+    ) {
+        val localNow = now.atZoneSameInstant(INSTITUTE_ZONE)
+        val candidateTimes =
+            buildList {
+                repeat(numberOfDays) { dayOffset ->
+                    val date = localNow.toLocalDate().plusDays(dayOffset.toLong())
+                    STANDARD_SLOT_TIMES.forEach { time ->
+                        val candidate = date.atTime(time).atZone(INSTITUTE_ZONE).toOffsetDateTime()
+                        if (candidate.isAfter(now)) add(candidate)
+                    }
+                }
+            }
+
+        dataSource.connection.use { connection ->
+            val facilityIds =
+                connection
+                    .prepareStatement("SELECT id FROM facilities ORDER BY id")
+                    .use { statement ->
+                        statement.executeQuery().use { result ->
+                            buildList {
+                                while (result.next()) add(result.getLong("id"))
+                            }
+                        }
+                    }
+
+            connection.autoCommit = false
+            try {
+                connection
+                    .prepareStatement(
+                        "SELECT COUNT(*) FROM appointment_slots WHERE facility_id = ? AND starts_at = ?",
+                    ).use { exists ->
+                        connection
+                            .prepareStatement(
+                                "INSERT INTO appointment_slots (facility_id, starts_at, is_available) VALUES (?, ?, TRUE)",
+                            ).use { insert ->
+                                facilityIds.forEach { facilityId ->
+                                    candidateTimes.forEach { startsAt ->
+                                        exists.setLong(1, facilityId)
+                                        exists.setObject(2, startsAt)
+                                        val alreadyExists =
+                                            exists.executeQuery().use { result ->
+                                                result.next()
+                                                result.getInt(1) > 0
+                                            }
+                                        if (!alreadyExists) {
+                                            insert.setLong(1, facilityId)
+                                            insert.setObject(2, startsAt)
+                                            insert.addBatch()
+                                        }
+                                    }
+                                }
+                                insert.executeBatch()
+                            }
+                    }
+                connection.commit()
+            } catch (error: Throwable) {
+                connection.rollback()
+                throw error
+            } finally {
+                connection.autoCommit = true
+            }
+        }
+    }
+
     fun bookAppointment(
         userId: Long,
         facilityId: Long,
@@ -168,7 +237,10 @@ class SupportRepository(
                             """
                             SELECT id
                             FROM appointment_slots
-                            WHERE facility_id = ? AND starts_at = ? AND is_available = TRUE
+                            WHERE facility_id = ?
+                              AND starts_at = ?
+                              AND is_available = TRUE
+                              AND starts_at > CURRENT_TIMESTAMP
                             FOR UPDATE
                             """.trimIndent(),
                         ).use { statement ->
@@ -473,4 +545,9 @@ class SupportRepository(
             status = getString("status"),
             note = getString("note"),
         )
+
+    private companion object {
+        val INSTITUTE_ZONE: ZoneId = ZoneId.of("Asia/Shanghai")
+        val STANDARD_SLOT_TIMES: List<LocalTime> = listOf(LocalTime.of(10, 0), LocalTime.of(14, 30))
+    }
 }

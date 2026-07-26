@@ -37,7 +37,9 @@ import org.nmsi.assistant.FacilityRecommendation
 import org.nmsi.assistant.SupportAssistant
 import org.nmsi.data.DatabaseFactory
 import org.nmsi.data.SupportRepository
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.ZoneId
 
 @Serializable
 data class PortalSession(
@@ -60,6 +62,7 @@ data class ChatResponse(
 fun Application.module() {
     val dataSource = DatabaseFactory.create()
     val repository = SupportRepository(dataSource)
+    repository.ensureFutureSlots()
     val assistant = AssistantFactory.create(repository)
     monitor.subscribe(ApplicationStopped) {
         dataSource.close()
@@ -214,6 +217,7 @@ private fun Route.authenticatedPortalRoutes(
                         activePage = "support",
                         "facility" to facility,
                         "availableSlots" to repository.availableSlots(facility.id),
+                        "bookingToday" to LocalDate.now(INSTITUTE_ZONE).toString(),
                     ),
                 ),
             )
@@ -238,17 +242,26 @@ private fun Route.authenticatedPortalRoutes(
             val session = call.requireSession() ?: return@post
             val parameters = call.receiveParameters()
             val facilityId = parameters["facilityId"]?.toLongOrNull()
-            val startsAt = parameters["startsAt"]?.let(OffsetDateTime::parse)
-            if (facilityId == null || startsAt == null || repository.facilityById(facilityId) == null) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid appointment request")
+            val startsAt =
+                parameters["startsAt"]
+                    ?.let { value -> runCatching { OffsetDateTime.parse(value) }.getOrNull() }
+            val appointmentIsFuture = startsAt?.isAfter(OffsetDateTime.now()) == true
+            val facilityIsKnown = facilityId?.let(repository::facilityById) != null
+            if (!appointmentIsFuture || !facilityIsKnown) {
+                call.respond(HttpStatusCode.BadRequest, "Choose an available future appointment time")
                 return@post
             }
-            repository.bookAppointment(
-                userId = session.userId,
-                facilityId = facilityId,
-                startsAt = startsAt,
-                note = parameters["note"],
-            )
+            runCatching {
+                repository.bookAppointment(
+                    userId = session.userId,
+                    facilityId = facilityId,
+                    startsAt = startsAt,
+                    note = parameters["note"],
+                )
+            }.getOrElse {
+                call.respond(HttpStatusCode.BadRequest, "That appointment time is no longer available")
+                return@post
+            }
             call.respondRedirect("/appointments?booked=1")
         }
         post("/appointments/{id}/cancel") {
@@ -278,6 +291,8 @@ private fun Route.authenticatedPortalRoutes(
         }
     }
 }
+
+private val INSTITUTE_ZONE: ZoneId = ZoneId.of("Asia/Shanghai")
 
 private suspend fun io.ktor.server.application.ApplicationCall.requireSession(): PortalSession? {
     val session = sessions.get<PortalSession>()

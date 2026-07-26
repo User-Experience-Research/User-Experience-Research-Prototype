@@ -916,6 +916,44 @@ button:hover,
     font-weight: 400;
 }
 
+.booking-field-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.booking-field-grid > div {
+    min-width: 0;
+}
+
+.booking-field-grid label {
+    display: block;
+    margin-bottom: 0.45rem;
+}
+
+.booking-field-grid input,
+.booking-field-grid select {
+    width: 100%;
+    min-height: 3.25rem;
+}
+
+.availability-status {
+    min-height: 2.8rem;
+    margin: 0.9rem 0 0;
+    padding: 0.75rem;
+    color: var(--muted);
+    border-left: 0.25rem solid var(--brand);
+    background: #edf5f2;
+    font-size: 0.9rem;
+}
+
+.booking-card button:disabled {
+    color: #56615e;
+    border-color: #9aa4a1;
+    background: #dfe3e1;
+    cursor: not-allowed;
+}
+
 .status-message {
     margin-bottom: 1.5rem;
     padding: 1rem 1.25rem;
@@ -1369,6 +1407,10 @@ button:hover,
 
     .booking-card {
         position: static;
+    }
+
+    .booking-field-grid {
+        grid-template-columns: 1fr;
     }
 }
 

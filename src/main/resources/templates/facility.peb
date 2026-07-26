@@ -32,23 +32,55 @@
     <section class="booking-card" aria-labelledby="booking-heading">
         <p class="eyebrow">Optional next step</p>
         <h2 id="booking-heading">Book a demonstration appointment</h2>
-        <p>Choose one available prototype slot. No confirmation is sent outside this project.</p>
-        <form method="post" action="/appointments">
+        <p id="booking-help">Choose a date first, then select one of its available future times.</p>
+        <form method="post" action="/appointments" data-appointment-booking>
             <input type="hidden" name="facilityId" value="{{ facility.id }}">
-            <label for="starts-at">Available time</label>
-            <select id="starts-at" name="startsAt" required>
-                <option value="">Choose a time</option>
-                {% for slot in availableSlots %}
-                    <option value="{{ slot.startsAt }}">{{ slot.startsAt }}</option>
-                {% endfor %}
-            </select>
+            <div class="booking-field-grid">
+                <div>
+                    <label for="appointment-date">Date</label>
+                    <input
+                        id="appointment-date"
+                        name="appointmentDate"
+                        type="date"
+                        min="{{ bookingToday }}"
+                        aria-describedby="booking-help appointment-availability"
+                        required
+                    >
+                </div>
+                <div>
+                    <label for="starts-at">Time</label>
+                    <select
+                        id="starts-at"
+                        name="startsAt"
+                        aria-describedby="booking-help appointment-availability"
+                        required
+                        disabled
+                    >
+                        <option value="">Choose a date first</option>
+                        {% for slot in availableSlots %}
+                            <option
+                                value="{{ slot.startsAt }}"
+                                data-appointment-slot
+                                data-date="{{ slot.dateValue }}"
+                                data-starts-at="{{ slot.startsAt }}"
+                                disabled
+                                hidden
+                            >{{ slot.timeLabel }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <p id="appointment-availability" class="availability-status" role="status" aria-live="polite">
+                Select a date to see available times.
+            </p>
             <label for="appointment-note">Anything useful to share? <span>(optional)</span></label>
             <textarea id="appointment-note" name="note" rows="4" maxlength="500"></textarea>
-            <button class="button-with-icon" type="submit">
+            <button class="button-with-icon" type="submit" disabled>
                 <span aria-hidden="true">＋</span>
                 <span>Book appointment</span>
             </button>
         </form>
     </section>
 </div>
+<script src="/assets/js/appointment-booking.js" defer></script>
 {% include "fragments/portal-end" %}

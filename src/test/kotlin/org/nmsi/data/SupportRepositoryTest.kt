@@ -1,8 +1,10 @@
 package org.nmsi.data
 
+import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -37,6 +39,7 @@ class SupportRepositoryTest {
         database().use { dataSource ->
             val repository = SupportRepository(dataSource)
             val user = repository.demoUser()
+            repository.ensureFutureSlots()
             val facility = repository.searchFacilities(null, null).first { repository.availableSlots(it.id).isNotEmpty() }
             val slot = repository.availableSlots(facility.id).first()
 
@@ -54,6 +57,37 @@ class SupportRepositoryTest {
             val cancelled = assertNotNull(repository.cancelAppointment(user.id, booked.id))
             assertEquals("CANCELLED", cancelled.status)
             assertTrue(repository.availableSlots(facility.id).any { it.id == slot.id })
+        }
+    }
+
+    @Test
+    fun `past appointment slots cannot be listed or booked`() {
+        database().use { dataSource ->
+            val repository = SupportRepository(dataSource)
+            val user = repository.demoUser()
+            val facility = repository.searchFacilities(null, null).first()
+            val pastTime = OffsetDateTime.now().minusHours(2).withNano(0)
+
+            dataSource.connection.use { connection ->
+                connection
+                    .prepareStatement(
+                        "INSERT INTO appointment_slots (facility_id, starts_at, is_available) VALUES (?, ?, TRUE)",
+                    ).use { statement ->
+                        statement.setLong(1, facility.id)
+                        statement.setObject(2, pastTime)
+                        statement.executeUpdate()
+                    }
+            }
+
+            assertTrue(repository.availableSlots(facility.id).none { slot -> slot.startsAt == pastTime })
+            assertFailsWith<IllegalStateException> {
+                repository.bookAppointment(
+                    userId = user.id,
+                    facilityId = facility.id,
+                    startsAt = pastTime,
+                    note = null,
+                )
+            }
         }
     }
 

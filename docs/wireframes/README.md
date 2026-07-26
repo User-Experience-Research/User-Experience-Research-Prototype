@@ -8,7 +8,7 @@ These are low-fidelity black-and-white line drawings of the implemented Pebble r
 2. [Shared Mobile Navigation](mobile-navigation-wireframe.svg) — closed and open drawer states used by every authenticated route.
 3. [Dashboard](dashboard-wireframe.svg) — institutional service directory with a problem-first Navigator entry.
 4. [Support Search](support-search-wireframe.svg) — own-language search, need-area filter, and comparable source cards.
-5. [Facility Detail and Booking](facility-wireframe.svg) — scope boundaries, access facts, availability, and optional booking.
+5. [Facility Detail and Booking](facility-wireframe.svg) — scope boundaries, access facts, live calendar/date filtering, and optional future-time booking.
 6. [My Appointments](appointments-wireframe.svg) — confirmation, status, review, and cancellation.
 7. [Support Guide](support-chat-wireframe.svg) — neutral opening, clarification, recommendations, and confirmed appointment actions.
 8. [End-to-end flow](system-flow-wireframe.svg) — route and evidence relationship.

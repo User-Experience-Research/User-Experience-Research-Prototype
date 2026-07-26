@@ -1,6 +1,8 @@
 package org.nmsi.data
 
 import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 data class Category(
     val id: Long,
@@ -41,7 +43,18 @@ data class AppointmentSlot(
     val id: Long,
     val facilityId: Long,
     val startsAt: OffsetDateTime,
-)
+) {
+    val dateValue: String
+        get() = startsAt.atZoneSameInstant(INSTITUTE_ZONE).toLocalDate().toString()
+
+    val timeLabel: String
+        get() = startsAt.atZoneSameInstant(INSTITUTE_ZONE).format(TIME_FORMATTER)
+
+    private companion object {
+        val INSTITUTE_ZONE: ZoneId = ZoneId.of("Asia/Shanghai")
+        val TIME_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+    }
+}
 
 data class UserAccount(
     val id: Long,

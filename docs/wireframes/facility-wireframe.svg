@@ -28,16 +28,18 @@
   <rect x="590" y="295" width="215" height="315" class="box"/>
   <text x="610" y="330" class="s">OPTIONAL NEXT STEP</text>
   <text x="610" y="365" class="t">Book appointment</text>
-  <text x="610" y="405" class="s">Available time</text>
-  <rect x="610" y="418" width="175" height="42" class="box"/><text x="625" y="445" class="s">Choose a slot ▾</text>
-  <text x="610" y="492" class="s">Optional context</text>
-  <rect x="610" y="505" width="175" height="55" class="box"/>
-  <rect x="610" y="575" width="175" height="40" class="box"/><text x="633" y="601" class="s">Book appointment</text>
+  <text x="610" y="398" class="s">Date</text><text x="700" y="398" class="s">Time</text>
+  <rect x="610" y="408" width="82" height="40" class="box"/><text x="621" y="433" class="s">Calendar</text>
+  <rect x="700" y="408" width="85" height="40" class="box"/><text x="711" y="433" class="s">Time ▾</text>
+  <rect x="610" y="458" width="175" height="36" class="box"/><text x="620" y="481" class="s">Live availability status</text>
+  <text x="610" y="522" class="s">Optional context</text>
+  <rect x="610" y="535" width="175" height="45" class="box"/>
+  <rect x="610" y="590" width="175" height="40" class="box"/><text x="633" y="616" class="s">Book appointment</text>
   <rect x="865" y="150" width="205" height="160" class="dash"/>
   <text x="883" y="182" class="s">Boundary information appears</text><text x="883" y="207" class="s">before the optional note, so</text><text x="883" y="232" class="s">students can judge fit before</text><text x="883" y="257" class="s">sharing personal context.</text>
   <path d="M865 250 C825 290 700 280 520 330" class="line"/>
-  <rect x="865" y="420" width="205" height="120" class="dash"/>
-  <text x="883" y="452" class="s">Only live, available database</text><text x="883" y="477" class="s">slots can be booked.</text><text x="883" y="512" class="s">Mutation is transactional.</text>
-  <path d="M865 485 C840 500 810 515 780 438" class="line"/>
+  <rect x="865" y="420" width="205" height="150" class="dash"/>
+  <text x="883" y="452" class="s">Calendar date comes first.</text><text x="883" y="477" class="s">The time list is filtered by</text><text x="883" y="502" class="s">the live browser clock; the</text><text x="883" y="527" class="s">server also rejects past slots.</text>
+  <path d="M865 505 C840 520 810 520 780 430" class="line"/>
   <text x="45" y="700" class="s">Evidence: clear scope, provider, eligibility, preparation and privacy T12–T15, T19.</text>
 </svg>

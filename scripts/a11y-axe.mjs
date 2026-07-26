@@ -43,6 +43,26 @@ try {
     await checkPage(name, path);
   }
 
+  await page.goto(`${baseUrl}/support/1`, { waitUntil: "networkidle" });
+  const firstFutureSlot = page.locator("[data-appointment-slot]").first();
+  const slotDate = await firstFutureSlot.getAttribute("data-date");
+  const slotValue = await firstFutureSlot.getAttribute("data-starts-at");
+  if (!slotDate || !slotValue || new Date(slotValue) <= new Date()) {
+    throw new Error("Facility booking did not provide a future appointment slot");
+  }
+  await page.getByLabel("Date").fill(slotDate);
+  await page.getByLabel("Time").selectOption(slotValue);
+  if (!(await page.getByRole("button", { name: "Book appointment" }).isEnabled())) {
+    throw new Error("Book appointment remained disabled after a future date and time were selected");
+  }
+  const bookingResults = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  if (bookingResults.violations.length > 0) {
+    throw new Error("Selected appointment form has accessibility violations");
+  }
+  console.log("✓ Future appointment date and time selection");
+
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(`${baseUrl}/dashboard`, { waitUntil: "networkidle" });
   const menuButton = page.getByRole("button", { name: "Open student portal menu" });
